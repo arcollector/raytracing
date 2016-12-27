@@ -2,8 +2,10 @@
 #define PLANE_H
 
 #include <stdio.h>
+#include <math.h>
 
-#include "rbg.h"
+#include "helpers.h"
+#include "rgb.h"
 #include "vector.h"
 #include "ray.h"
 #include "camera.h"

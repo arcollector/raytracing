@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "bmp.h"
 #include "tga.h"
+#include "plane.h"
 
 int main(int argc, char *argv) {
 
@@ -24,8 +25,8 @@ int main(int argc, char *argv) {
   );
 
   Camera cam = Camera_New(
-    Vector_New(20,20,20), // pos
-    Vector_New(20,21,20), // up reference point
+    Vector_New(0,0,-10), // pos
+    Vector_New(0,1,-10), // up reference point
     Vector_New(0,0,0) // view reference point
   );
   Camera_Print(cam);
@@ -37,8 +38,11 @@ int main(int argc, char *argv) {
   spheres[0] = Sphere_New(Vector_New(0,0,0),5,RGB_New(255,0,0),cam);
   Sphere_Print(spheres[0]);
   spheresLength++;
-
-  // this is a test!!
+  Plane planes[10];
+  long planesLength = 0;
+  planes[0] = Plane_New(Vector_New(0,-10,0),Vector_New(0,1,0),RGB_New(255,255,0),cam);
+  Plane_Print(planes[0]);
+  planesLength++;
 
   double lastT;
   RGB lastColor; 
@@ -71,6 +75,14 @@ int main(int argc, char *argv) {
         if(t > 0 && t < lastT) {
           lastT = t;
           lastColor = sphere.color;
+        }
+      }
+      for(long i = 0; i < planesLength; i++) {
+        Plane plane = planes[i];
+        double t = Plane_Intersect(ray,plane);
+        if(t > 0 && t < lastT) {
+          lastT = t;
+          lastColor = plane.color;
         }
       }
     
