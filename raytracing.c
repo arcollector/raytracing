@@ -38,6 +38,8 @@ int main(int argc, char *argv) {
   Sphere_Print(spheres[0]);
   spheresLength++;
 
+  // this is a test!!
+
   double lastT;
   RGB lastColor; 
 
