@@ -1,0 +1,35 @@
+FILE_NAME = test1.bmp
+
+WIDTH = 200
+HEIGHT = 200
+
+CAMERA {
+  loc (0,0,-10)
+  upPoint (0,1,-10)
+  lookAt (0,0,0)
+}
+
+SPHERE {
+  loc (-6,0,0)
+  radius 5
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (6,0,0)
+  radius 5
+  TEXTURE {
+    color (0,0,255)
+  }
+}
+
+PLANE {
+  loc (0,-10,0)
+  normal (0,1,0)
+  TEXTURE {
+    color (255,255,0)
+  }
+}
+

@@ -3,16 +3,9 @@
 
 #include <stdio.h>
 
+#include "datatypes.h"
 #include "vector.h"
 #include "matrix.h"
-
-struct CameraStruct {
-  Vector pos;
-  Vector up,left,view;
-  Matrix local, invLocal;
-};
-
-typedef struct CameraStruct Camera;
 
 Camera Camera_New(
   Vector pos,

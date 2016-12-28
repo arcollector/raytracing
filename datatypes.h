@@ -24,22 +24,21 @@ typedef struct MatrixStruct Matrix;
 
 // ----------------------------------------
 
+struct CameraStruct {
+  Vector pos;
+  Vector up,left,view;
+  Matrix local, invLocal;
+};
+
+typedef struct CameraStruct Camera;
+
+// ----------------------------------------
+
 struct RayStruct {
   Vector start, end, dir;
 };
 
 typedef struct RayStruct Ray;
-
-// ----------------------------------------
-
-struct ObjectStruct {
-  void *obj;
-  struct ObjectStruct *next;
-  double (*intersect)(Ray ray, void *obj);
-  RGB (*getColor)(void *obj);
-};
-
-typedef struct ObjectStruct Object;
 
 // ----------------------------------------
 
@@ -66,7 +65,29 @@ typedef struct PlaneStruct Plane;
 
 // ----------------------------------------
 
+struct ObjectStruct {
+  void *obj;
+  int type;
+  struct ObjectStruct *next;
+  double (*intersect)(Ray ray, void *obj);
+  RGB (*getColor)(void *obj);
+  void (*print)(void *obj);
+  void (*free)(void *obj);
+};
 
+typedef struct ObjectStruct Object;
+
+// ----------------------------------------
+
+typedef struct {
+  char *fileName;
+  long width, height;
+  Camera cam;
+  Object *objList;
+  long objectsTotal;
+} Scene;
+
+// ----------------------------------------
 
 #endif
 

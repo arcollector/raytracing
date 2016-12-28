@@ -1,5 +1,5 @@
 #include "camera.h"
-#define CAMERA_DEBUG 1
+#define CAMERA_DEBUG 0
 
 Camera Camera_New(
   Vector pos,
@@ -78,9 +78,9 @@ Camera Camera_New(
 void Camera_Print(Camera cam) {
   printf("cam.up: %5.5f %5.5f %5.5f\n",
           cam.up.x,cam.up.y,cam.up.z);
-  printf(" cam.left: %5.5f %5.5f %5.5f\n",
+  printf("cam.left: %5.5f %5.5f %5.5f\n",
           cam.left.x,cam.left.y,cam.left.z);
-  printf(" cam.view: %5.5f %5.5f %5.5f\n",
+  printf("cam.view: %5.5f %5.5f %5.5f\n",
         cam.view.x,cam.view.y,cam.view.z);
 }
 

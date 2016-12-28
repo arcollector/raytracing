@@ -1,26 +1,28 @@
 #include "sphere.h"
 
-Sphere Sphere_New(Vector center, double radius, RGB color, Camera cam) {
+Sphere *Sphere_New(Vector center, double radius, RGB color, Camera cam) {
+  
+  Sphere *sphere = malloc(sizeof(Sphere));
+  if(!sphere) return NULL;
 
   center = Vector_MulMatrix(center, cam.local);
 
-  Sphere sphere;
-  sphere.center = center;
-  sphere.radius = radius;
-  sphere.rSquared = radius*radius;
-  sphere.invRadius = 1/radius;
-  sphere.color = color;
+  sphere->center = center;
+  sphere->radius = radius;
+  sphere->rSquared = radius*radius;
+  sphere->invRadius = 1/radius;
+  sphere->color = color;
   
   Matrix t1 = Matrix_New();
   t1._30 = -center.x;
   t1._31 = -center.y;
   t1._32 = -center.z;
-  sphere.local = t1;
+  sphere->local = t1;
 
   t1._30 = center.x;
   t1._31 = center.y;
   t1._32 = center.z;
-  sphere.invLocal = t1;
+  sphere->invLocal = t1;
   
   return sphere;
 }
@@ -65,10 +67,16 @@ RGB Sphere_GetColor(void *_sphere) {
   return sphere->color;
 }
 
-void Sphere_Print(Sphere sphere) {
+void Sphere_Print(void *_sphere) {
+  Sphere *sphere = _sphere;
   printf("sphere center: (%5.5f %5.5f %5.5f)",
-                sphere.center.x,sphere.center.y,sphere.center.z);
-  printf(" radius: %5.5f", sphere.radius);
+                sphere->center.x,sphere->center.y,sphere->center.z);
+  printf(" radius: %5.5f", sphere->radius);
   printf(" color: %d %d %d\n", 
-                sphere.color.red,sphere.color.green,sphere.color.blue);
+                sphere->color.red,sphere->color.green,sphere->color.blue);
 }
+
+void Sphere_Free(void *sphere) {
+  free(sphere);
+}
+

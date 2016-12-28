@@ -1,12 +1,13 @@
 #include "plane.h"
 
-Plane Plane_New(Vector center, Vector normal, RGB color, Camera cam) {
+Plane *Plane_New(Vector center, Vector normal, RGB color, Camera cam) {
+  Plane *plane = malloc(sizeof(Plane));
+  if(!plane) return NULL;
 
-  Plane plane;
-  plane.center = Vector_MulMatrix(center, cam.local);
+  plane->center = Vector_MulMatrix(center, cam.local);
   normal = Vector_MulMatrixNotTranslation(normal, cam.local);
-  plane.normal = Vector_Normalize(normal);
-  plane.color = color;
+  plane->normal = Vector_Normalize(normal);
+  plane->color = color;
 
   return plane;
 }
@@ -35,10 +36,15 @@ RGB Plane_GetColor(void *_plane) {
   return plane->color;
 }
 
-void Plane_Print(Plane plane) {
-  printf("plane normal is: "); Vector_Print(plane.normal);
-  printf("plane center is: "); Vector_Print(plane.center);
+void Plane_Print(void *_plane) {
+  Plane *plane = _plane;
+  printf("plane normal is: "); Vector_Print(plane->normal);
+  printf("plane center is: "); Vector_Print(plane->center);
   printf("plane color is: %d %d %d\n",
-                     plane.color.red,plane.color.green,plane.color.blue);  
+                     plane->color.red,plane->color.green,plane->color.blue);  
+}
+
+void Plane_Free(void *plane) {
+  free(plane);
 }
 

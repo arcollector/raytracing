@@ -1,6 +1,8 @@
 #ifndef OCTREE_QUANTIZER_H
 #define OCTREE_QUANTIZER_H
 
+#include "rgb.h"
+
 struct Octree_NodeStruct {
   int level; // node depth
   int isLeaf;
