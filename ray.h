@@ -2,15 +2,9 @@
 #define RAY_H
 
 #include "helpers.h"
-
+#include "datatypes.h"
 #include "vector.h"
 #include "matrix.h"
-
-struct RayStruct {
-  Vector start, end, dir;
-};
-
-typedef struct RayStruct Ray;
 
 Ray Ray_New(Vector p1, Vector p2);
 Vector Ray_CalcDir(Ray ray);
