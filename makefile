@@ -1,4 +1,4 @@
-default: rgb vector matrix ray sphere octree_quantizer bmp windowing camera tga plane
+default: rgb vector matrix ray sphere octree_quantizer bmp windowing camera tga plane 
 	gcc raytracing.c -o raytracing rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o -lm
 
 rgb:
@@ -33,3 +33,4 @@ tga:
 
 plane:
 	gcc -c plane.c
+
