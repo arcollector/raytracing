@@ -1,11 +1,6 @@
 #include "sphere.h"
 
-Sphere Sphere_New(
-  Vector center,
-  double radius,
-  RGB color,
-  Camera cam)
-{
+Sphere Sphere_New(Vector center, double radius, RGB color, Camera cam) {
 
   center = Vector_MulMatrix(center, cam.local);
 
@@ -30,11 +25,13 @@ Sphere Sphere_New(
   return sphere;
 }
 
-double Sphere_Intersect(Ray ray, Sphere sphere) {
-  ray = Ray_Transform(ray, sphere.local);
+double Sphere_Intersect(Ray ray, void *_sphere) {
+  Sphere *sphere = _sphere;
+
+  ray = Ray_Transform(ray, sphere->local);
 
   double b = Vector_Dot(ray.start,ray.dir);
-  double c = Vector_Dot(ray.start,ray.start) - sphere.rSquared;
+  double c = Vector_Dot(ray.start,ray.start) - sphere->rSquared;
 
   double dis = b*b - c;
   // not intersection possible
@@ -61,6 +58,11 @@ Vector Sphere_Normal(Vector point, Sphere sphere) {
   Vector normal = Vector_FromP1toP2(sphere.center, point);
   normal = Vector_MulScalar(normal, sphere.invRadius);
   return normal;
+}
+
+RGB Sphere_GetColor(void *_sphere) {
+  Sphere *sphere = _sphere;
+  return sphere->color;
 }
 
 void Sphere_Print(Sphere sphere) {

@@ -12,7 +12,8 @@
 #include "camera.h"
 
 Plane Plane_New(Vector center, Vector normal, RGB color, Camera cam);
-double Plane_Intersect(Ray ray, Plane plane);
+double Plane_Intersect(Ray ray, void *plane);
+RGB Plane_GetColor(void *plane);
 void Plane_Print(Plane plane);
 
 #endif

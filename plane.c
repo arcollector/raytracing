@@ -11,15 +11,16 @@ Plane Plane_New(Vector center, Vector normal, RGB color, Camera cam) {
   return plane;
 }
 
-double Plane_Intersect(Ray ray, Plane plane) {
+double Plane_Intersect(Ray ray, void *_plane) {
+  Plane *plane = _plane;
   
-  double deno = Vector_Dot(plane.normal, ray.dir);
+  double deno = Vector_Dot(plane->normal, ray.dir);
   if(fabs(deno) < EPSILON) { // not intersection possible
     return -1;
   }
 
-  double nume = Vector_Dot(plane.normal,
-                     Vector_SubVector(plane.center, ray.start));
+  double nume = Vector_Dot(plane->normal,
+                     Vector_SubVector(plane->center, ray.start));
   
   double t = nume/deno;
   if(fabs(t) < EPSILON) {
@@ -27,6 +28,11 @@ double Plane_Intersect(Ray ray, Plane plane) {
   }
 
   return t;
+}
+
+RGB Plane_GetColor(void *_plane) {
+  Plane *plane = _plane;
+  return plane->color;
 }
 
 void Plane_Print(Plane plane) {

@@ -32,6 +32,17 @@ typedef struct RayStruct Ray;
 
 // ----------------------------------------
 
+struct ObjectStruct {
+  void *obj;
+  struct ObjectStruct *next;
+  double (*intersect)(Ray ray, void *obj);
+  RGB (*getColor)(void *obj);
+};
+
+typedef struct ObjectStruct Object;
+
+// ----------------------------------------
+
 struct SphereStruct {
   Vector center;
   double radius;
@@ -54,6 +65,8 @@ struct PlaneStruct {
 typedef struct PlaneStruct Plane;
 
 // ----------------------------------------
+
+
 
 #endif
 

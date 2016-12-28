@@ -11,7 +11,8 @@
 #include "camera.h"
 
 Sphere Sphere_New(Vector center, double radius, RGB color, Camera cam);
-double Sphere_Intersect(Ray ray, Sphere sphere);
+double Sphere_Intersect(Ray ray, void *sphere);
+RGB Sphere_GetColor(void *sphere);
 Vector Sphere_Normal(Vector point, Sphere sphere);
 void Sphere_Print(Sphere sphere);
 
