@@ -10,4 +10,3 @@ typedef struct RGBStruct RGB;
 RGB RGB_New(unsigned int red, unsigned int green, unsigned int blue);
 
 #endif
-

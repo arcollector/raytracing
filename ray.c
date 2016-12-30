@@ -9,10 +9,6 @@ Ray Ray_New(Vector p1, Vector p2) {
 }
 
 Ray Ray_Transform(Ray ray, Matrix m) {
-  /*ray.end = Vector_MulMatrix(ray.end, m);
-  ray.start = Vector_MulMatrix(ray.start, m);
-  // re calc direction
-  ray.dir = Ray_CalcDir(ray);*/
   ray.start = Vector_MulMatrix(ray.start, m);
   ray.dir = Vector_MulMatrixNotTranslation(ray.dir, m);
   return ray;
@@ -30,4 +26,3 @@ void Ray_Print(Ray ray) {
   printf(" dir: (%5.5f %5.5f %5.5f)\n",
                     ray.dir.x,ray.dir.y,ray.dir.z);
 }
-

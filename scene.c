@@ -10,20 +10,22 @@
 #define CAMERA 5
 #define UPPOINT 6
 #define LOOKAT 7
-#define TEXTURE 8
-#define COLOR 9
-#define SPHERE 10
-#define RADIUS 11
-#define PLANE 12
-#define CURLY 13
-#define TOTAL_IDS 14
-#define ERROR 15
+#define VIEWERDISTANCE 8
+#define WINDOW 9
+#define TEXTURE 10
+#define COLOR 11
+#define SPHERE 12
+#define RADIUS 13
+#define PLANE 14
+#define CURLY 15
+#define TOTAL_IDS 16
+#define ERROR 17
 
 char stringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
   "LOC", "NORMAL",
-  "CAMERA", "UPPOINT", "LOOKAT",
+  "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
   "TEXTURE", "COLOR",
   "SPHERE", "RADIUS",
   "PLANE",
@@ -57,7 +59,7 @@ int Scene_GetString(FILE *fp) {
       if(isalnum(ch) || ch == '.' || ch == '-' || ch == '}') {
         stringBuf[0] = ch;
         break;
-      } 
+      }
     }
   }
   i = 1;
@@ -87,7 +89,7 @@ Vector Scene_ParseVector(FILE *fp) {
   y = atof(stringBuf);
   code = Scene_GetString(fp);
   z = atof(stringBuf);
-  return Vector_New(x,y,z); 
+  return Vector_New(x,y,z);
 }
 
 double Scene_ParseFloat(FILE *fp) {
@@ -101,7 +103,7 @@ double Scene_ParseFloat(FILE *fp) {
 int Scene_GetTexture(FILE *fp, RGB *color) {
   int code;
 
-  while(!feof(fp) && 
+  while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == COLOR) {
@@ -134,7 +136,7 @@ Object *Scene_AddBlankObject(Scene *scene) {
     obj = obj->next = malloc(sizeof(Object));
     if(!obj) return NULL;
   }
-  
+
   obj->next = NULL;
   scene->objectsTotal++;
 
@@ -172,7 +174,7 @@ int Scene_Setup(FILE *fp, Scene *scene) {
     int code = Scene_GetString(fp);
     if(code == FILE_NAME) {
       if(DEBUG) printf("FILE_NAME found, ");
-      code = Scene_GetString(fp); 
+      code = Scene_GetString(fp);
       if(DEBUG) printf("value is %s\n",stringBuf);
       strcpy(scene->fileName,stringBuf);
 
@@ -206,7 +208,7 @@ int Scene_Setup(FILE *fp, Scene *scene) {
         return 0;
       }
     }
-    
+
     if(code == ERROR) {
       if(DEBUG) printf("SOMETHING WENT WRONG\n");
       return 0;
@@ -217,18 +219,20 @@ int Scene_Setup(FILE *fp, Scene *scene) {
 }
 
 int Scene_GetCamera(FILE *fp, Scene *scene) {
-  
-  int code; 
-  Vector loc, lookAt, upPoint;
 
-  while(!feof(fp) && 
+  int code;
+  Vector loc, lookAt, upPoint;
+  double viewerDistance;
+  double minX,minY,maxX,maxY;
+
+  while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
       loc = Scene_ParseVector(fp);
       if(DEBUG) Vector_Print(loc);
-   
+
     } else if(code == LOOKAT) {
       if(DEBUG) printf("\tLOOKAT found, ");
       lookAt = Scene_ParseVector(fp);
@@ -239,14 +243,35 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
       upPoint = Scene_ParseVector(fp);
       if(DEBUG) Vector_Print(upPoint);
 
+    } else if(code == VIEWERDISTANCE) {
+      if(DEBUG) printf("\tVIEWDISTANE found, ");
+      Scene_GetString(fp);
+      viewerDistance = atof(stringBuf);
+      if(DEBUG) printf("%5.5f\n", viewerDistance);
+
+    } else if(code == WINDOW) {
+      if(DEBUG) printf("\tWINDOW found, ");
+      Scene_GetString(fp);
+      minX = atof(stringBuf);
+      Scene_GetString(fp);
+      minY = atof(stringBuf);
+      Scene_GetString(fp);
+      maxX = atof(stringBuf);
+      Scene_GetString(fp);
+      maxY = atof(stringBuf);
+      if(DEBUG) printf("(%5.5f %5.5f)(%5.5f %5.5f)\n",minX,minY,maxX,maxY);
+
     } else {
       if(DEBUG) printf("\tCAMERA property invalid: %s\n", stringBuf);
       return ERROR;
     }
-
   }
 
-  scene->cam = Camera_New(loc, upPoint, lookAt);
+  scene->cam = Camera_New(
+                loc, upPoint, lookAt,
+                viewerDistance,
+                Vector_New(minX,minY,0),Vector_New(maxX,maxY,0)
+              );
 
   return code;
 }
@@ -255,17 +280,17 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
 
   int code;
   Vector loc;
-  double radius; 
+  double radius;
   RGB color;
 
-  while(!feof(fp) && 
+  while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
       loc = Scene_ParseVector(fp);
       if(DEBUG) Vector_Print(loc);
-   
+
     } else if(code == RADIUS) {
       if(DEBUG) printf("\tRADIUS found, ");
       radius = Scene_ParseFloat(fp);
@@ -304,14 +329,14 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
   Vector loc, normal;
   RGB color;
 
-  while(!feof(fp) && 
+  while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
       loc = Scene_ParseVector(fp);
       if(DEBUG) Vector_Print(loc);
-   
+
     } else if(code == NORMAL) {
       if(DEBUG) printf("\tNORMAL found, ");
       normal = Scene_ParseVector(fp);
@@ -361,4 +386,3 @@ void Scene_Print(Scene *scene) {
   printf("==== END ====\n");
 
 }
-

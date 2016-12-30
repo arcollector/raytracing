@@ -3,7 +3,7 @@ default: rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowi
 
 rgb.o: rgb.h rgb.c
 	gcc -c rgb.c
-  
+
 vector.o: datatypes.h vector.h vector.c
 	gcc -c vector.c
 
@@ -46,6 +46,5 @@ scene_test: datatypes.h scene.h scene.c scene_test.c rgb.h rgb.c vector.h vector
 	gcc -c plane.c
 	gcc -c rgb.c
 	gcc -c ray.c
-	gcc scene_test.c -o bin/scene_test vector.o matrix.o ray.o camera.o rgb.o sphere.o plane.o scene.o -lm
-
-
+	gcc -c windowing.c
+	gcc scene_test.c -o bin/scene_test vector.o matrix.o ray.o windowing.o camera.o rgb.o sphere.o plane.o scene.o -lm

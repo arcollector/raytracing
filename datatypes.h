@@ -28,6 +28,8 @@ struct CameraStruct {
   Vector pos;
   Vector up,left,view;
   Matrix local, invLocal;
+  double vpd;
+  Vector min, max;
 };
 
 typedef struct CameraStruct Camera;
@@ -46,7 +48,7 @@ struct SphereStruct {
   Vector center;
   double radius;
   double rSquared;
-  double invRadius; 
+  double invRadius;
   RGB color;
   Matrix local,invLocal;
 };
@@ -90,4 +92,3 @@ typedef struct {
 // ----------------------------------------
 
 #endif
-

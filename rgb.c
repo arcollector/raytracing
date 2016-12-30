@@ -7,4 +7,3 @@ RGB RGB_New(unsigned int red, unsigned int green, unsigned int blue) {
   color.blue = blue;
   return color;
 }
-

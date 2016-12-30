@@ -7,6 +7,8 @@ CAMERA {
   loc (0,0,-10)
   upPoint (0,1,-10)
   lookAt (0,0,0)
+  viewerDistance 10
+  window (-10,-10) (10,10)
 }
 
 SPHERE {
@@ -32,4 +34,3 @@ PLANE {
     color (255,255,0)
   }
 }
-

@@ -4,7 +4,10 @@
 Camera Camera_New(
   Vector pos,
   Vector upPoint,
-  Vector viewPoint
+  Vector viewPoint,
+  double viewerDistance,
+  Vector min,
+  Vector max
 ) {
 
   Vector viewDir = Vector_Normalize(Vector_FromP1toP2(pos,viewPoint));
@@ -13,7 +16,7 @@ Camera Camera_New(
   Vector_Print(viewDir); Vector_Print(upDir); printf("==========\n");
   #endif
   // create orthnormal basis
-  
+
   // up
   Vector w = Vector_MulScalar(viewDir,Vector_Dot(viewDir,upDir));
   Vector up = Vector_SubVector(upDir,w);
@@ -41,7 +44,7 @@ Camera Camera_New(
   cam.up = up;
   cam.left = left;
   cam.view = viewDir;
-  
+
   // create orthnormal matrix
   Matrix t1 = Matrix_New();
   t1._30 = -pos.x;
@@ -57,22 +60,45 @@ Camera Camera_New(
   #if CAMERA_DEBUG == 1
   Matrix_Print(cam.local); printf("==============\n");
   #endif
-  
+
   // create inverse orthonormal matrix
   t1._30 = pos.x;
   t1._31 = pos.y;
   t1._32 = pos.z;
 
   t2 = Matrix_Transpose(t2);
-   
+
   cam.invLocal = Matrix_Mul(t2,t1);
   #if CAMERA_DEBUG == 1
   Matrix_Print(cam.invLocal); printf("============\n");
-  
+
   Matrix_Print(Matrix_Mul(cam.local,cam.invLocal)); printf("==========\n");
   #endif
 
-  return cam; 
+  cam.vpd = viewerDistance;
+  cam.min = min;
+  cam.max = max;
+
+  return cam;
+}
+
+Matrix Camera_GetScreenToViewingPlaneMatrix(
+  long width,
+  long height,
+  Camera cam
+) {
+
+  Matrix win = Windowing_New(
+      Vector_New(0,0,0),Vector_New(width,height,0),
+      cam.min,cam.max,
+      1 // invert y screen axis
+  );
+
+  return win;
+}
+
+Vector Camera_GetViewerPosition(Camera cam) {
+  return Vector_New(0,0,-cam.vpd);
 }
 
 void Camera_Print(Camera cam) {
@@ -82,5 +108,8 @@ void Camera_Print(Camera cam) {
           cam.left.x,cam.left.y,cam.left.z);
   printf("cam.view: %5.5f %5.5f %5.5f\n",
         cam.view.x,cam.view.y,cam.view.z);
+  printf("cam.vpd: %5.5f\n", cam.vpd);
+  printf("cam.min and cam.max:\n");
+  Vector_Print(cam.min);
+  Vector_Print(cam.max);
 }
-

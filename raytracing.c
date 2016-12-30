@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     return 0;
   }
-  
+
   if(!Scene_Setup(fp, scene)) {
     Scene_Free(scene);
     fclose(fp);
@@ -48,16 +48,16 @@ int main(int argc, char *argv[]) {
 
   Object *objList = scene->objList;
 
-  Matrix win = Windowing_New(
-      Vector_New(0,0,0),Vector_New(width,height,0),
-      Vector_New(-10,-10,0),Vector_New(10,10,0),
-      1
-  );
+  Camera cam = scene->cam;
 
-  Vector rayStart = Vector_New(0,0,-10);
+  Matrix win = Camera_GetScreenToViewingPlaneMatrix(
+                  width, height, cam
+              );
+
+  Vector rayStart = Camera_GetViewerPosition(cam);
 
   double lastT;
-  RGB lastColor; 
+  RGB lastColor;
 
   // resulted image
   BMP_Canvas canvas;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
-      
+
       // windowing
       Vector ps = Vector_New(x+.5,y+.5,0); // from screen space
       Vector pvp = Vector_MulMatrix(ps,win); // to view plane space
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 
       // build ray
       Ray ray = Ray_New(rayStart,pvp);
-    
+
       // intersect
       lastT = 1e10;
       lastColor = bkgColor;
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
       }
 
       // store pixel
-      BMP_PushRGB(&canvas,lastColor);     
+      BMP_PushRGB(&canvas,lastColor);
 
     }
   }
@@ -105,4 +105,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
