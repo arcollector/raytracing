@@ -12,20 +12,22 @@
 #define LOOKAT 7
 #define VIEWERDISTANCE 8
 #define WINDOW 9
-#define TEXTURE 10
-#define COLOR 11
-#define SPHERE 12
-#define RADIUS 13
-#define PLANE 14
-#define CURLY 15
-#define TOTAL_IDS 16
-#define ERROR 17
+#define SKY 10
+#define TEXTURE 11
+#define COLOR 12
+#define SPHERE 13
+#define RADIUS 14
+#define PLANE 15
+#define CURLY 16
+#define TOTAL_IDS 17
+#define ERROR 18
 
 char stringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
   "LOC", "NORMAL",
   "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
+  "SKY",
   "TEXTURE", "COLOR",
   "SPHERE", "RADIUS",
   "PLANE",
@@ -194,6 +196,10 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       if(DEBUG) printf("CAMERA found\n");
       code = Scene_GetCamera(fp, scene);
 
+    } else if(code == SKY) {
+      if(DEBUG) printf("SKY found\n");
+      code = Scene_GetSky(fp, scene);
+
     } else if(code == SPHERE) {
       if(DEBUG) printf("SPHERE found\n");
       code = Scene_GetSphere(fp, scene);
@@ -272,6 +278,31 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
                 viewerDistance,
                 Vector_New(minX,minY,0),Vector_New(maxX,maxY,0)
               );
+
+  return code;
+}
+
+int Scene_GetSky(FILE *fp, Scene *scene) {
+
+  int code;
+  RGB color;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == TEXTURE) {
+      if(DEBUG) printf("\tTEXTURE found\n");
+      code = Scene_GetTexture(fp,&color);
+      if(DEBUG) printf("\t\tCOLOR is %d %d %d\n",color.red,color.green,color.blue);
+
+    } else {
+      if(DEBUG) printf("\tSKY property invalid: %s\n", stringBuf);
+      return ERROR;
+    }
+
+  }
+
+  scene->bkgColor = color;
 
   return code;
 }
@@ -377,6 +408,8 @@ void Scene_Print(Scene *scene) {
   printf("height: %ld\n", scene->height);
   printf("= CAMERA =====\n");
   Camera_Print(scene->cam);
+  printf("= SKY =====\n");
+  printf("color is %d %d %d\n",scene->bkgColor.red,scene->bkgColor.green,scene->bkgColor.blue);
   printf("= OBJECTS ====\n");
   printf("total objects are: %ld\n", scene->objectsTotal);
   for(Object *node = scene->objList; node; node = node->next) {

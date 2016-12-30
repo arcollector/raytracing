@@ -5,69 +5,57 @@
 
 // ----------------------------------------
 
-struct VectorStruct {
+typedef struct {
   double x,y,z,w;
-};
-
-typedef struct VectorStruct Vector;
+} Vector;
 
 // ----------------------------------------
 
-struct MatrixStruct {
+typedef struct {
   double _00,_01,_02,_03;
   double _10,_11,_12,_13;
   double _20,_21,_22,_23;
   double _30,_31,_32,_33;
-};
-
-typedef struct MatrixStruct Matrix;
+} Matrix;
 
 // ----------------------------------------
 
-struct CameraStruct {
+typedef struct {
   Vector pos;
   Vector up,left,view;
   Matrix local, invLocal;
   double vpd;
   Vector min, max;
-};
-
-typedef struct CameraStruct Camera;
+} Camera;
 
 // ----------------------------------------
 
-struct RayStruct {
+typedef struct {
   Vector start, end, dir;
-};
-
-typedef struct RayStruct Ray;
+} Ray;
 
 // ----------------------------------------
 
-struct SphereStruct {
+typedef struct {
   Vector center;
   double radius;
   double rSquared;
   double invRadius;
   RGB color;
   Matrix local,invLocal;
-};
-
-typedef struct SphereStruct Sphere;
+} Sphere;
 
 // ----------------------------------------
 
-struct PlaneStruct {
+typedef struct {
   Vector center;
   Vector normal;
   RGB color;
-};
-
-typedef struct PlaneStruct Plane;
+} Plane;
 
 // ----------------------------------------
 
-struct ObjectStruct {
+typedef struct ObjectStruct {
   void *obj;
   int type;
   struct ObjectStruct *next;
@@ -75,9 +63,7 @@ struct ObjectStruct {
   RGB (*getColor)(void *obj);
   void (*print)(void *obj);
   void (*free)(void *obj);
-};
-
-typedef struct ObjectStruct Object;
+} Object;
 
 // ----------------------------------------
 
@@ -87,6 +73,7 @@ typedef struct {
   Camera cam;
   Object *objList;
   long objectsTotal;
+  RGB bkgColor;
 } Scene;
 
 // ----------------------------------------

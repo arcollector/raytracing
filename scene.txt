@@ -11,6 +11,12 @@ CAMERA {
   window (-10,-10) (10,10)
 }
 
+SKY {
+  TEXTURE {
+    color (45,54,0)
+  }
+}
+
 SPHERE {
   loc (-6,0,0)
   radius 5

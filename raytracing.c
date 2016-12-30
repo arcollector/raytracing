@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  RGB bkgColor = RGB_New(54,241,54);
+  RGB bkgColor = scene->bkgColor;
 
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
