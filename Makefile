@@ -48,3 +48,7 @@ scene_test: datatypes.h scene.h scene.c scene_test.c rgb.h rgb.c vector.h vector
 	gcc -c ray.c
 	gcc -c windowing.c
 	gcc scene_test.c -o bin/scene_test vector.o matrix.o ray.o windowing.o camera.o rgb.o sphere.o plane.o scene.o -lm
+
+clean:
+	rm -f *.o
+
