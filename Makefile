@@ -1,5 +1,5 @@
-default: rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o
-	gcc raytracing.c -o bin/raytracing rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o -lm
+default: rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o shoot.o
+	gcc raytracing.c -o bin/raytracing rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o shoot.o -lm
 
 rgb.o: rgb.h rgb.c
 	gcc -c rgb.c
@@ -7,8 +7,17 @@ rgb.o: rgb.h rgb.c
 vector.o: datatypes.h vector.h vector.c
 	gcc -c vector.c
 
+vector_test: datatypes.h vector.h vector.c matrix.h matrix.c
+	gcc -c vector.c
+	gcc tests/vector_test.c -o bin/vector_test vector.o matrix.o -lm
+
 matrix.o: datatypes.h matrix.h matrix.c
 	gcc -c matrix.c
+
+matrix_test: datatypes.h vector.h vector.c matrix.h matrix.c
+	gcc -c vector.c
+	gcc -c matrix.c
+	gcc tests/matrix_test.c -o bin/matrix_test vector.o matrix.o -lm
 
 ray.o: datatypes.h vector.h vector.c matrix.h matrix.c ray.h ray.c
 	gcc -c ray.c
@@ -19,6 +28,12 @@ sphere.o: datatypes.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c sphere.h s
 octree_quantizer.o: rgb.h rgb.c octree_quantizer.h octree_quantizer.c
 	gcc -c octree_quantizer.c
 
+octree_quantizer_test: octree_quantizer.o
+	gcc -c bmp.c
+	gcc -c tga.c
+	gcc -c pcx.c
+	gcc tests/octree_quantizer_test.c -o bin/octree_quantizer_test octree_quantizer.o bmp.o tga.o pcx.o -lm
+
 bmp.o: rgb.h rgb.c bmp.h bmp.c
 	gcc -c bmp.c
 
@@ -27,6 +42,11 @@ windowing.o: datatypes.h windowing.h windowing.c
 
 camera.o: datatypes.h vector.h vector.c matrix.h matrix.c camera.h camera.c
 	gcc -c camera.c
+
+camera_test: datatypes.h windowing.h windowing.c camera.h camera.c
+	gcc -c camera.c
+	gcc -c windowing.c
+	gcc tests/camera_test.c -o bin/camera_test vector.o matrix.o windowing.o camera.o -lm
 
 tga.o: rgb.h rgb.c bmp.h bmp.c tga.h tga.c
 	gcc -c tga.c
@@ -37,7 +57,13 @@ plane.o: datatypes.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c plane.h pla
 scene.o: datatypes.h scene.h scene.c
 	gcc -c scene.c
 
-scene_test: datatypes.h scene.h scene.c scene_test.c rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c sphere.h sphere.c plane.h plane.c ray.h ray.c
+shade.o: datatypes.h rgb.h rgb.c ray.h ray.c
+	gcc -c shade.c
+
+shoot.o: datatypes.h rgb.h rgb.c shade.h shade.c shoot.h shoot.c
+	gcc -c shoot.c
+
+scene_test: datatypes.h scene.h scene.c rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c sphere.h sphere.c plane.h plane.c ray.h ray.c
 	gcc -c scene.c
 	gcc -c vector.c
 	gcc -c matrix.c
@@ -47,8 +73,7 @@ scene_test: datatypes.h scene.h scene.c scene_test.c rgb.h rgb.c vector.h vector
 	gcc -c rgb.c
 	gcc -c ray.c
 	gcc -c windowing.c
-	gcc scene_test.c -o bin/scene_test vector.o matrix.o ray.o windowing.o camera.o rgb.o sphere.o plane.o scene.o -lm
+	gcc tests/scene_test.c -o bin/scene_test vector.o matrix.o ray.o windowing.o camera.o rgb.o sphere.o plane.o scene.o -lm
 
 clean:
 	rm -f *.o
-

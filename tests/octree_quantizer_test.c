@@ -1,16 +1,16 @@
 #include <stdio.h>
 
-#include "rgb.h"
-#include "octree_quantizer.h"
+#include "../rgb.h"
+#include "../octree_quantizer.h"
 
 #define BMP_DEBUG 1
-#include "bmp.h"
+#include "../bmp.h"
 
 #define TGA_DEBUG 1
-#include "tga.h"
+#include "../tga.h"
 
 #define PCX_DEBUG 1
-#include "pcx.h"
+#include "../pcx.h"
 
 int main( int argc, char *argv[] ) {
 
@@ -25,9 +25,9 @@ int main( int argc, char *argv[] ) {
     printf("source bmp/tga/pcx cannot open: %s\n", sourceFile);
     return 0;
   }
-  
+
   BMP_Canvas bmpCanvas;
-  if( BMP_IsBMP( fp ) ) { 
+  if( BMP_IsBMP( fp ) ) {
     BMP_Header bmpHeader;
     if( !BMP_Read( fp, &bmpHeader, &bmpCanvas ) ) {
       printf("bmp file: %s is corrupted\n", sourceFile);
@@ -77,4 +77,3 @@ int main( int argc, char *argv[] ) {
 
   return 0;
 }
-

@@ -15,7 +15,7 @@ Camera Camera_New(
   #if CAMERA_DEBUG == 1
   Vector_Print(viewDir); Vector_Print(upDir); printf("==========\n");
   #endif
-  // create orthnormal basis
+  // create orthonormal basis
 
   // up
   Vector w = Vector_MulScalar(viewDir,Vector_Dot(viewDir,upDir));
@@ -75,30 +75,26 @@ Camera Camera_New(
   Matrix_Print(Matrix_Mul(cam.local,cam.invLocal)); printf("==========\n");
   #endif
 
-  cam.vpd = viewerDistance;
+  cam.viewerPos = Vector_New(0,0,-viewerDistance);
   cam.min = min;
   cam.max = max;
 
   return cam;
 }
 
-Matrix Camera_GetScreenToViewingPlaneMatrix(
+void Camera_PrepareForShooting(
   long width,
   long height,
-  Camera cam
+  Camera *cam
 ) {
 
   Matrix win = Windowing_New(
       Vector_New(0,0,0),Vector_New(width,height,0),
-      cam.min,cam.max,
+      cam->min,cam->max,
       1 // invert y screen axis
   );
 
-  return win;
-}
-
-Vector Camera_GetViewerPosition(Camera cam) {
-  return Vector_New(0,0,-cam.vpd);
+  cam->win = win;
 }
 
 void Camera_Print(Camera cam) {
@@ -108,7 +104,7 @@ void Camera_Print(Camera cam) {
           cam.left.x,cam.left.y,cam.left.z);
   printf("cam.view: %5.5f %5.5f %5.5f\n",
         cam.view.x,cam.view.y,cam.view.z);
-  printf("cam.vpd: %5.5f\n", cam.vpd);
+  printf("cam.viewerPos: "); Vector_Print(cam.viewerPos);
   printf("cam.min and cam.max:\n");
   Vector_Print(cam.min);
   Vector_Print(cam.max);

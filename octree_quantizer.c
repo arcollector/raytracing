@@ -35,7 +35,7 @@ Octree_Node *Octree_Insert( Octree_Node *node, RGB color, int level ) {
     int branch = (((color.red >> (7 - level)) & 1) << 2) |
                  (((color.green >> (7 - level)) & 1) << 1) |
                  ((color.blue >> (7 - level)) & 1);
-    
+
     if( node->children[branch] == NULL ) {
       node->childrenCount++;
       if( node->childrenCount == 2 ) {
@@ -45,11 +45,11 @@ Octree_Node *Octree_Insert( Octree_Node *node, RGB color, int level ) {
     }
 
     //printf("\tBRANCHING TO LEVEL %d\n", level + 1);
-    node->children[branch] = Octree_Insert( (node->children[branch]), 
+    node->children[branch] = Octree_Insert( (node->children[branch]),
                                                   color, level + 1 );
   }
- 
-  return node; 
+
+  return node;
 }
 
 void Octree_Kill( Octree_Node *node ) {
@@ -116,7 +116,7 @@ void Octree_ReduceIfNeeded( void ) {
   if( node->level < gbNodeLevel ) {
     gbNodeLevel = node->level;
     gbLeafLevel = gbNodeLevel + 1;
-  } 
+  }
 
   //printf("\tNOW NODE LEVEL IS %d\n", gbNodeLevel );
   //printf("\tNOW LEAF LEVEL IS %d\n", gbLeafLevel );
@@ -146,7 +146,7 @@ void printTree( Octree_Node *node ) {
     printf("\tI AM LEAF NOW\n");
     return;
   }
- 
+
   Octree_Node *child0 = node->children[0]; // level 7
   printf("\tLEVEL: %d\n",child0->level);
   printf("\tNODE COUNT: %ld\n", child0->childrenCount );
@@ -162,7 +162,7 @@ void printTree( Octree_Node *node ) {
 
 }
 
-void Octree_GeneratePalette( Octree_Node *node, RGB palette[], 
+void Octree_GeneratePalette( Octree_Node *node, RGB palette[],
                                                   int *paletteLength ) {
 
   if( node == NULL ) {
@@ -172,7 +172,7 @@ void Octree_GeneratePalette( Octree_Node *node, RGB palette[],
   if( node->isLeaf || node->level >= gbLeafLevel ) {
     palette[(*paletteLength)].red = (unsigned int)
                                     (node->redSum / node->colorCount);
-    palette[(*paletteLength)].green = (unsigned int) 
+    palette[(*paletteLength)].green = (unsigned int)
                                     (node->greenSum / node->colorCount);
     palette[(*paletteLength)].blue = (unsigned int)
                                     (node->blueSum / node->colorCount);
@@ -203,7 +203,7 @@ int Octree_FindColorPaletteIndex( Octree_Node *node, RGB color ) {
   int branch = (((color.red >> (7 - level)) & 1) << 2) |
 	       (((color.green >> (7 - level)) & 1) << 1) |
 	       ((color.blue >> (7 - level)) & 1);
-  
+
   return Octree_FindColorPaletteIndex( (node->children[branch]), color );
 }
 
@@ -227,7 +227,7 @@ void Octree_Free( Octree_Node *node ) {
 int Octree_Test() {
 
   Octree_Node *root = NULL;
-  
+
   RGB color0 = { 0,0,0 };
   RGB color1 = { 0,0,1 };
   RGB color2 = { 0,1,0 };
@@ -293,13 +293,13 @@ int Octree_Test() {
   node = node->children[4]; // from 1 to 2
   node = node->children[4]; // from 2 to 3
   node = node->children[4]; // from 3 to 4
-  printf("ThIS NODE AT LEVEL 4 must have 3 children == %ld\n", node->childrenCount ); 
+  printf("ThIS NODE AT LEVEL 4 must have 3 children == %ld\n", node->childrenCount );
 
   Octree_Reduce();
 
-  printf("NOW THE NODE AT LEVE 4 must have 0 children == %ld\n", node->childrenCount ); 
+  printf("NOW THE NODE AT LEVE 4 must have 0 children == %ld\n", node->childrenCount );
 
-  printf("INSERTING COLOR ----------->\n");  
+  printf("INSERTING COLOR ----------->\n");
   Octree_Insert( root, color20, 0 );
 
   Octree_Reduce();
@@ -340,4 +340,3 @@ int Octree_Test() {
   return 0;
 
 }
-

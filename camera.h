@@ -17,13 +17,11 @@ Camera Camera_New(
   Vector max
 );
 
-Matrix Camera_GetScreenToViewingPlaneMatrix(
+void Camera_PrepareForShooting(
   long width,
   long height,
-  Camera cam
+  Camera *cam
 );
-
-Vector Camera_GetViewerPosition(Camera cam);
 
 void Camera_Print(Camera cam);
 

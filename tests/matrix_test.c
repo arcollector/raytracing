@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "matrix.h"
+#include "../matrix.h"
 
 #ifdef DEG2RAD
 #undef DEG2RAD
@@ -66,7 +66,7 @@ int main(int argc,char *argv) {
   printf("m1 * m2\n");
   res = Matrix_Mul(m1,m2);
   Matrix_Print(res);
-  
+
   m1 = res;
 
   m2 = Matrix_New();
@@ -79,7 +79,6 @@ int main(int argc,char *argv) {
   printf("m1 * m2\n");
   res = Matrix_Mul(m1,m2);
   Matrix_Print(res);
-  
+
   return 0;
 }
-

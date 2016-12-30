@@ -24,8 +24,9 @@ typedef struct {
   Vector pos;
   Vector up,left,view;
   Matrix local, invLocal;
-  double vpd;
+  Vector viewerPos;
   Vector min, max;
+  Matrix win;
 } Camera;
 
 // ----------------------------------------

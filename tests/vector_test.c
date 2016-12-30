@@ -1,9 +1,9 @@
 #include <stdio.h>
 
-#include "vector.h"
+#include "../vector.h"
 
 int main(int argc, char args) {
-  
+
   Vector v1 = Vector_New(1,2,3);
   Vector_Print(v1);
   v1 = Vector_MulScalar(v1,10);
@@ -74,4 +74,3 @@ int main(int argc, char args) {
   Vector_Print(v1);
   return 0;
 }
-

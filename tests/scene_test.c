@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "datatypes.h"
-#include "scene.h"
+#include "../datatypes.h"
+#include "../scene.h"
 
 int main(int argc, char *argv[]) {
 
@@ -26,4 +26,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
