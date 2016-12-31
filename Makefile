@@ -1,5 +1,5 @@
-default: rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o shoot.o
-	gcc raytracing.c -o bin/raytracing rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o shoot.o -lm
+default: rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o shoot.o quadtree.o
+	gcc raytracing.c -o bin/raytracing rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o quadtree.o shoot.o -lm
 
 rgb.o: rgb.h rgb.c
 	gcc -c rgb.c
@@ -34,7 +34,7 @@ octree_quantizer_test: octree_quantizer.o
 	gcc -c pcx.c
 	gcc tests/octree_quantizer_test.c -o bin/octree_quantizer_test octree_quantizer.o bmp.o tga.o pcx.o -lm
 
-bmp.o: rgb.h rgb.c bmp.h bmp.c
+bmp.o: helpers.h rgb.h rgb.c bmp.h bmp.c
 	gcc -c bmp.c
 
 windowing.o: datatypes.h windowing.h windowing.c
@@ -74,6 +74,14 @@ scene_test: datatypes.h scene.h scene.c rgb.h rgb.c vector.h vector.c matrix.h m
 	gcc -c ray.c
 	gcc -c windowing.c
 	gcc tests/scene_test.c -o bin/scene_test vector.o matrix.o ray.o windowing.o camera.o rgb.o sphere.o plane.o scene.o -lm
+
+quadtree.o: rgb.h rgb.c datatypes.h quadtree.h quadtree.c
+	gcc -c quadtree.c
+
+quadtree_test: helpers.h rgb.h rgb.c datatypes.h quadtree.h quadtree.c
+	gcc -c rgb.c
+	gcc -c quadtree.c
+	gcc tests/quadtree_test.c -o bin/quadtree_test rgb.o quadtree.o -lm
 
 clean:
 	rm -f *.o
