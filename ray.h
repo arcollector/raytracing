@@ -7,7 +7,6 @@
 #include "matrix.h"
 
 Ray Ray_New(Vector p1, Vector p2);
-Vector Ray_CalcDir(Ray ray);
 Ray Ray_Transform(Ray ray, Matrix m);
 void Ray_Print(Ray ray);
 

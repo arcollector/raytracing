@@ -32,7 +32,7 @@ typedef struct {
 // ----------------------------------------
 
 typedef struct {
-  Vector start, end, dir;
+  Vector start, dir;
 } Ray;
 
 // ----------------------------------------

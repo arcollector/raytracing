@@ -2,9 +2,8 @@
 
 Ray Ray_New(Vector p1, Vector p2) {
   Ray ray;
-  ray.end = p2;
   ray.start = p1;
-  ray.dir = Ray_CalcDir(ray);
+  ray.dir = Vector_Normalize(Vector_FromP1toP2(ray.start,p2));
   return ray;
 }
 
@@ -14,15 +13,9 @@ Ray Ray_Transform(Ray ray, Matrix m) {
   return ray;
 }
 
-Vector Ray_CalcDir(Ray ray) {
-  return Vector_Normalize(Vector_FromP1toP2(ray.start,ray.end));
-}
-
 void Ray_Print(Ray ray) {
   printf("ray start: (%5.5f %5.5f %5.5f)",
                     ray.start.x,ray.start.y,ray.start.z);
-  printf(" end: (%5.5f %5.5f %5.5f)",
-                    ray.end.x,ray.end.y,ray.end.z);
   printf(" dir: (%5.5f %5.5f %5.5f)\n",
                     ray.dir.x,ray.dir.y,ray.dir.z);
 }
