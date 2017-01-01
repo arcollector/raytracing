@@ -25,7 +25,7 @@ RGB Shoot(long x, long y, Scene *scene) {
 
 
   // if stochastic
-  if(1) {
+  if(Scene_isShootStochastic(scene)) {
     // todo
     Quadtree *n = Quadtree_New();
     gbTotalNodes = 0;
@@ -35,11 +35,21 @@ RGB Shoot(long x, long y, Scene *scene) {
 
   // else if single ray shooting
   } else {
-    // build ray
-    Ray ray = Shoot_BuildRay(x+.5,y+.5,cam);
-    pixel = Shade(ray, objList, bkgColor);
+    pixel = Shoot_Single(x,y,cam,objList,bkgColor);
   }
 
+  return pixel;
+}
+
+RGB Shoot_Single(
+  double x, double y,
+  Camera cam,
+  Object *objList,
+  RGB bkgColor
+) {
+  // build ray
+  Ray ray = Shoot_BuildRay(x+.5,y+.5,cam);
+  RGB pixel = Shade(ray, objList, bkgColor);
   return pixel;
 }
 
@@ -72,21 +82,13 @@ void Shoot_Stochastic(
   //printf("\n");
 
   // compute avg color
-  long red = n->c1.red + n->c2.red + n->c3.red + n->c4.red;
-  long green = n->c1.green + n->c2.green + n->c3.green + n->c4.green;
-  long blue = n->c1.blue + n->c2.blue + n->c3.blue + n->c4.blue;
-  n->sum = RGBl_New(red, green, blue);
-  n->avg = RGB_New(
-    MIN(255,ROUND(n->sum.red/4.)),
-    MIN(255,ROUND(n->sum.green/4.)),
-    MIN(255,ROUND(n->sum.blue/4.))
-  );
+  Quadtree_NodeAvgRGB(n);
 
   // not much difference between avg and corners colors
-  int c1 = RGB_Equals(n->avg,n->c1,QUADTREE_THRESHOLD);
-  int c2 = RGB_Equals(n->avg,n->c2,QUADTREE_THRESHOLD);
-  int c3 = RGB_Equals(n->avg,n->c3,QUADTREE_THRESHOLD);
-  int c4 = RGB_Equals(n->avg,n->c4,QUADTREE_THRESHOLD);
+  int c1 = Quadtree_CmpRGB(n->avg,n->c1,QUADTREE_THRESHOLD);
+  int c2 = Quadtree_CmpRGB(n->avg,n->c2,QUADTREE_THRESHOLD);
+  int c3 = Quadtree_CmpRGB(n->avg,n->c3,QUADTREE_THRESHOLD);
+  int c4 = Quadtree_CmpRGB(n->avg,n->c4,QUADTREE_THRESHOLD);
 
   if((c1 && c2 && c3 && c4) || level == QUADTREE_MAXLEVEL) {
     // enough

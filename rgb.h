@@ -24,7 +24,6 @@ RGBl RGBl_New(long red, long green, long blue);
 RGBf RGBf_New(double red, double green, double blue);
 RGBf RGB_toRGBf(RGB rgb);
 RGB RGBf_toRGB(RGBf rgb);
-int RGB_Equals(RGB c1, RGB c2, int threshold);
 void RGB_Print(RGB c);
 void RGBl_Print(RGBl c);
 void RGBf_Print(RGBf c);

@@ -40,17 +40,6 @@ RGB RGBf_toRGB(RGBf rgb) {
   );
 }
 
-int RGB_Equals(RGB c1, RGB c2, int threshold) {
-  RGB cmp = RGB_New(
-    abs(c1.red - c2.red),
-    abs(c1.green - c2.green),
-    abs(c1.blue - c2.blue)
-  );
-  return cmp.red <= threshold &&
-        cmp.blue <= threshold &&
-        cmp.green <= threshold;
-}
-
 void RGB_Print(RGB c) {
   printf("color is: %d %d %d\n",c.red,c.green,c.blue);
 }

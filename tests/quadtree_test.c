@@ -43,10 +43,10 @@ void trace(
   //exit(0);
 
   // not much difference between avg and corners colors
-  int c1 = RGB_Equals(n->avg,n->c1,QUADTREE_THRESHOLD);
-  int c2 = RGB_Equals(n->avg,n->c2,QUADTREE_THRESHOLD);
-  int c3 = RGB_Equals(n->avg,n->c3,QUADTREE_THRESHOLD);
-  int c4 = RGB_Equals(n->avg,n->c4,QUADTREE_THRESHOLD);
+  int c1 = Quadtree_CmpRGB(n->avg,n->c1,QUADTREE_THRESHOLD);
+  int c2 = Quadtree_CmpRGB(n->avg,n->c2,QUADTREE_THRESHOLD);
+  int c3 = Quadtree_CmpRGB(n->avg,n->c3,QUADTREE_THRESHOLD);
+  int c4 = Quadtree_CmpRGB(n->avg,n->c4,QUADTREE_THRESHOLD);
   //printf("%d %d %d %d\n",c1,c2,c3,c4);
   if((c1 && c2 && c3 && c4) || level == QUADTREE_MAXLEVEL) {
     // enough

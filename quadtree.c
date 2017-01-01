@@ -13,6 +13,33 @@ Quadtree *Quadtree_New() {
   return n;
 }
 
+int Quadtree_CmpRGB(RGB c1, RGB c2, int threshold) {
+  RGB cmp = RGB_New(
+    abs(c1.red - c2.red),
+    abs(c1.green - c2.green),
+    abs(c1.blue - c2.blue)
+  );
+  return cmp.red <= threshold &&
+        cmp.blue <= threshold &&
+        cmp.green <= threshold;
+}
+
+void Quadtree_NodeSumRGB(Quadtree *n) {
+  long red = n->c1.red + n->c2.red + n->c3.red + n->c4.red;
+  long green = n->c1.green + n->c2.green + n->c3.green + n->c4.green;
+  long blue = n->c1.blue + n->c2.blue + n->c3.blue + n->c4.blue;
+  n->sum = RGBl_New(red, green, blue);
+}
+
+void Quadtree_NodeAvgRGB(Quadtree *n) {
+  Quadtree_NodeSumRGB(n);
+  n->avg = RGB_New(
+    MIN(255,ROUND(n->sum.red/4.)),
+    MIN(255,ROUND(n->sum.green/4.)),
+    MIN(255,ROUND(n->sum.blue/4.))
+  );
+}
+
 void Quadtree_Print(Quadtree *n) {
 
   printf("== QUADTREE ====\n");
@@ -44,6 +71,7 @@ void Quadtree_Print(Quadtree *n) {
     RGB_Print(n->c2);
     RGB_Print(n->c3);
     RGB_Print(n->c4);
+    RGBl_Print(n->sum);
     RGB_Print(n->avg);
 
     levelNodes--;
@@ -111,9 +139,11 @@ RGB Quadtree_GetAvg(Quadtree *n) {
   Quadtree_GetSum(n,&sum,&totalNodes);
 
   RGB avg = RGB_New(0,0,0);
-  avg.red = MIN(255,ROUND(sum.red / (double)totalNodes / 4.));
-  avg.green = MIN(255,ROUND(sum.green / (double)totalNodes / 4.));
-  avg.blue = MIN(255,ROUND(sum.blue / (double)totalNodes / 4.));
+  double deno = totalNodes * 4.;
+  // avg = color / totalNodes / 4
+  avg.red = MIN(255,ROUND(sum.red / deno));
+  avg.green = MIN(255,ROUND(sum.green / deno));
+  avg.blue = MIN(255,ROUND(sum.blue / deno));
 
   return avg;
 }

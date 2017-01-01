@@ -2,6 +2,7 @@ FILE_NAME = test2.bmp
 
 WIDTH = 200
 HEIGHT = 200
+SHOOT_TYPE = STOCHASTIC
 
 CAMERA {
   loc (0,0,-10)

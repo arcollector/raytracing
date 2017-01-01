@@ -24,6 +24,9 @@ typedef struct QuadtreeStruct {
 } Quadtree;
 
 Quadtree *Quadtree_New();
+void Quadtree_NodeSumRGB(Quadtree *n);
+void Quadtree_NodeAvgRGB(Quadtree *n);
+int Quadtree_CmpRGB(RGB c1, RGB c2, int threshold);
 void Quadtree_Print(Quadtree *n);
 void Quadtree_GetSum(Quadtree *n, RGBl *sum, long *totalNodes);
 RGB Quadtree_GetAvg(Quadtree *n);

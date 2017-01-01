@@ -5,26 +5,30 @@
 #define FILE_NAME 0
 #define WIDTH 1
 #define HEIGHT 2
-#define LOC 3
-#define NORMAL 4
-#define CAMERA 5
-#define UPPOINT 6
-#define LOOKAT 7
-#define VIEWERDISTANCE 8
-#define WINDOW 9
-#define SKY 10
-#define TEXTURE 11
-#define COLOR 12
-#define SPHERE 13
-#define RADIUS 14
-#define PLANE 15
-#define CURLY 16
-#define TOTAL_IDS 17
-#define ERROR 18
+#define SHOOT_TYPE 3
+#define SINGLE 4
+#define STOCHASTIC 5
+#define LOC 6
+#define NORMAL 7
+#define CAMERA 8
+#define UPPOINT 9
+#define LOOKAT 10
+#define VIEWERDISTANCE 11
+#define WINDOW 12
+#define SKY 13
+#define TEXTURE 14
+#define COLOR 15
+#define SPHERE 16
+#define RADIUS 17
+#define PLANE 18
+#define CURLY 19
+#define TOTAL_IDS 20
+#define ERROR 21
 
 char stringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
+  "SHOOT_TYPE", "SINGLE", "STOCHASTIC",
   "LOC", "NORMAL",
   "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
   "SKY",
@@ -155,6 +159,8 @@ Scene *Scene_New() {
   scene->objectsTotal = 0;
   scene->objList = NULL;
 
+  scene->shootType = SINGLE;
+
   return scene;
 }
 
@@ -192,6 +198,10 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       if(DEBUG) printf("value is %s\n",stringBuf);
       scene->height = atol(stringBuf);
 
+    } else if(code == SHOOT_TYPE) {
+      if(DEBUG) printf("SHOOT_TYPE found\n");
+      code = Scene_GetShootType(fp, scene);
+
     } else if(code == CAMERA) {
       if(DEBUG) printf("CAMERA found\n");
       code = Scene_GetCamera(fp, scene);
@@ -222,6 +232,23 @@ int Scene_Setup(FILE *fp, Scene *scene) {
   }
 
   return 1;
+}
+
+int Scene_GetShootType(FILE *fp, Scene *scene) {
+
+  int code = Scene_GetString(fp);
+  if(code == SINGLE) {
+    if(DEBUG) printf("shoot type is SINGLE\n");
+    scene->shootType = SINGLE;
+  } else if(code == STOCHASTIC) {
+    if(DEBUG) printf("shoot type is STOCHASTIC\n");
+    scene->shootType = STOCHASTIC;
+  } else {
+    if(DEBUG) printf("SHOOT_TYPE unknown property value %s\n",stringBuf);
+    code = ERROR;
+  }
+
+  return code;
 }
 
 int Scene_GetCamera(FILE *fp, Scene *scene) {
@@ -406,6 +433,7 @@ void Scene_Print(Scene *scene) {
   printf("fileName: %s\n", scene->fileName);
   printf("width: %ld\n", scene->width);
   printf("height: %ld\n", scene->height);
+  printf("shootType: %d\n", scene->shootType);
   printf("= CAMERA =====\n");
   Camera_Print(scene->cam);
   printf("= SKY =====\n");
@@ -418,4 +446,12 @@ void Scene_Print(Scene *scene) {
   }
   printf("==== END ====\n");
 
+}
+
+int Scene_isShootStochastic(Scene *scene) {
+  return scene->shootType == STOCHASTIC;
+}
+
+int Scene_isShootSingle(Scene *scene) {
+  return scene->shootType == SINGLE;
 }

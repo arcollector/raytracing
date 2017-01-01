@@ -26,9 +26,13 @@ void Scene_Free(Scene *scene);
 int Scene_Setup(FILE *fp, Scene *scene);
 void Scene_Print(Scene *scene);
 
+int Scene_GetShootType(FILE *fp, Scene *scene);
 int Scene_GetCamera(FILE *fp, Scene *scene);
 int Scene_GetSky(FILE *fp, Scene *scene);
 int Scene_GetSphere(FILE *fp, Scene *scene);
 int Scene_GetPlane(FILE *fp, Scene *scene);
+
+int Scene_isShootStochastic(Scene *scene);
+int Scene_isShootSingle(Scene *scene);
 
 #endif
