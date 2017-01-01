@@ -1,22 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 
-#include "helpers.h"
-#include "datatypes.h"
-#include "rgb.h"
-#include "vector.h"
-#include "matrix.h"
-#include "ray.h"
-#include "sphere.h"
-#include "windowing.h"
 #include "camera.h"
 #include "bmp.h"
-#include "tga.h"
-#include "plane.h"
 #include "scene.h"
 #include "shoot.h"
-#include "shade.h"
 
 int main(int argc, char *argv[]) {
 
