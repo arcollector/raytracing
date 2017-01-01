@@ -25,7 +25,7 @@ RGB Shoot(long x, long y, Scene *scene) {
 
 
   // if stochastic
-  if(Scene_isShootStochastic(scene)) {
+  if(scene->shootType == SCENE_STOCHASTIC) {
     // todo
     Quadtree *n = Quadtree_New();
     gbTotalNodes = 0;
@@ -66,20 +66,39 @@ void Shoot_Stochastic(
   double half32 = half * 3. / 2.;
   Ray ray;
 
+  #undef RANDOM
+  #define RANDOM(x,y) 0
   // compute topleft, topright, bottomleft and bottomright colors
-  //printf("shoot %5.5f %5.5f\n", x+half2, y+half2);
-  ray = Shoot_BuildRay(x+half2,y+half2,cam);
+  //printf("shoot %5.5f %5.5f\n", x+half2+ RANDOM(-half2,half2), y+half2+ RANDOM(-half2,half2));
+  ray = Shoot_BuildRay(
+    x+half2 + RANDOM(-half2,half2),
+    y+half2 + RANDOM(-half2,half2),
+    cam
+  );
   n->c1 = Shade(ray, objList, bkgColor);
-  //printf("shoot %5.5f %5.5f\n", x+half32, y+half2);
-  ray = Shoot_BuildRay(x+half32,y+half2,cam);
+  //printf("shoot %5.5f %5.5f\n", x+half32+ RANDOM(-half2,half2), y+half2+ RANDOM(-half2,half2));
+  ray = Shoot_BuildRay(
+    x+half32 + RANDOM(-half2,half2),
+    y+half2 + RANDOM(-half2,half2),
+    cam
+  );
   n->c2 = Shade(ray, objList, bkgColor);
-  //printf("shoot %5.5f %5.5f\n", x+half2, y+half32);
-  ray = Shoot_BuildRay(x+half2,y+half32,cam);
+  //printf("shoot %5.5f %5.5f\n", x+half2+ RANDOM(-half2,half2), y+half32+ RANDOM(-half2,half2));
+  ray = Shoot_BuildRay(
+    x+half2 + RANDOM(-half2,half2),
+    y+half32 + RANDOM(-half2,half2),
+    cam
+  );
   n->c3 = Shade(ray, objList, bkgColor);
-  //printf("shoot %5.5f %5.5f\n", x+half32, y+half32);
-  ray = Shoot_BuildRay(x+half32,y+half32,cam);
+  //printf("shoot %5.5f %5.5f\n", x+half32+ RANDOM(-half2,half2), y+half32+ RANDOM(-half2,half2));
+  ray = Shoot_BuildRay(
+    x+half32 + RANDOM(-half2,half2),
+    y+half32 + RANDOM(-half2,half2),
+    cam
+  );
   n->c4 = Shade(ray, objList, bkgColor);
   //printf("\n");
+  //exit(0);
 
   // compute avg color
   Quadtree_NodeAvgRGB(n);

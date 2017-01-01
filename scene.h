@@ -14,6 +14,9 @@
 #include "sphere.h"
 #include "plane.h"
 
+#define SCENE_SINGLE 1
+#define SCENE_STOCHASTIC 2
+
 // helpers
 int Scene_GetString(FILE *fp);
 Vector Scene_ParseVector(FILE *fp);
@@ -31,8 +34,5 @@ int Scene_GetCamera(FILE *fp, Scene *scene);
 int Scene_GetSky(FILE *fp, Scene *scene);
 int Scene_GetSphere(FILE *fp, Scene *scene);
 int Scene_GetPlane(FILE *fp, Scene *scene);
-
-int Scene_isShootStochastic(Scene *scene);
-int Scene_isShootSingle(Scene *scene);
 
 #endif

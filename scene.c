@@ -239,10 +239,10 @@ int Scene_GetShootType(FILE *fp, Scene *scene) {
   int code = Scene_GetString(fp);
   if(code == SINGLE) {
     if(DEBUG) printf("shoot type is SINGLE\n");
-    scene->shootType = SINGLE;
+    scene->shootType = SCENE_SINGLE;
   } else if(code == STOCHASTIC) {
     if(DEBUG) printf("shoot type is STOCHASTIC\n");
-    scene->shootType = STOCHASTIC;
+    scene->shootType = SCENE_STOCHASTIC;
   } else {
     if(DEBUG) printf("SHOOT_TYPE unknown property value %s\n",stringBuf);
     code = ERROR;
@@ -446,12 +446,4 @@ void Scene_Print(Scene *scene) {
   }
   printf("==== END ====\n");
 
-}
-
-int Scene_isShootStochastic(Scene *scene) {
-  return scene->shootType == STOCHASTIC;
-}
-
-int Scene_isShootSingle(Scene *scene) {
-  return scene->shootType == SINGLE;
 }
