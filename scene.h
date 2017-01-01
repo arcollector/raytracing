@@ -14,8 +14,9 @@
 #include "sphere.h"
 #include "plane.h"
 
-#define SCENE_SINGLE 1
-#define SCENE_STOCHASTIC 2
+#define AA_NONE 1
+#define AA_MULTI 2
+#define AA_STOCHASTIC 3
 
 // helpers
 int Scene_GetString(FILE *fp);
@@ -29,7 +30,7 @@ void Scene_Free(Scene *scene);
 int Scene_Setup(FILE *fp, Scene *scene);
 void Scene_Print(Scene *scene);
 
-int Scene_GetShootType(FILE *fp, Scene *scene);
+int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
 int Scene_GetCamera(FILE *fp, Scene *scene);
 int Scene_GetSky(FILE *fp, Scene *scene);
 int Scene_GetSphere(FILE *fp, Scene *scene);

@@ -5,30 +5,31 @@
 #define FILE_NAME 0
 #define WIDTH 1
 #define HEIGHT 2
-#define SHOOT_TYPE 3
-#define SINGLE 4
-#define STOCHASTIC 5
-#define LOC 6
-#define NORMAL 7
-#define CAMERA 8
-#define UPPOINT 9
-#define LOOKAT 10
-#define VIEWERDISTANCE 11
-#define WINDOW 12
-#define SKY 13
-#define TEXTURE 14
-#define COLOR 15
-#define SPHERE 16
-#define RADIUS 17
-#define PLANE 18
-#define CURLY 19
-#define TOTAL_IDS 20
-#define ERROR 21
+#define ANTI_ALIASING 3
+#define NONE 4
+#define MULTI 5
+#define STOCHASTIC 6
+#define LOC 7
+#define NORMAL 8
+#define CAMERA 9
+#define UPPOINT 10
+#define LOOKAT 11
+#define VIEWERDISTANCE 12
+#define WINDOW 13
+#define SKY 14
+#define TEXTURE 15
+#define COLOR 16
+#define SPHERE 17
+#define RADIUS 18
+#define PLANE 19
+#define CURLY 20
+#define TOTAL_IDS 21
+#define ERROR 22
 
 char stringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
-  "SHOOT_TYPE", "SINGLE", "STOCHASTIC",
+  "ANTI_ALIASING", "NONE", "MULTI", "STOCHASTIC",
   "LOC", "NORMAL",
   "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
   "SKY",
@@ -159,7 +160,7 @@ Scene *Scene_New() {
   scene->objectsTotal = 0;
   scene->objList = NULL;
 
-  scene->shootType = SINGLE;
+  scene->aa = AA_NONE;
 
   return scene;
 }
@@ -198,9 +199,9 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       if(DEBUG) printf("value is %s\n",stringBuf);
       scene->height = atol(stringBuf);
 
-    } else if(code == SHOOT_TYPE) {
-      if(DEBUG) printf("SHOOT_TYPE found\n");
-      code = Scene_GetShootType(fp, scene);
+    } else if(code == ANTI_ALIASING) {
+      if(DEBUG) printf("ANTI_ALIASING found\n");
+      code = Scene_GetAntiAliasing(fp, scene);
 
     } else if(code == CAMERA) {
       if(DEBUG) printf("CAMERA found\n");
@@ -234,17 +235,20 @@ int Scene_Setup(FILE *fp, Scene *scene) {
   return 1;
 }
 
-int Scene_GetShootType(FILE *fp, Scene *scene) {
+int Scene_GetAntiAliasing(FILE *fp, Scene *scene) {
 
   int code = Scene_GetString(fp);
-  if(code == SINGLE) {
-    if(DEBUG) printf("shoot type is SINGLE\n");
-    scene->shootType = SCENE_SINGLE;
+  if(code == NONE) {
+    if(DEBUG) printf("AA is NONE\n");
+    scene->aa = AA_NONE;
+  } else if(code == MULTI) {
+    if(DEBUG) printf("AA is MULTI\n");
+    scene->aa = AA_MULTI;
   } else if(code == STOCHASTIC) {
-    if(DEBUG) printf("shoot type is STOCHASTIC\n");
-    scene->shootType = SCENE_STOCHASTIC;
+    if(DEBUG) printf("AA is STOCHASTIC\n");
+    scene->aa = AA_STOCHASTIC;
   } else {
-    if(DEBUG) printf("SHOOT_TYPE unknown property value %s\n",stringBuf);
+    if(DEBUG) printf("ANTI_ALIASING unknown property value %s\n",stringBuf);
     code = ERROR;
   }
 
@@ -433,7 +437,7 @@ void Scene_Print(Scene *scene) {
   printf("fileName: %s\n", scene->fileName);
   printf("width: %ld\n", scene->width);
   printf("height: %ld\n", scene->height);
-  printf("shootType: %d\n", scene->shootType);
+  printf("antiAliasing: %d\n", scene->aa);
   printf("= CAMERA =====\n");
   Camera_Print(scene->cam);
   printf("= SKY =====\n");

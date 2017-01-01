@@ -13,6 +13,17 @@ Quadtree *Quadtree_New() {
   return n;
 }
 
+void Quadtree_NodeToLeaf(Quadtree *node, Quadtree *leaf) {
+  leaf->isLeaf = 1;
+  if(node == leaf) return;
+  leaf->c1 = node->c1;
+  leaf->c2 = node->c2;
+  leaf->c3 = node->c3;
+  leaf->c4 = node->c4;
+  leaf->sum = node->sum;
+  leaf->avg = node->avg;
+}
+
 int Quadtree_CmpRGB(RGB c1, RGB c2, int threshold) {
   RGB cmp = RGB_New(
     abs(c1.red - c2.red),

@@ -24,18 +24,24 @@ RGB Shoot(long x, long y, Scene *scene) {
   RGB bkgColor = scene->bkgColor;
 
 
-  // if stochastic
-  if(scene->shootType == SCENE_STOCHASTIC) {
-    // todo
+  // if stochastic or multisamplig
+  if(scene->aa == AA_STOCHASTIC || scene->aa == AA_MULTI) {
     Quadtree *n = Quadtree_New();
     gbTotalNodes = 0;
-    Shoot_Stochastic(x,y,1,n,1,cam,objList,bkgColor);
+    Shoot_Multi(
+      x,y,1,n,1,
+      scene->aa == AA_STOCHASTIC,
+      cam,objList,bkgColor
+    );
     pixel = Quadtree_GetAvg(n);
     Quadtree_Free(n);
 
   // else if single ray shooting
   } else {
-    pixel = Shoot_Single(x,y,cam,objList,bkgColor);
+    pixel = Shoot_Single(
+      x,y,
+      cam,objList,bkgColor
+    );
   }
 
   return pixel;
@@ -53,9 +59,10 @@ RGB Shoot_Single(
   return pixel;
 }
 
-void Shoot_Stochastic(
+void Shoot_Multi(
   double x, double y, double length,
   Quadtree *n, int level,
+  int isStochastic,
   Camera cam,
   Object *objList,
   RGB bkgColor
@@ -66,34 +73,46 @@ void Shoot_Stochastic(
   double half32 = half * 3. / 2.;
   Ray ray;
 
-  #undef RANDOM
-  #define RANDOM(x,y) (rand()/(double)RAND_MAX*((y)+(x))+(x)-.125)
+  double r1,r2,r3,r4,r5,r6,r7,r8;
+  if(isStochastic) {
+    r1 = SRANDOM(-half2,half2);
+    r2 = SRANDOM(-half2,half2);
+    r3 = SRANDOM(-half2,half2);
+    r4 = SRANDOM(-half2,half2);
+    r5 = SRANDOM(-half2,half2);
+    r6 = SRANDOM(-half2,half2);
+    r7 = SRANDOM(-half2,half2);
+    r8 = SRANDOM(-half2,half2);
+  } else {
+    r1 = r2 = r3 = r4 = r5 = r6 = r7 = r8 = 0;
+  }
+
   // compute topleft, topright, bottomleft and bottomright colors
-  //printf("shoot %5.5f %5.5f\n", x+half2+ RANDOM(-half2,half2), y+half2+ RANDOM(-half2,half2));
+  //printf("shoot %5.5f %5.5f\n", x+half2+ r1, y+half2+ r2);
   ray = Shoot_BuildRay(
-    x+half2 + RANDOM(-half2,half2),
-    y+half2 + RANDOM(-half2,half2),
+    x+half2 + r1,
+    y+half2 + r2,
     cam
   );
   n->c1 = Shade(ray, objList, bkgColor);
-  //printf("shoot %5.5f %5.5f\n", x+half32+ RANDOM(-half2,half2), y+half2+ RANDOM(-half2,half2));
+  //printf("shoot %5.5f %5.5f\n", x+half32+ r3, y+half2+ r4);
   ray = Shoot_BuildRay(
-    x+half32 + RANDOM(-half2,half2),
-    y+half2 + RANDOM(-half2,half2),
+    x+half32 + r3,
+    y+half2 + r4,
     cam
   );
   n->c2 = Shade(ray, objList, bkgColor);
-  //printf("shoot %5.5f %5.5f\n", x+half2+ RANDOM(-half2,half2), y+half32+ RANDOM(-half2,half2));
+  //printf("shoot %5.5f %5.5f\n", x+half2+ r5, y+half32+ r6);
   ray = Shoot_BuildRay(
-    x+half2 + RANDOM(-half2,half2),
-    y+half32 + RANDOM(-half2,half2),
+    x+half2 + r5,
+    y+half32 + r6,
     cam
   );
   n->c3 = Shade(ray, objList, bkgColor);
-  //printf("shoot %5.5f %5.5f\n", x+half32+ RANDOM(-half2,half2), y+half32+ RANDOM(-half2,half2));
+  //printf("shoot %5.5f %5.5f\n", x+half32+ r7, y+half32+ r8);
   ray = Shoot_BuildRay(
-    x+half32 + RANDOM(-half2,half2),
-    y+half32 + RANDOM(-half2,half2),
+    x+half32 + r7,
+    y+half32 + r8,
     cam
   );
   n->c4 = Shade(ray, objList, bkgColor);
@@ -111,46 +130,51 @@ void Shoot_Stochastic(
 
   if((c1 && c2 && c3 && c4) || level == QUADTREE_MAXLEVEL) {
     // enough
-    n->isLeaf = 1;
+    Quadtree_NodeToLeaf(n,n);
     return;
   }
 
   Quadtree *aux;
+  aux = n->children[QUADTREE_TOPLEFT] = Quadtree_New();
   // need more topleft refinement
   if(!c1) {
-    aux = n->children[QUADTREE_TOPLEFT] = Quadtree_New();
-    gbTotalNodes++;
-    Shoot_Stochastic(
-      x,y,half,aux,level+1,
+    Shoot_Multi(
+      x,y,half,aux,level+1,isStochastic,
       cam,objList,bkgColor
     );
+  } else {
+    Quadtree_NodeToLeaf(n,aux);
   }
   // topright
+  aux = n->children[QUADTREE_TOPRIGHT] = Quadtree_New();
   if(!c2) {
-    aux = n->children[QUADTREE_TOPRIGHT] = Quadtree_New();
-    gbTotalNodes++;
-    Shoot_Stochastic(
-      x+half,y,half,aux,level+1,
+    Shoot_Multi(
+      x+half,y,half,aux,level+1,isStochastic,
       cam,objList,bkgColor
     );
+  } else {
+    Quadtree_NodeToLeaf(n,aux);
   }
   // bottomleft
+  aux = n->children[QUADTREE_BOTTOMLEFT] = Quadtree_New();
   if(!c3) {
-    aux = n->children[QUADTREE_BOTTOMLEFT] = Quadtree_New();
-    gbTotalNodes++;
-    Shoot_Stochastic(
-      x,y+half,half,aux,level+1,
+    Shoot_Multi(
+      x,y+half,half,aux,level+1,isStochastic,
       cam,objList,bkgColor
     );
+  } else {
+    Quadtree_NodeToLeaf(n,aux);
   }
   // bottomright
+  aux = n->children[QUADTREE_BOTTOMRIGHT] = Quadtree_New();
   if(!c4) {
-    aux = n->children[QUADTREE_BOTTOMRIGHT] = Quadtree_New();
-    gbTotalNodes++;
-    Shoot_Stochastic(
-      x+half,y+half,half,aux,level+1,
+    Shoot_Multi(
+      x+half,y+half,half,aux,level+1,isStochastic,
       cam,objList,bkgColor
     );
+  } else {
+    Quadtree_NodeToLeaf(n,aux);
   }
 
+  gbTotalNodes+=4;
 }

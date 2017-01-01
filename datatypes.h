@@ -75,7 +75,7 @@ typedef struct {
   Object *objList;
   long objectsTotal;
   RGB bkgColor;
-  int shootType;
+  int aa;
 } Scene;
 
 // ----------------------------------------
