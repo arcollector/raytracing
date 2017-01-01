@@ -1,5 +1,13 @@
-default: rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o shoot.o quadtree.o
-	gcc raytracing.c -o bin/raytracing rgb.o vector.o matrix.o ray.o sphere.o octree_quantizer.o bmp.o windowing.o camera.o tga.o plane.o scene.o shade.o quadtree.o shoot.o -lm
+default: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
+				sphere.o plane.o \
+				scene.o shade.o quadtree.o shoot.o \
+				octree_quantizer.o bmp.o tga.o
+	gcc raytracing.c -o bin/raytracing \
+				rgb.o vector.o matrix.o ray.o camera.o windowing.o \
+				sphere.o plane.o \
+				scene.o shade.o quadtree.o shoot.o \
+				octree_quantizer.o bmp.o tga.o \
+				-lm
 
 rgb.o: rgb.h rgb.c
 	gcc -c rgb.c

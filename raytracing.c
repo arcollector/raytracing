@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#define TT_IMPLEMENTATION
+#include "3rdparty/tinytime.h"
+
 #include "camera.h"
 #include "bmp.h"
 #include "scene.h"
@@ -45,6 +48,7 @@ int main(int argc, char *argv[]) {
 
   Camera_PrepareForShooting(width,height,&scene->cam);
 
+  ttTime();
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
 
@@ -54,6 +58,7 @@ int main(int argc, char *argv[]) {
 
     }
   }
+  printf("raytracing elaped time was: %3.10f\n", ttTime());
 
   BMP_Save(&canvas,scene->fileName);
   BMP_Free(&canvas);
