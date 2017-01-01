@@ -1,4 +1,4 @@
-FILE_NAME = test3.bmp
+FILE_NAME = test2.bmp
 
 WIDTH = 200
 HEIGHT = 200

@@ -67,7 +67,7 @@ void Shoot_Stochastic(
   Ray ray;
 
   #undef RANDOM
-  #define RANDOM(x,y) 0
+  #define RANDOM(x,y) (rand()/(double)RAND_MAX*((y)+(x))+(x)-.125)
   // compute topleft, topright, bottomleft and bottomright colors
   //printf("shoot %5.5f %5.5f\n", x+half2+ RANDOM(-half2,half2), y+half2+ RANDOM(-half2,half2));
   ray = Shoot_BuildRay(
