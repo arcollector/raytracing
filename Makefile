@@ -1,4 +1,7 @@
-default: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
+default:
+	mkdir -p test bin
+
+install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				sphere.o plane.o \
 				scene.o shade.o quadtree.o shoot.o \
 				octree_quantizer.o bmp.o tga.o
