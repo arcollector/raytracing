@@ -56,15 +56,27 @@ typedef struct {
 
 // ----------------------------------------
 
+#define OBJ_SPHERE 1
+#define OBJ_PLANE 2
+
 typedef struct ObjectStruct {
-  void *obj;
+  void *primitive;
   int type;
   struct ObjectStruct *next;
-  double (*intersect)(Ray ray, void *obj);
-  RGB (*getColor)(void *obj);
-  void (*print)(void *obj);
-  void (*free)(void *obj);
+  double (*intersect)(Ray ray, void *primitive);
+  RGB (*getColor)(void *primitive);
+  void (*print)(void *primitive);
+  void (*free)(void *primitive);
 } Object;
+
+// ----------------------------------------
+
+typedef struct BBOXStruct {
+  Object *obj;
+  int isUnbounded;
+  struct BBOXStruct *next;
+  Vector min[3], max[3];
+} BBOX;
 
 // ----------------------------------------
 

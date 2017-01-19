@@ -4,8 +4,11 @@
 #include <stdlib.h>
 
 #define PI 3.141592653589793
-
 #define EPSILON 10e-5
+#define POSITIVE_INFINITY 1e10
+#define NEGATIVE_INFINITY -POSITIVE_INFINITY
+
+#define SIGN(x) ((x) < 0 ? -1 : 1)
 
 #define DEG2RAD(x) ((x)/180.*PI)
 
