@@ -51,8 +51,8 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
   if(bbox->isUnbounded) return 1;
 
-  double tMins[3] = {POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY},
-        tMaxs[3] = {NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY};
+  double tMins[3] = {NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY},
+        tMaxs[3] = {POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
 
   // calc plane intersection
   for(long i = 0; i < 3; i++) {
@@ -60,6 +60,8 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
     Vector min = bbox->min[i];
     Vector max = bbox->max[i];
     double deno = Vector_Dot(axis, ray.dir);
+    //printf("axis  %ld\n",i);
+    //printf("\tdeno %5.5f\n", deno);
     if(fabs(deno) < EPSILON) {
       double dist1 = Vector_Dot(axis, Vector_SubVector(min, ray.start));
       double dist2 = Vector_Dot(axis, Vector_SubVector(max, ray.start));
@@ -76,6 +78,7 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
     double tMin = MIN(t1,t2);
     double tMax = MAX(t1,t2);
+    //printf("\tt1 %5.5f,t2 %5.5f,tMin %5.5f,tMax %5.5f\n", t1,t2,tMin,tMax);
     if(tMax < 0) {
       return 0; // not intersection possible
     }
@@ -86,6 +89,8 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
   double tMin = MAX(MAX(tMins[0], tMins[1]), tMins[2]);
   double tMax = MIN(MIN(tMaxs[0], tMaxs[1]), tMaxs[2]);
+  //printf("\ttMin %5.5f, tMax %5.5f\n", tMin,tMax);
+
   if(tMax < tMin) {
     return 0; // not intersecion with bounding box
   }

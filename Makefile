@@ -99,5 +99,14 @@ quadtree_test: helpers.h rgb.h rgb.c datatypes.h quadtree.h quadtree.c
 bbox.o: datatypes.h vector.h vector.c sphere.h sphere.c bbox.h bbox.c
 	gcc -c bbox.c
 
+bbox_test: bbox.h bbox.c datatypes.h vector.h vector.c matrix.h matrix.c ray.h ray.c sphere.h sphere.c camera.h camera.c rgb.h rgb.c windowing.h windowing.c
+	gcc -c bbox.c
+	gcc tests/bbox_test.c -o bin/bbox_test \
+					rgb.o \
+					vector.o matrix.o ray.o sphere.o \
+					camera.o windowing.o \
+					bbox.o \
+					-lm
+
 clean:
 	rm -f *.o
