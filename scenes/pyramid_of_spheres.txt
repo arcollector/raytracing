@@ -1,0 +1,791 @@
+FILE_NAME = scenes/test_aa_stochastic.bmp
+
+WIDTH = 500
+HEIGHT = 500
+ANTI_ALIASING = stochastic
+
+CAMERA {
+  loc (15,15,-10)
+  upPoint (15,16,-10)
+  lookAt (0,0,0)
+  viewerDistance 10
+  window (-5,-5) (5,5)
+}
+
+SKY {
+  TEXTURE {
+    color (45,54,0)
+  }
+}
+
+/* first plane */
+
+SPHERE {
+  loc (-9,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-7,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-5,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (7,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (9,0,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* second row */
+
+SPHERE {
+  loc (-7,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-5,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (7,2,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* thrid row */
+
+SPHERE {
+  loc (-5,4,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,4,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,4,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,4,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,4,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,4,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* fourth row */
+
+SPHERE {
+  loc (-3,6,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,6,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,6,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,6,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* fifth row */
+
+SPHERE {
+  loc (-1,8,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,8,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* sixth row */
+
+SPHERE {
+  loc (0,10,0)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* second plane */
+
+/* first row */
+
+SPHERE {
+  loc (-9,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-7,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-5,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (7,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (9,0,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* second row */
+
+SPHERE {
+  loc (-7,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-5,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (7,2,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* thrid row */
+
+SPHERE {
+  loc (-5,4,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,4,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,4,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,4,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,4,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,4,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* fourth row */
+
+SPHERE {
+  loc (-3,6,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,6,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,6,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,6,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* fifth row */
+
+SPHERE {
+  loc (-1,8,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,8,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* third plane */
+
+/* first row */
+
+SPHERE {
+  loc (-9,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-7,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-5,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (7,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (9,0,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* second row */
+
+SPHERE {
+  loc (-7,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-5,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (7,2,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* thrid row */
+
+SPHERE {
+  loc (-5,4,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-3,4,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,4,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,4,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,4,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (5,4,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* fourth row */
+
+SPHERE {
+  loc (-3,6,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (-1,6,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,6,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (3,6,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* fifth row */
+
+SPHERE {
+  loc (-1,8,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+SPHERE {
+  loc (1,8,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+PLANE {
+  loc (0,-10,0)
+  normal (0,1,0)
+  TEXTURE {
+    color (255,255,0)
+  }
+}

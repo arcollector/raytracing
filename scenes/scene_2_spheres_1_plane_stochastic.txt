@@ -1,4 +1,4 @@
-FILE_NAME = test_aa_stochastic.bmp
+FILE_NAME = scenes/test_aa_stochastic.bmp
 
 WIDTH = 200
 HEIGHT = 200
