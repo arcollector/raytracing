@@ -12,68 +12,48 @@ Camera Camera_New(
 
   Vector viewDir = Vector_Normalize(Vector_FromP1toP2(pos,viewPoint));
   Vector upDir = Vector_Normalize(Vector_FromP1toP2(pos,upPoint));
-  #if CAMERA_DEBUG == 1
-  Vector_Print(viewDir); Vector_Print(upDir); printf("==========\n");
-  #endif
+  //Vector_Print(viewDir); Vector_Print(upDir); printf("==========\n");
+
   // create orthonormal basis
 
   // up
   Vector w = Vector_MulScalar(viewDir,Vector_Dot(viewDir,upDir));
   Vector up = Vector_SubVector(upDir,w);
   up = Vector_Normalize(up);
-  #if CAMERA_DEBUG == 1
-  printf("Up: "); Vector_Print(up);
-  printf("up length: %5.5f\n",Vector_Length(up));
-  #endif
+  //printf("Up: "); Vector_Print(up);
+  //printf("up length: %5.5f\n",Vector_Length(up));
 
   // left
   Vector left = Vector_Cross(up,viewDir);
   left = Vector_Normalize(left);
-  #if CAMERA_DEBUG == 1
-  printf("left: "); Vector_Print(left);
-  printf("left length: %5.5f\n",Vector_Length(left));
-
-  printf("view: "); Vector_Print(viewDir);
-  printf("are normal? %5.5f %5.5f %5.5f\n",Vector_Dot(up,left),
-             Vector_Dot(up,viewDir),Vector_Dot(viewDir,left));
-  #endif
+  //printf("left: "); Vector_Print(left);
+  //printf("left length: %5.5f\n",Vector_Length(left));
+  //printf("viewDir: "); Vector_Print(viewDir);
+  //printf("are normal? %5.5f %5.5f %5.5f\n",Vector_Dot(up,left),Vector_Dot(up,viewDir),Vector_Dot(viewDir,left));
 
   Camera cam;
   cam.pos = pos;
   // save basis vectors
   cam.up = up;
   cam.left = left;
-  cam.view = viewDir;
+  cam.viewDir = viewDir;
 
   // create orthnormal matrix
-  Matrix t1 = Matrix_New();
-  t1._30 = -pos.x;
-  t1._31 = -pos.y;
-  t1._32 = -pos.z;
-
-  Matrix t2 = Matrix_New();
-  t2._00 = left.x; t2._01 = up.x; t2._02 = viewDir.x;
-  t2._10 = left.y; t2._11 = up.y; t2._12 = viewDir.y;
-  t2._20 = left.z; t2._21 = up.z; t2._22 = viewDir.z;
-
-  cam.local = Matrix_Mul(t1,t2);
-  #if CAMERA_DEBUG == 1
-  Matrix_Print(cam.local); printf("==============\n");
-  #endif
+  cam.local = Matrix_New();
+  cam.local._00 = left.x; cam.local._01 = up.x;   cam.local._02 = viewDir.x;
+  cam.local._10 = left.y; cam.local._11 = up.y;   cam.local._12 = viewDir.y;
+  cam.local._20 = left.z; cam.local._21 = up.z;   cam.local._22 = viewDir.z;
+  cam.local._30 = -pos.x; cam.local._31 = -pos.y; cam.local._32 = -pos.z;
+  //Matrix_Print(cam.local); printf("==============\n");
 
   // create inverse orthonormal matrix
-  t1._30 = pos.x;
-  t1._31 = pos.y;
-  t1._32 = pos.z;
-
-  t2 = Matrix_Transpose(t2);
-
-  cam.invLocal = Matrix_Mul(t2,t1);
-  #if CAMERA_DEBUG == 1
-  Matrix_Print(cam.invLocal); printf("============\n");
-
-  Matrix_Print(Matrix_Mul(cam.local,cam.invLocal)); printf("==========\n");
-  #endif
+  cam.invLocal = Matrix_New();
+  cam.invLocal._00 = left.x;    cam.invLocal._01 = left.y;    cam.invLocal._02 = left.z;
+  cam.invLocal._10 = up.x;      cam.invLocal._11 = up.y;      cam.invLocal._12 = up.z;
+  cam.invLocal._20 = viewDir.x; cam.invLocal._21 = viewDir.y; cam.invLocal._22 = viewDir.z;
+  cam.invLocal._30 = pos.x;     cam.invLocal._31 = pos.y;     cam.invLocal._32 = pos.z;
+  //Matrix_Print(cam.invLocal); printf("============\n");
+  //Matrix_Print(Matrix_Mul(cam.local,cam.invLocal)); printf("==========\n");
 
   cam.viewerPos = Vector_New(0,0,-viewerDistance);
   cam.min = min;
@@ -103,8 +83,8 @@ void Camera_Print(Camera cam) {
           cam.left.x,cam.left.y,cam.left.z);
   printf("up: %5.5f %5.5f %5.5f\n",
           cam.up.x,cam.up.y,cam.up.z);
-  printf("view: %5.5f %5.5f %5.5f\n",
-        cam.view.x,cam.view.y,cam.view.z);
+  printf("viewDir: %5.5f %5.5f %5.5f\n",
+        cam.viewDir.x,cam.viewDir.y,cam.viewDir.z);
   printf("viewerPos: "); Vector_Print(cam.viewerPos);
   printf("min and max:\n");
   Vector_Print(cam.min);

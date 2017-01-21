@@ -145,7 +145,7 @@ void Shoot_Multi(
   }
 
   Quadtree *aux;
-  aux = n->children[QUADTREE_TOPLEFT] = Quadtree_New();
+  aux = n->topLeft = Quadtree_New();
   // need more topleft refinement
   if(!c1) {
     Shoot_Multi(
@@ -158,7 +158,7 @@ void Shoot_Multi(
     Quadtree_NodeToLeaf(n,aux);
   }
   // topright
-  aux = n->children[QUADTREE_TOPRIGHT] = Quadtree_New();
+  aux = n->topRight = Quadtree_New();
   if(!c2) {
     Shoot_Multi(
       x+half,y,half,aux,level+1,isStochastic,
@@ -170,7 +170,7 @@ void Shoot_Multi(
     Quadtree_NodeToLeaf(n,aux);
   }
   // bottomleft
-  aux = n->children[QUADTREE_BOTTOMLEFT] = Quadtree_New();
+  aux = n->bottomLeft = Quadtree_New();
   if(!c3) {
     Shoot_Multi(
       x,y+half,half,aux,level+1,isStochastic,
@@ -182,7 +182,7 @@ void Shoot_Multi(
     Quadtree_NodeToLeaf(n,aux);
   }
   // bottomright
-  aux = n->children[QUADTREE_BOTTOMRIGHT] = Quadtree_New();
+  aux = n->bottomRight = Quadtree_New();
   if(!c4) {
     Shoot_Multi(
       x+half,y+half,half,aux,level+1,isStochastic,

@@ -1,8 +1,8 @@
 FILE_NAME = test_aa_stochastic.bmp
 
-WIDTH = 2000
-HEIGHT = 2000
-ANTI_ALIASING = NONE
+WIDTH = 200
+HEIGHT = 200
+ANTI_ALIASING = stochastic
 
 CAMERA {
   loc (0,0,-10)

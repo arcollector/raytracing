@@ -19,7 +19,7 @@ typedef struct QuadtreeStruct {
   RGBl sum;
   RGB avg;
   RGB c1,c2,c3,c4;
-  struct QuadtreeStruct *children[4];
+  struct QuadtreeStruct *topLeft, *topRight, *bottomLeft, *bottomRight;
   int isLeaf;
 } Quadtree;
 
@@ -27,7 +27,7 @@ Quadtree *Quadtree_New();
 void Quadtree_NodeSumRGB(Quadtree *n);
 void Quadtree_NodeAvgRGB(Quadtree *n);
 int Quadtree_CmpRGB(RGB c1, RGB c2, int threshold);
-void Quadtree_NodeToLeaf(Quadtree *node, Quadtree *leaf);
+void Quadtree_NodeToLeaf(Quadtree *node, Quadtree *parent);
 void Quadtree_Print(Quadtree *n);
 void Quadtree_GetSum(Quadtree *n, RGBl *sum, long *totalNodes);
 RGB Quadtree_GetAvg(Quadtree *n);

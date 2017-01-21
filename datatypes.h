@@ -22,7 +22,7 @@ typedef struct {
 
 typedef struct {
   Vector pos;
-  Vector up,left,view;
+  Vector up,left,viewDir;
   Matrix local, invLocal;
   Vector viewerPos;
   Vector min, max;

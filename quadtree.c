@@ -5,23 +5,23 @@ Quadtree *Quadtree_New() {
   Quadtree *n = malloc(sizeof(Quadtree));
   n->isLeaf = 0;
 
-  n->children[QUADTREE_TOPLEFT] = NULL;
-  n->children[QUADTREE_TOPRIGHT] = NULL;
-  n->children[QUADTREE_BOTTOMLEFT] = NULL;
-  n->children[QUADTREE_BOTTOMRIGHT] = NULL;
+  n->topLeft = NULL;
+  n->topRight = NULL;
+  n->bottomLeft = NULL;
+  n->bottomRight = NULL;
 
   return n;
 }
 
-void Quadtree_NodeToLeaf(Quadtree *node, Quadtree *leaf) {
-  leaf->isLeaf = 1;
-  if(node == leaf) return;
-  leaf->c1 = node->c1;
-  leaf->c2 = node->c2;
-  leaf->c3 = node->c3;
-  leaf->c4 = node->c4;
-  leaf->sum = node->sum;
-  leaf->avg = node->avg;
+void Quadtree_NodeToLeaf(Quadtree *node, Quadtree *parent) {
+  parent->isLeaf = 1;
+  if(node == parent) return;
+  parent->c1 = node->c1;
+  parent->c2 = node->c2;
+  parent->c3 = node->c3;
+  parent->c4 = node->c4;
+  parent->sum = node->sum;
+  parent->avg = node->avg;
 }
 
 int Quadtree_CmpRGB(RGB c1, RGB c2, int threshold) {
@@ -92,20 +92,20 @@ void Quadtree_Print(Quadtree *n) {
       levelNodes = pow(4,level);
     }
 
-    if(n->children[QUADTREE_TOPLEFT]) {
-      stack.nodes[stack.length++] = n->children[QUADTREE_TOPLEFT];
+    if(n->topLeft) {
+      stack.nodes[stack.length++] = n->topLeft;
       totalNodes++;
     }
-    if(n->children[QUADTREE_TOPRIGHT]) {
-      stack.nodes[stack.length++] = n->children[QUADTREE_TOPLEFT];
+    if(n->topRight) {
+      stack.nodes[stack.length++] = n->topRight;
       totalNodes++;
     }
-    if(n->children[QUADTREE_BOTTOMLEFT]) {
-      stack.nodes[stack.length++] = n->children[QUADTREE_TOPLEFT];
+    if(n->bottomLeft) {
+      stack.nodes[stack.length++] = n->bottomLeft;
       totalNodes++;
     }
-    if(n->children[QUADTREE_BOTTOMRIGHT]) {
-      stack.nodes[stack.length++] = n->children[QUADTREE_TOPLEFT];
+    if(n->bottomRight) {
+      stack.nodes[stack.length++] = n->bottomRight;
       totalNodes++;
     }
 
@@ -128,17 +128,17 @@ void Quadtree_GetSum(Quadtree *n, RGBl *sum, long *totalNodes) {
     return;
   }
 
-  if(n->children[QUADTREE_TOPLEFT]) {
-    Quadtree_GetSum(n->children[QUADTREE_TOPLEFT],sum,totalNodes);
+  if(n->topLeft) {
+    Quadtree_GetSum(n->topLeft,sum,totalNodes);
   }
-  if(n->children[QUADTREE_TOPRIGHT]) {
-    Quadtree_GetSum(n->children[QUADTREE_TOPRIGHT],sum,totalNodes);
+  if(n->topRight) {
+    Quadtree_GetSum(n->topRight,sum,totalNodes);
   }
-  if(n->children[QUADTREE_BOTTOMLEFT]) {
-    Quadtree_GetSum(n->children[QUADTREE_BOTTOMLEFT],sum,totalNodes);
+  if(n->bottomLeft) {
+    Quadtree_GetSum(n->bottomLeft,sum,totalNodes);
   }
-  if(n->children[QUADTREE_BOTTOMRIGHT]) {
-    Quadtree_GetSum(n->children[QUADTREE_BOTTOMRIGHT],sum,totalNodes);
+  if(n->bottomRight) {
+    Quadtree_GetSum(n->bottomRight,sum,totalNodes);
   }
 
 }
@@ -170,17 +170,17 @@ void Quadtree_Free(Quadtree *n) {
     return;
   }
 
-  if(n->children[QUADTREE_TOPLEFT]) {
-    Quadtree_Free(n->children[QUADTREE_TOPLEFT]);
+  if(n->topLeft) {
+    Quadtree_Free(n->topLeft);
   }
-  if(n->children[QUADTREE_TOPRIGHT]) {
-    Quadtree_Free(n->children[QUADTREE_TOPRIGHT]);
+  if(n->topRight) {
+    Quadtree_Free(n->topRight);
   }
-  if(n->children[QUADTREE_BOTTOMLEFT]) {
-    Quadtree_Free(n->children[QUADTREE_BOTTOMLEFT]);
+  if(n->bottomLeft) {
+    Quadtree_Free(n->bottomLeft);
   }
-  if(n->children[QUADTREE_BOTTOMRIGHT]) {
-    Quadtree_Free(n->children[QUADTREE_BOTTOMRIGHT]);
+  if(n->bottomRight) {
+    Quadtree_Free(n->bottomRight);
   }
 
   free(n);
