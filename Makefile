@@ -1,5 +1,5 @@
 default:
-	mkdir -p test bin
+	mkdir -p tests bin
 
 install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				sphere.o plane.o \
