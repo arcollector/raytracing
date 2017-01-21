@@ -1,4 +1,4 @@
-FILE_NAME = scenes/test_aa_stochastic.bmp
+FILE_NAME = pyramid_of_spheres.bmp
 
 WIDTH = 500
 HEIGHT = 500
