@@ -1,7 +1,6 @@
 #include "sphere.h"
 
 Sphere *Sphere_New(Vector center, double radius, RGB color, Camera cam) {
-  
   Sphere *sphere = malloc(sizeof(Sphere));
   if(!sphere) return NULL;
 
@@ -12,7 +11,7 @@ Sphere *Sphere_New(Vector center, double radius, RGB color, Camera cam) {
   sphere->rSquared = radius*radius;
   sphere->invRadius = 1/radius;
   sphere->color = color;
-  
+
   Matrix t1 = Matrix_New();
   t1._30 = -center.x;
   t1._31 = -center.y;
@@ -23,7 +22,7 @@ Sphere *Sphere_New(Vector center, double radius, RGB color, Camera cam) {
   t1._31 = center.y;
   t1._32 = center.z;
   sphere->invLocal = t1;
-  
+
   return sphere;
 }
 
@@ -35,13 +34,13 @@ double Sphere_Intersect(Ray ray, void *_sphere) {
   double b = Vector_Dot(ray.start,ray.dir);
   double c = Vector_Dot(ray.start,ray.start) - sphere->rSquared;
 
-  double dis = b*b - c;
+  double disc = b*b - c;
   // not intersection possible
-  if(fabs(dis) < EPSILON) {
+  if(disc < EPSILON) {
     return -1;
   }
 
-  double term = sqrt(dis);
+  double term = sqrt(disc);
   double t1 = -b - term;
   double t2 = -b + term;
 
@@ -53,6 +52,7 @@ double Sphere_Intersect(Ray ray, void *_sphere) {
   if(t1 < 0) {
     return t2;
   }
+
   return t1;
 }
 
@@ -72,11 +72,10 @@ void Sphere_Print(void *_sphere) {
   printf("sphere center: (%5.5f %5.5f %5.5f)",
                 sphere->center.x,sphere->center.y,sphere->center.z);
   printf(" radius: %5.5f", sphere->radius);
-  printf(" color: %d %d %d\n", 
+  printf(" color: %d %d %d\n",
                 sphere->color.red,sphere->color.green,sphere->color.blue);
 }
 
 void Sphere_Free(void *sphere) {
   free(sphere);
 }
-

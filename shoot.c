@@ -125,6 +125,10 @@ void Shoot_Multi(
   //printf("\n");
   //exit(0);
 
+  //printf("corners colors\n");
+  //RGB_Print(n->c1); RGB_Print(n->c2); RGB_Print(n->c3); RGB_Print(n->c4);
+  //exit(0);
+
   // compute avg color
   Quadtree_NodeAvgRGB(n);
 
