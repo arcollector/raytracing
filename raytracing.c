@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  BBOX *bbox = BBOX_New(scene->objList);
-  BBOX_Print(bbox);
+  Object *unboundObjList;
+  BBOXTree *root = BBOXTree_New(scene->objList,&unboundObjList);
 
   Camera_PrepareForShooting(width,height,&scene->cam);
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
 
-      RGB pixel = Shoot(x,y,scene,bbox);
+      RGB pixel = Shoot(x,y,scene,root,unboundObjList);
 
       BMP_PushRGB(&canvas,pixel);
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
   BMP_Save(&canvas,scene->fileName);
   BMP_Free(&canvas);
 
-  BBOX_Free(bbox);
+  BBOXTree_Free(root);
 
   Scene_Free(scene);
   fclose(fp);

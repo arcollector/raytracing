@@ -13,13 +13,18 @@
 
 #define JITTER(min,max) (rand()/(double)RAND_MAX*((min)+(max))+(min)-.125)
 
-RGB Shoot(long x, long y, Scene *scene, BBOX *bbox);
+RGB Shoot(
+  long x, long y,
+  Scene *scene,
+  BBOXTree *root, Object *unboundObjList
+);
+
 Ray Shoot_BuildRay(double x, double y, Camera cam);
 
 RGB Shoot_Single(
   double x, double y,
   Camera cam,
-  BBOX *bbox,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 );
 
@@ -28,7 +33,7 @@ void Shoot_Multi(
   Quadtree *n, int level,
   int isStochastic,
   Camera cam,
-  BBOX *bbox,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 );
 

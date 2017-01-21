@@ -41,5 +41,15 @@ int main(int argc, char *argv[]) {
   printf("intersection? %d\n", BBOX_Intersect(ray, bbox));
   printf("t value: %5.5f\n", (*obj.intersect)(ray, obj.primitive));
 
+  ray = Ray_New(Vector_New(1,0,-10),Vector_New(1,0,0));
+  Ray_Print(ray);
+  printf("intersection? %d\n", BBOX_Intersect(ray, bbox));
+  printf("t value: %5.5f\n", (*obj.intersect)(ray, obj.primitive));
+
+  ray = Ray_New(Vector_New(0,10,-10),Vector_New(0,10,0));
+  Ray_Print(ray);
+  printf("intersection? %d\n", BBOX_Intersect(ray, bbox));
+  printf("t value: %5.5f\n", (*obj.intersect)(ray, obj.primitive));
+
   return 0;
 }

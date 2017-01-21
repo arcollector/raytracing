@@ -75,8 +75,20 @@ typedef struct BBOXStruct {
   Object *obj;
   int isUnbounded;
   struct BBOXStruct *next;
-  Vector min[3], max[3];
+  Vector min[3], max[3], centroid[3];
 } BBOX;
+
+typedef struct {
+  BBOX *bbox;
+  long length;
+} BBOXList;
+
+typedef struct BBOXTreeStruct {
+  struct BBOXTreeStruct *left, *right;
+  BBOX bbox;
+  Object *objectList;
+  long objectListLength;
+} BBOXTree;
 
 // ----------------------------------------
 

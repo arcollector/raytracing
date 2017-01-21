@@ -16,7 +16,11 @@ Ray Shoot_BuildRay(double x, double y, Camera cam) {
   return ray;
 }
 
-RGB Shoot(long x, long y, Scene *scene, BBOX *bbox) {
+RGB Shoot(
+  long x, long y,
+  Scene *scene,
+  BBOXTree *root, Object *unboundObjList
+) {
 
   Camera cam = scene->cam;
   RGB pixel;
@@ -29,7 +33,9 @@ RGB Shoot(long x, long y, Scene *scene, BBOX *bbox) {
     Shoot_Multi(
       x,y,1,n,1,
       scene->aa == AA_STOCHASTIC,
-      cam,bbox,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
     pixel = Quadtree_GetAvg(n);
     Quadtree_Free(n);
@@ -38,7 +44,9 @@ RGB Shoot(long x, long y, Scene *scene, BBOX *bbox) {
   } else {
     pixel = Shoot_Single(
       x,y,
-      cam,bbox,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   }
 
@@ -48,12 +56,12 @@ RGB Shoot(long x, long y, Scene *scene, BBOX *bbox) {
 RGB Shoot_Single(
   double x, double y,
   Camera cam,
-  BBOX *bbox,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 ) {
   // build ray
   Ray ray = Shoot_BuildRay(x+.5,y+.5,cam);
-  RGB pixel = Shade(ray, bbox, bkgColor);
+  RGB pixel = Shade(ray, root, unboundObjList, bkgColor);
   return pixel;
 }
 
@@ -62,7 +70,7 @@ void Shoot_Multi(
   Quadtree *n, int level,
   int isStochastic,
   Camera cam,
-  BBOX *bbox,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 ) {
 
@@ -92,28 +100,28 @@ void Shoot_Multi(
     y+half2 + r2,
     cam
   );
-  n->c1 = Shade(ray, bbox, bkgColor);
+  n->c1 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("shoot %5.5f %5.5f\n", x+half32+ r3, y+half2+ r4);
   ray = Shoot_BuildRay(
     x+half32 + r3,
     y+half2 + r4,
     cam
   );
-  n->c2 = Shade(ray, bbox, bkgColor);
+  n->c2 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("shoot %5.5f %5.5f\n", x+half2+ r5, y+half32+ r6);
   ray = Shoot_BuildRay(
     x+half2 + r5,
     y+half32 + r6,
     cam
   );
-  n->c3 = Shade(ray, bbox, bkgColor);
+  n->c3 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("shoot %5.5f %5.5f\n", x+half32+ r7, y+half32+ r8);
   ray = Shoot_BuildRay(
     x+half32 + r7,
     y+half32 + r8,
     cam
   );
-  n->c4 = Shade(ray, bbox, bkgColor);
+  n->c4 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("\n");
   //exit(0);
 
@@ -138,7 +146,9 @@ void Shoot_Multi(
   if(!c1) {
     Shoot_Multi(
       x,y,half,aux,level+1,isStochastic,
-      cam,bbox,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
@@ -148,7 +158,9 @@ void Shoot_Multi(
   if(!c2) {
     Shoot_Multi(
       x+half,y,half,aux,level+1,isStochastic,
-      cam,bbox,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
@@ -158,7 +170,9 @@ void Shoot_Multi(
   if(!c3) {
     Shoot_Multi(
       x,y+half,half,aux,level+1,isStochastic,
-      cam,bbox,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
@@ -168,7 +182,9 @@ void Shoot_Multi(
   if(!c4) {
     Shoot_Multi(
       x+half,y+half,half,aux,level+1,isStochastic,
-      cam,bbox,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
