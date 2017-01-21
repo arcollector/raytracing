@@ -47,8 +47,14 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  Object *unboundObjList;
-  BBOXTree *root = BBOXTree_New(scene->objList,&unboundObjList);
+  Object *unboundObjList = NULL;
+  BBOXTree *root = NULL;
+  #if 1
+  root = BBOXTree_New(scene->objList,&unboundObjList);
+  #else
+  // if 0 to raytracing without hierarchy bbox tree (for benchmarking use)
+  unboundObjList = scene->objList;
+  #endif
 
   Camera_PrepareForShooting(width,height,&scene->cam);
 

@@ -9,8 +9,8 @@ RGB Shade(Ray ray, BBOXTree *root, Object *unboundObjList, RGB bkgColor) {
   BBOXTree *stack[1000];
   long stackLength = 0;
   stack[stackLength++] = root;
-
-  while(stackLength) {
+  // root may null if ie scene only contains unbounded objects
+  while(root && stackLength) {
     BBOXTree *node = stack[--stackLength];
     if(!BBOXTree_NodeIntersect(ray, node)) {
       continue;
