@@ -90,7 +90,6 @@ float ttTime( );
 	{
 		static int first = 1;
 		static struct timespec prev;
-
 		if ( first )
 		{
 			first = 0;
@@ -98,9 +97,15 @@ float ttTime( );
 			return 0;
 		}
 
-		static struct timespec now;
+		struct timespec now;
 		clock_gettime( CLOCK_MONOTONIC, &now );
-		float elapsed = (float)((double)(now.tv_nsec - prev.tv_nsec) * 1.0e-9);
+		double secDiff = (now.tv_sec - prev.tv_sec);
+		double nanoDiff = (now.tv_nsec - prev.tv_nsec);
+		if(nanoDiff < 0) {
+			secDiff--;
+			nanoDiff += 1e9;
+		}
+		float elapsed = (float)(secDiff + nanoDiff / 1.0e9);
 		prev = now;
 		return elapsed;
 	}

@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
 
   Camera_PrepareForShooting(width,height,&scene->cam);
 
+  printf("--- RAY TRACING GO! ---\n");
   ttTime();
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
@@ -62,7 +63,7 @@ int main(int argc, char *argv[]) {
 
     }
   }
-  printf("raytracing elaped time was: %3.10f\n", ttTime());
+  printf("raytracing elaped time was: %f seconds\n", ttTime());
 
   BMP_Save(&canvas,scene->fileName);
   BMP_Free(&canvas);
