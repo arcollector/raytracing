@@ -98,14 +98,17 @@ void Camera_PrepareForShooting(
 }
 
 void Camera_Print(Camera cam) {
-  printf("cam.up: %5.5f %5.5f %5.5f\n",
-          cam.up.x,cam.up.y,cam.up.z);
-  printf("cam.left: %5.5f %5.5f %5.5f\n",
+  printf("==== CAMERA CONFIG ===\n");
+  printf("left: %5.5f %5.5f %5.5f\n",
           cam.left.x,cam.left.y,cam.left.z);
-  printf("cam.view: %5.5f %5.5f %5.5f\n",
+  printf("up: %5.5f %5.5f %5.5f\n",
+          cam.up.x,cam.up.y,cam.up.z);
+  printf("view: %5.5f %5.5f %5.5f\n",
         cam.view.x,cam.view.y,cam.view.z);
-  printf("cam.viewerPos: "); Vector_Print(cam.viewerPos);
-  printf("cam.min and cam.max:\n");
+  printf("viewerPos: "); Vector_Print(cam.viewerPos);
+  printf("min and max:\n");
   Vector_Print(cam.min);
   Vector_Print(cam.max);
+  printf("win\n");
+  Matrix_Print(cam.win);
 }
