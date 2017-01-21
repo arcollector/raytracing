@@ -1,8 +1,12 @@
+<<<<<<< c96a7bdbde9d234f55e9fec80d4f31d83ba681a7:scenes/scene_2_spheres_1_plane_stochastic.txt
 FILE_NAME = scenes/test_aa_stochastic.bmp
+=======
+FILE_NAME = test_aa_none.bmp
+>>>>>>> bbox fixs:scene.txt
 
-WIDTH = 200
-HEIGHT = 200
-ANTI_ALIASING = STOCHASTIC
+WIDTH = 2000
+HEIGHT = 2000
+ANTI_ALIASING = NONE
 
 CAMERA {
   loc (0,0,-10)

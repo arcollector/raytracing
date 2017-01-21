@@ -7,6 +7,7 @@
 #include "bmp.h"
 #include "scene.h"
 #include "shoot.h"
+#include "bbox.h"
 
 int main(int argc, char *argv[]) {
 
@@ -46,13 +47,16 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
+  Object *unboundObjList;
+  BBOXTree *root = BBOXTree_New(scene->objList,&unboundObjList);
+
   Camera_PrepareForShooting(width,height,&scene->cam);
 
   ttTime();
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
 
-      RGB pixel = Shoot(x,y,scene);
+      RGB pixel = Shoot(x,y,scene,root,unboundObjList);
 
       BMP_PushRGB(&canvas,pixel);
 
@@ -62,6 +66,8 @@ int main(int argc, char *argv[]) {
 
   BMP_Save(&canvas,scene->fileName);
   BMP_Free(&canvas);
+
+  BBOXTree_Free(root);
 
   Scene_Free(scene);
   fclose(fp);

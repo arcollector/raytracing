@@ -16,13 +16,15 @@ Ray Shoot_BuildRay(double x, double y, Camera cam) {
   return ray;
 }
 
-RGB Shoot(long x, long y, Scene *scene) {
+RGB Shoot(
+  long x, long y,
+  Scene *scene,
+  BBOXTree *root, Object *unboundObjList
+) {
 
   Camera cam = scene->cam;
   RGB pixel;
-  Object *objList = scene->objList;
   RGB bkgColor = scene->bkgColor;
-
 
   // if stochastic or multisamplig
   if(scene->aa == AA_STOCHASTIC || scene->aa == AA_MULTI) {
@@ -31,7 +33,9 @@ RGB Shoot(long x, long y, Scene *scene) {
     Shoot_Multi(
       x,y,1,n,1,
       scene->aa == AA_STOCHASTIC,
-      cam,objList,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
     pixel = Quadtree_GetAvg(n);
     Quadtree_Free(n);
@@ -40,7 +44,9 @@ RGB Shoot(long x, long y, Scene *scene) {
   } else {
     pixel = Shoot_Single(
       x,y,
-      cam,objList,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   }
 
@@ -50,12 +56,12 @@ RGB Shoot(long x, long y, Scene *scene) {
 RGB Shoot_Single(
   double x, double y,
   Camera cam,
-  Object *objList,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 ) {
   // build ray
   Ray ray = Shoot_BuildRay(x+.5,y+.5,cam);
-  RGB pixel = Shade(ray, objList, bkgColor);
+  RGB pixel = Shade(ray, root, unboundObjList, bkgColor);
   return pixel;
 }
 
@@ -64,7 +70,7 @@ void Shoot_Multi(
   Quadtree *n, int level,
   int isStochastic,
   Camera cam,
-  Object *objList,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 ) {
 
@@ -75,14 +81,14 @@ void Shoot_Multi(
 
   double r1,r2,r3,r4,r5,r6,r7,r8;
   if(isStochastic) {
-    r1 = SRANDOM(-half2,half2);
-    r2 = SRANDOM(-half2,half2);
-    r3 = SRANDOM(-half2,half2);
-    r4 = SRANDOM(-half2,half2);
-    r5 = SRANDOM(-half2,half2);
-    r6 = SRANDOM(-half2,half2);
-    r7 = SRANDOM(-half2,half2);
-    r8 = SRANDOM(-half2,half2);
+    r1 = JITTER(-half2,half2);
+    r2 = JITTER(-half2,half2);
+    r3 = JITTER(-half2,half2);
+    r4 = JITTER(-half2,half2);
+    r5 = JITTER(-half2,half2);
+    r6 = JITTER(-half2,half2);
+    r7 = JITTER(-half2,half2);
+    r8 = JITTER(-half2,half2);
   } else {
     r1 = r2 = r3 = r4 = r5 = r6 = r7 = r8 = 0;
   }
@@ -94,28 +100,28 @@ void Shoot_Multi(
     y+half2 + r2,
     cam
   );
-  n->c1 = Shade(ray, objList, bkgColor);
+  n->c1 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("shoot %5.5f %5.5f\n", x+half32+ r3, y+half2+ r4);
   ray = Shoot_BuildRay(
     x+half32 + r3,
     y+half2 + r4,
     cam
   );
-  n->c2 = Shade(ray, objList, bkgColor);
+  n->c2 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("shoot %5.5f %5.5f\n", x+half2+ r5, y+half32+ r6);
   ray = Shoot_BuildRay(
     x+half2 + r5,
     y+half32 + r6,
     cam
   );
-  n->c3 = Shade(ray, objList, bkgColor);
+  n->c3 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("shoot %5.5f %5.5f\n", x+half32+ r7, y+half32+ r8);
   ray = Shoot_BuildRay(
     x+half32 + r7,
     y+half32 + r8,
     cam
   );
-  n->c4 = Shade(ray, objList, bkgColor);
+  n->c4 = Shade(ray, root, unboundObjList, bkgColor);
   //printf("\n");
   //exit(0);
 
@@ -140,7 +146,9 @@ void Shoot_Multi(
   if(!c1) {
     Shoot_Multi(
       x,y,half,aux,level+1,isStochastic,
-      cam,objList,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
@@ -150,7 +158,9 @@ void Shoot_Multi(
   if(!c2) {
     Shoot_Multi(
       x+half,y,half,aux,level+1,isStochastic,
-      cam,objList,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
@@ -160,7 +170,9 @@ void Shoot_Multi(
   if(!c3) {
     Shoot_Multi(
       x,y+half,half,aux,level+1,isStochastic,
-      cam,objList,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);
@@ -170,7 +182,9 @@ void Shoot_Multi(
   if(!c4) {
     Shoot_Multi(
       x+half,y+half,half,aux,level+1,isStochastic,
-      cam,objList,bkgColor
+      cam,
+      root,unboundObjList,
+      bkgColor
     );
   } else {
     Quadtree_NodeToLeaf(n,aux);

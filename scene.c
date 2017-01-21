@@ -170,7 +170,7 @@ void Scene_Free(Scene *scene) {
   if(scene->objectsTotal) {
     for(Object *node = scene->objList, *next; node; node = next) {
       next = node->next;
-      (*node->free)(node->obj);
+      (*node->free)(node->primitive);
       free(node);
     }
   }
@@ -375,12 +375,12 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
     return ERROR;
   }
 
-  node->obj = Sphere_New(loc, radius, color, scene->cam);
+  node->primitive = Sphere_New(loc, radius, color, scene->cam);
   node->print = Sphere_Print;
   node->intersect = Sphere_Intersect;
   node->getColor = Sphere_GetColor;
   node->free = Sphere_Free;
-  node->type = SPHERE;
+  node->type = OBJ_SPHERE;
 
   return code;
 }
@@ -421,12 +421,12 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
     return ERROR;
   }
 
-  node->obj = Plane_New(loc, normal, color, scene->cam);
+  node->primitive = Plane_New(loc, normal, color, scene->cam);
   node->print = Plane_Print;
   node->intersect = Plane_Intersect;
   node->getColor = Plane_GetColor;
   node->free = Plane_Free;
-  node->type = PLANE;
+  node->type = OBJ_PLANE;
 
   return code;
 }
@@ -446,7 +446,7 @@ void Scene_Print(Scene *scene) {
   printf("total objects are: %ld\n", scene->objectsTotal);
   for(Object *node = scene->objList; node; node = node->next) {
     printf("I am a: %d\n", node->type);
-    (*node->print)(node->obj);
+    (*node->print)(node->primitive);
   }
   printf("==== END ====\n");
 

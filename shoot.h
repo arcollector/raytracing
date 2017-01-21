@@ -11,15 +11,20 @@
 #include "quadtree.h"
 #include "scene.h"
 
-#define SRANDOM(min,max) (rand()/(double)RAND_MAX*((min)+(max))+(min)-.125)
+#define JITTER(min,max) (rand()/(double)RAND_MAX*((min)+(max))+(min)-.125)
 
-RGB Shoot(long x, long y, Scene *scene);
+RGB Shoot(
+  long x, long y,
+  Scene *scene,
+  BBOXTree *root, Object *unboundObjList
+);
+
 Ray Shoot_BuildRay(double x, double y, Camera cam);
 
 RGB Shoot_Single(
   double x, double y,
   Camera cam,
-  Object *objList,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 );
 
@@ -28,7 +33,7 @@ void Shoot_Multi(
   Quadtree *n, int level,
   int isStochastic,
   Camera cam,
-  Object *objList,
+  BBOXTree *root, Object *unboundObjList,
   RGB bkgColor
 );
 
