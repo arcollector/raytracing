@@ -18,7 +18,9 @@ SKY {
   }
 }
 
+/*** pyramid start ***/
 /* first plane */
+/* first row */
 
 SPHERE {
   loc (-9,0,0)
@@ -166,7 +168,7 @@ SPHERE {
   }
 }
 
-/* thrid row */
+/* third row */
 
 SPHERE {
   loc (-5,4,0)
@@ -279,7 +281,6 @@ SPHERE {
 }
 
 /* second plane */
-
 /* first row */
 
 SPHERE {
@@ -428,7 +429,7 @@ SPHERE {
   }
 }
 
-/* thrid row */
+/* third row */
 
 SPHERE {
   loc (-5,4,3)
@@ -530,8 +531,17 @@ SPHERE {
   }
 }
 
-/* third plane */
+/* sixth row */
 
+SPHERE {
+  loc (0,10,3)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/* third plane */
 /* first row */
 
 SPHERE {
@@ -680,7 +690,7 @@ SPHERE {
   }
 }
 
-/* thrid row */
+/* third row */
 
 SPHERE {
   loc (-5,4,6)
@@ -781,6 +791,18 @@ SPHERE {
     color (255,0,0)
   }
 }
+
+/* sixth row */
+
+SPHERE {
+  loc (0,10,6)
+  radius .95
+  TEXTURE {
+    color (255,0,0)
+  }
+}
+
+/*** end pyramid ***/
 
 PLANE {
   loc (0,-10,0)
