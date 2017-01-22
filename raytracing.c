@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 
     }
   }
-  printf("raytracing elaped time was: %f seconds\n", ttTime());
+  printf("raytracing elaped time was: %f seconds\n",ttTime());
 
   BMP_Save(&canvas,scene->fileName);
   BMP_Free(&canvas);
