@@ -23,13 +23,12 @@ RGB Shade(
     }
     if(node->left) stack[stackLength++] = node->left;
     if(node->right) stack[stackLength++] = node->right;
-    if(node->objectListLength) {
-      for(Object *obj = node->objectList; obj; obj = obj->next) {
-        double t = (*obj->intersect)(ray, obj->primitive);
-        if(t > 0 && t < lastT) {
-          lastT = t;
-          lastColor = (*obj->getColor)(Ray_PointAt(ray,t),cam,obj->primitive);
-        }
+    // node is a leaf if node->objectList contains Objects
+    for(Object *obj = node->objectList; obj; obj = obj->next) {
+      double t = (*obj->intersect)(ray, obj->primitive);
+      if(t > 0 && t < lastT) {
+        lastT = t;
+        lastColor = (*obj->getColor)(Ray_PointAt(ray,t),cam,obj->primitive);
       }
     }
   }
