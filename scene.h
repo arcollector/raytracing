@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "sphere.h"
 #include "plane.h"
+#include "texture.h"
 
 #define AA_NONE 1
 #define AA_MULTI 2
@@ -22,7 +23,7 @@
 int Scene_GetString(FILE *fp);
 Vector Scene_ParseVector(FILE *fp);
 double Scene_ParseFloat(FILE *fp);
-int Scene_GetTexture(FILE *fp, RGB *color);
+int Scene_GetTexture(FILE *fp, Texture *tex);
 Object *Scene_AddBlankObject(Scene *scene);
 
 Scene *Scene_New();

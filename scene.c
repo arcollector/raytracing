@@ -5,7 +5,7 @@
 #define FILE_NAME 0
 #define WIDTH 1
 #define HEIGHT 2
-#define ANTI_ALIASING 3
+#define ANTIALIASING 3
 #define NONE 4
 #define MULTI 5
 #define STOCHASTIC 6
@@ -19,12 +19,14 @@
 #define SKY 14
 #define TEXTURE 15
 #define COLOR 16
-#define SPHERE 17
-#define RADIUS 18
-#define PLANE 19
-#define CURLY 20
-#define TOTAL_IDS 21
-#define ERROR 22
+#define MINRADIUS 17
+#define MAXRADIUS 18
+#define SPHERE 19
+#define RADIUS 20
+#define PLANE 21
+#define CURLY 22
+#define TOTAL_IDS 23
+#define ERROR 24
 
 char stringTypes[][50] = {
   "FILE_NAME",
@@ -33,7 +35,7 @@ char stringTypes[][50] = {
   "LOC", "NORMAL",
   "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
   "SKY",
-  "TEXTURE", "COLOR",
+  "TEXTURE", "COLOR", "MINRADIUS", "MAXRADIUS",
   "SPHERE", "RADIUS",
   "PLANE",
   "}",
@@ -107,22 +109,35 @@ double Scene_ParseFloat(FILE *fp) {
   return val;
 }
 
-int Scene_GetTexture(FILE *fp, RGB *color) {
+int Scene_GetTexture(FILE *fp, Texture *tex) {
   int code;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == COLOR) {
+      if(DEBUG) printf("FOUND COLOR\n");
+      long i = tex->length;
       code = Scene_GetString(fp);
-      color->red = (unsigned char)atoi(stringBuf);
+      tex->limit[i] = atof(stringBuf);
       code = Scene_GetString(fp);
-      color->green = (unsigned char)atoi(stringBuf);
+      tex->color[i].x = (unsigned char)atoi(stringBuf);
       code = Scene_GetString(fp);
-      color->blue = (unsigned char)atoi(stringBuf);
-
+      tex->color[i].y = (unsigned char)atoi(stringBuf);
+      code = Scene_GetString(fp);
+      tex->color[i].z = (unsigned char)atoi(stringBuf);
+      tex->length++;
+    } else if(code == MINRADIUS) {
+      if(DEBUG) printf("FOUND MIN RADIUS\n");
+      code = Scene_GetString(fp);
+      tex->minRadius = atof(stringBuf);
+    } else if(code == MAXRADIUS) {
+      if(DEBUG) printf("FOUND MAX RADIUS\n");
+      code = Scene_GetString(fp);
+      tex->maxRadius = atof(stringBuf);
     } else {
       if(DEBUG) printf("TEXTURE PROPERTY INVALID %s\n", stringBuf);
+      return code;
     }
 
   }
@@ -152,6 +167,9 @@ Object *Scene_AddBlankObject(Scene *scene) {
 
 Scene *Scene_New() {
 
+  // TODO: create a scene with various defaults
+  // for an easy test scenes
+
   Scene *scene = malloc(sizeof(Scene));
   scene->fileName = malloc(256);
   scene->width = 0;
@@ -159,6 +177,8 @@ Scene *Scene_New() {
 
   scene->objectsTotal = 0;
   scene->objList = NULL;
+
+  scene->sky = NULL;
 
   scene->aa = AA_NONE;
 
@@ -174,6 +194,7 @@ void Scene_Free(Scene *scene) {
       free(node);
     }
   }
+  Texture_Free(scene->sky);
   free(scene);
 }
 
@@ -199,7 +220,7 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       if(DEBUG) printf("value is %s\n",stringBuf);
       scene->height = atol(stringBuf);
 
-    } else if(code == ANTI_ALIASING) {
+    } else if(code == ANTIALIASING) {
       if(DEBUG) printf("ANTI_ALIASING found\n");
       code = Scene_GetAntiAliasing(fp, scene);
 
@@ -305,10 +326,10 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
   }
 
   scene->cam = Camera_New(
-                loc, upPoint, lookAt,
-                viewerDistance,
-                Vector_New(minX,minY,0),Vector_New(maxX,maxY,0)
-              );
+    loc, upPoint, lookAt,
+    viewerDistance,
+    Vector_New(minX,minY,0),Vector_New(maxX,maxY,0)
+  );
 
   return code;
 }
@@ -316,15 +337,15 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
 int Scene_GetSky(FILE *fp, Scene *scene) {
 
   int code;
-  RGB color;
+  Texture *tex = Texture_New();
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == TEXTURE) {
       if(DEBUG) printf("\tTEXTURE found\n");
-      code = Scene_GetTexture(fp,&color);
-      if(DEBUG) printf("\t\tCOLOR is %d %d %d\n",color.red,color.green,color.blue);
+      code = Scene_GetTexture(fp,tex);
+      if(DEBUG) Texture_Print(tex);
 
     } else {
       if(DEBUG) printf("\tSKY property invalid: %s\n", stringBuf);
@@ -333,7 +354,7 @@ int Scene_GetSky(FILE *fp, Scene *scene) {
 
   }
 
-  scene->bkgColor = color;
+  scene->sky = tex;
 
   return code;
 }
@@ -343,7 +364,7 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
   int code;
   Vector loc;
   double radius;
-  RGB color;
+  Texture *tex = Texture_New();
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -360,8 +381,8 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
 
     } else if(code == TEXTURE) {
       if(DEBUG) printf("\tTEXTURE found\n");
-      code = Scene_GetTexture(fp,&color);
-      if(DEBUG) printf("\t\tCOLOR is %d %d %d\n",color.red,color.green,color.blue);
+      code = Scene_GetTexture(fp,tex);
+      if(DEBUG) Texture_Print(tex);
 
     } else {
       if(DEBUG) printf("\tSPHERE property invalid: %s\n", stringBuf);
@@ -375,7 +396,7 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
     return ERROR;
   }
 
-  node->primitive = Sphere_New(loc, radius, color, scene->cam);
+  node->primitive = Sphere_New(loc, radius, tex, scene->cam);
   node->print = Sphere_Print;
   node->intersect = Sphere_Intersect;
   node->getColor = Sphere_GetColor;
@@ -389,7 +410,7 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
 
   int code;
   Vector loc, normal;
-  RGB color;
+  Texture *tex = Texture_New();
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -406,8 +427,8 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
 
     } else if(code == TEXTURE) {
       if(DEBUG) printf("\tTEXTURE found\n");
-      code = Scene_GetTexture(fp,&color);
-      if(DEBUG) printf("\t\tCOLOR is %d %d %d\n",color.red,color.green,color.blue);
+      code = Scene_GetTexture(fp,tex);
+      if(DEBUG) Texture_Print(tex);
 
     } else {
       if(DEBUG) printf("\tPLANE property invalid: %s\n", stringBuf);
@@ -421,7 +442,7 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
     return ERROR;
   }
 
-  node->primitive = Plane_New(loc, normal, color, scene->cam);
+  node->primitive = Plane_New(loc, normal, tex, scene->cam);
   node->print = Plane_Print;
   node->intersect = Plane_Intersect;
   node->getColor = Plane_GetColor;
@@ -441,7 +462,7 @@ void Scene_Print(Scene *scene) {
   printf("= CAMERA =====\n");
   Camera_Print(scene->cam);
   printf("= SKY =====\n");
-  printf("color is %d %d %d\n",scene->bkgColor.red,scene->bkgColor.green,scene->bkgColor.blue);
+  Texture_Print(scene->sky);
   printf("= OBJECTS ====\n");
   printf("total objects are: %ld\n", scene->objectsTotal);
   for(Object *node = scene->objList; node; node = node->next) {

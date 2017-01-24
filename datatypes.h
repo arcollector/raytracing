@@ -12,6 +12,15 @@ typedef struct {
 // ----------------------------------------
 
 typedef struct {
+  Vector color[16];
+  double limit[16];
+  long length;
+  double minRadius, maxRadius; // used in spherical texturing
+} Texture;
+
+// ----------------------------------------
+
+typedef struct {
   double _00,_01,_02,_03;
   double _10,_11,_12,_13;
   double _20,_21,_22,_23;
@@ -42,7 +51,7 @@ typedef struct {
   double radius;
   double rSquared;
   double invRadius;
-  RGB color;
+  Texture *tex;
   Matrix local,invLocal;
 } Sphere;
 
@@ -51,7 +60,7 @@ typedef struct {
 typedef struct {
   Vector center;
   Vector normal;
-  RGB color;
+  Texture *tex;
 } Plane;
 
 // ----------------------------------------
@@ -64,7 +73,7 @@ typedef struct ObjectStruct {
   int type;
   struct ObjectStruct *next;
   double (*intersect)(Ray ray, void *primitive);
-  RGB (*getColor)(void *primitive);
+  RGB (*getColor)(Vector p, Camera cam, void *primitive);
   void (*print)(void *primitive);
   void (*free)(void *primitive);
 } Object;
@@ -98,7 +107,7 @@ typedef struct {
   Camera cam;
   Object *objList;
   long objectsTotal;
-  RGB bkgColor;
+  Texture *sky;
   int aa;
 } Scene;
 

@@ -1,9 +1,15 @@
 #include "shade.h"
 
-RGB Shade(Ray ray, BBOXTree *root, Object *unboundObjList, RGB bkgColor) {
+RGB Shade(
+  Ray ray,
+  Camera cam,
+  BBOXTree *root,
+  Object *unboundObjList,
+  Texture *sky
+) {
 
   double lastT = 1e10;
-  RGB lastColor = bkgColor;
+  RGB lastColor = Texture_GetColorRGB(Vector_New(0,0,0),sky);
 
   // TODO: make a linked list
   BBOXTree *stack[1000];
@@ -22,7 +28,7 @@ RGB Shade(Ray ray, BBOXTree *root, Object *unboundObjList, RGB bkgColor) {
         double t = (*obj->intersect)(ray, obj->primitive);
         if(t > 0 && t < lastT) {
           lastT = t;
-          lastColor = (*obj->getColor)(obj->primitive);
+          lastColor = (*obj->getColor)(Ray_PointAt(ray,t),cam,obj->primitive);
         }
       }
     }
@@ -32,7 +38,7 @@ RGB Shade(Ray ray, BBOXTree *root, Object *unboundObjList, RGB bkgColor) {
     double t = (*obj->intersect)(ray, obj->primitive);
     if(t > 0 && t < lastT) {
       lastT = t;
-      lastColor = (*obj->getColor)(obj->primitive);
+      lastColor = (*obj->getColor)(Ray_PointAt(ray,t),cam,obj->primitive);
     }
   }
 

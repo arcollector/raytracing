@@ -13,6 +13,10 @@ Ray Ray_Transform(Ray ray, Matrix m) {
   return ray;
 }
 
+Vector Ray_PointAt(Ray ray, double t) {
+  return Vector_AddVector(ray.start, Vector_MulScalar(ray.dir, t));
+}
+
 void Ray_Print(Ray ray) {
   printf("ray start: (%5.5f %5.5f %5.5f)",
                     ray.start.x,ray.start.y,ray.start.z);

@@ -25,7 +25,7 @@ RGB Shoot_Single(
   double x, double y,
   Camera cam,
   BBOXTree *root, Object *unboundObjList,
-  RGB bkgColor
+  Texture *sky
 );
 
 void Shoot_Multi(
@@ -34,7 +34,7 @@ void Shoot_Multi(
   int isStochastic,
   Camera cam,
   BBOXTree *root, Object *unboundObjList,
-  RGB bkgColor
+  Texture *sky
 );
 
 #endif
