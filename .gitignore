@@ -3,5 +3,6 @@
 *.o
 bin/*
 *.BMP
+*.bmp
 
 !.gitignore
