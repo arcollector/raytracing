@@ -2,7 +2,6 @@
 #define SPHERE_H
 
 #include <stdlib.h>
-#include <math.h>
 
 #include "helpers.h"
 #include "datatypes.h"

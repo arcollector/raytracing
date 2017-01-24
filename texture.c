@@ -68,9 +68,6 @@ RGB Texture_GetColorRGB(Vector p, Texture *tex) {
 
 double Texture_Spherical(Vector p, Texture *tex) {
 
-  int debug = 0;
-  if(debug) Vector_Print(p);
-
   double minRadius = tex->minRadius;
   double maxRadius = tex->maxRadius;
 
@@ -78,37 +75,30 @@ double Texture_Spherical(Vector p, Texture *tex) {
 
   double radius = minRadius + maxRadius;
   distance = fmod(distance, radius);
-  if(debug) printf("distance (fmod?) is: %f\n",distance);
 
   if(distance < minRadius * .25) {
-    if(debug) printf(".5 to 1\n");
-    return .5 + (1 - .5)*(distance/(minRadius*.25));
+    return .5 + 2 * distance / minRadius;
   }
 
   if(distance < minRadius * .75) {
-    if(debug) printf("1\n");
     return 1;
   }
 
   if(distance < minRadius) {
-    if(debug) printf("1 to .5\n");
-    return .5 + (1 - .5)*(-(distance - minRadius*.75)/(minRadius - minRadius*.75)+1);
+    return 2.5 - 2 * distance / minRadius;
   }
 
   distance -= minRadius;
 
   if(distance < maxRadius * .25) {
-    if(debug) printf(".5 to 0\n");
-    return 0 + (.5 - 0)*(-(distance)/(maxRadius*.25)+1);
+    return .5 - 2 * distance / maxRadius;
   }
 
   if(distance < maxRadius * .75) {
-    if(debug) printf("0\n");
     return 0;
   }
 
-  if(debug) printf("0 to .5\n");
-  return 0 + (.5 - 0)*((distance - maxRadius*.75)/(maxRadius - maxRadius *.75));
+  return 2 * distance / maxRadius - 1.5;
 }
 
 void Texture_Free(Texture *tex) {
