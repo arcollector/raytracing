@@ -14,7 +14,7 @@ CAMERA {
 
 SKY {
   TEXTURE {
-    color (45,54,0)
+    color 1, (.54,.54,0)
   }
 }
 
@@ -26,7 +26,7 @@ SPHERE {
   loc (-9,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -34,7 +34,7 @@ SPHERE {
   loc (-7,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -42,7 +42,7 @@ SPHERE {
   loc (-5,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -50,7 +50,7 @@ SPHERE {
   loc (-3,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -58,7 +58,7 @@ SPHERE {
   loc (-1,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -66,7 +66,7 @@ SPHERE {
   loc (1,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -74,7 +74,7 @@ SPHERE {
   loc (3,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -82,7 +82,7 @@ SPHERE {
   loc (5,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -90,7 +90,7 @@ SPHERE {
   loc (7,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -98,7 +98,7 @@ SPHERE {
   loc (9,0,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -108,7 +108,7 @@ SPHERE {
   loc (-7,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -116,7 +116,7 @@ SPHERE {
   loc (-5,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -124,7 +124,7 @@ SPHERE {
   loc (-3,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -132,7 +132,7 @@ SPHERE {
   loc (-1,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -140,7 +140,7 @@ SPHERE {
   loc (1,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -148,7 +148,7 @@ SPHERE {
   loc (3,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -156,7 +156,7 @@ SPHERE {
   loc (5,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -164,7 +164,7 @@ SPHERE {
   loc (7,2,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -174,7 +174,7 @@ SPHERE {
   loc (-5,4,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -182,7 +182,7 @@ SPHERE {
   loc (-3,4,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -190,7 +190,7 @@ SPHERE {
   loc (-1,4,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -198,7 +198,7 @@ SPHERE {
   loc (1,4,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -206,7 +206,7 @@ SPHERE {
   loc (3,4,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -214,7 +214,7 @@ SPHERE {
   loc (5,4,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -224,7 +224,7 @@ SPHERE {
   loc (-3,6,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -232,7 +232,7 @@ SPHERE {
   loc (-1,6,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -240,7 +240,7 @@ SPHERE {
   loc (1,6,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -248,7 +248,7 @@ SPHERE {
   loc (3,6,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -258,7 +258,7 @@ SPHERE {
   loc (-1,8,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -266,7 +266,7 @@ SPHERE {
   loc (1,8,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -276,7 +276,7 @@ SPHERE {
   loc (0,10,0)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -287,7 +287,7 @@ SPHERE {
   loc (-9,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -295,7 +295,7 @@ SPHERE {
   loc (-7,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -303,7 +303,7 @@ SPHERE {
   loc (-5,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -311,7 +311,7 @@ SPHERE {
   loc (-3,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -319,7 +319,7 @@ SPHERE {
   loc (-1,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -327,7 +327,7 @@ SPHERE {
   loc (1,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -335,7 +335,7 @@ SPHERE {
   loc (3,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -343,7 +343,7 @@ SPHERE {
   loc (5,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -351,7 +351,7 @@ SPHERE {
   loc (7,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -359,7 +359,7 @@ SPHERE {
   loc (9,0,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -369,7 +369,7 @@ SPHERE {
   loc (-7,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -377,7 +377,7 @@ SPHERE {
   loc (-5,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -385,7 +385,7 @@ SPHERE {
   loc (-3,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -393,7 +393,7 @@ SPHERE {
   loc (-1,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -401,7 +401,7 @@ SPHERE {
   loc (1,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -409,7 +409,7 @@ SPHERE {
   loc (3,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -417,7 +417,7 @@ SPHERE {
   loc (5,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -425,7 +425,7 @@ SPHERE {
   loc (7,2,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -435,7 +435,7 @@ SPHERE {
   loc (-5,4,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -443,7 +443,7 @@ SPHERE {
   loc (-3,4,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -451,7 +451,7 @@ SPHERE {
   loc (-1,4,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -459,7 +459,7 @@ SPHERE {
   loc (1,4,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -467,7 +467,7 @@ SPHERE {
   loc (3,4,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -475,7 +475,7 @@ SPHERE {
   loc (5,4,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -485,7 +485,7 @@ SPHERE {
   loc (-3,6,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -493,7 +493,7 @@ SPHERE {
   loc (-1,6,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -501,7 +501,7 @@ SPHERE {
   loc (1,6,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -509,7 +509,7 @@ SPHERE {
   loc (3,6,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -519,7 +519,7 @@ SPHERE {
   loc (-1,8,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -527,7 +527,7 @@ SPHERE {
   loc (1,8,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -537,7 +537,7 @@ SPHERE {
   loc (0,10,3)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -548,7 +548,7 @@ SPHERE {
   loc (-9,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -556,7 +556,7 @@ SPHERE {
   loc (-7,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -564,7 +564,7 @@ SPHERE {
   loc (-5,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -572,7 +572,7 @@ SPHERE {
   loc (-3,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -580,7 +580,7 @@ SPHERE {
   loc (-1,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -588,7 +588,7 @@ SPHERE {
   loc (1,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -596,7 +596,7 @@ SPHERE {
   loc (3,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -604,7 +604,7 @@ SPHERE {
   loc (5,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -612,7 +612,7 @@ SPHERE {
   loc (7,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -620,7 +620,7 @@ SPHERE {
   loc (9,0,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -630,7 +630,7 @@ SPHERE {
   loc (-7,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -638,7 +638,7 @@ SPHERE {
   loc (-5,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -646,7 +646,7 @@ SPHERE {
   loc (-3,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -654,7 +654,7 @@ SPHERE {
   loc (-1,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -662,7 +662,7 @@ SPHERE {
   loc (1,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -670,7 +670,7 @@ SPHERE {
   loc (3,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -678,7 +678,7 @@ SPHERE {
   loc (5,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -686,7 +686,7 @@ SPHERE {
   loc (7,2,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -696,7 +696,7 @@ SPHERE {
   loc (-5,4,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -704,7 +704,7 @@ SPHERE {
   loc (-3,4,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -712,7 +712,7 @@ SPHERE {
   loc (-1,4,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -720,7 +720,7 @@ SPHERE {
   loc (1,4,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -728,7 +728,7 @@ SPHERE {
   loc (3,4,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -736,7 +736,7 @@ SPHERE {
   loc (5,4,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -746,7 +746,7 @@ SPHERE {
   loc (-3,6,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -754,7 +754,7 @@ SPHERE {
   loc (-1,6,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -762,7 +762,7 @@ SPHERE {
   loc (1,6,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -770,7 +770,7 @@ SPHERE {
   loc (3,6,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -780,7 +780,7 @@ SPHERE {
   loc (-1,8,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -788,7 +788,7 @@ SPHERE {
   loc (1,8,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -798,7 +798,7 @@ SPHERE {
   loc (0,10,6)
   radius .95
   TEXTURE {
-    color (255,0,0)
+    color 1, (1,0,0)
   }
 }
 
@@ -808,6 +808,6 @@ PLANE {
   loc (0,-10,0)
   normal (0,1,0)
   TEXTURE {
-    color (255,255,0)
+    color 1, (1,1,0)
   }
 }
