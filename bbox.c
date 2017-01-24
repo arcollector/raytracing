@@ -1,10 +1,20 @@
 #include  "bbox.h"
 
 Vector BBOX_GetAxis(int index) {
-  Vector axes[3];
-  axes[0] = Vector_New(1,0,0);
-  axes[1] = Vector_New(0,1,0);
-  axes[2] = Vector_New(0,0,1);
+  static Vector axes[BBOX_AXES_COUNT];
+  static int areCreated = 0;
+  if(!areCreated) {
+    axes[0] = Vector_New(1,0,0);
+    axes[1] = Vector_New(0,1,0);
+    axes[2] = Vector_New(0,0,1);
+    // TODO adding more axes, make the raytracer slower
+    // check if can find a solution for this situation
+    axes[3] = Vector_Normalize(Vector_New(1,1,1));
+    axes[4] = Vector_Normalize(Vector_New(-1,1,1));
+    axes[5] = Vector_Normalize(Vector_New(-1,-1,1));
+    axes[6] = Vector_Normalize(Vector_New(1,-1,1));
+  }
+  areCreated = 1;
   return axes[index];
 }
 
@@ -100,14 +110,14 @@ void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOXList *bboxList) {
   BBOX nodeBBOX;
   BBOX *bbox = bboxList->bbox;
   long totalObjects = 0;
-  for(long i = 0; i < 3; i++) { // use the first bbox as start point
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) { // use the first bbox as start point
     totalObjects++;
     nodeBBOX.min[i] = bbox->min[i];
     nodeBBOX.max[i] = bbox->max[i];
   }
   for(bbox = bbox->next; bbox; bbox = bbox->next) { // keep iterating
     totalObjects++;
-    for(long i = 0; i < 3; i++) {
+    for(long i = 0; i < BBOX_AXES_COUNT; i++) {
       nodeBBOX.min[i].x = MIN(nodeBBOX.min[i].x, bbox->min[i].x);
       nodeBBOX.min[i].y = MIN(nodeBBOX.min[i].y, bbox->min[i].y);
       nodeBBOX.min[i].z = MIN(nodeBBOX.min[i].z, bbox->min[i].z);
@@ -117,7 +127,7 @@ void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOXList *bboxList) {
     }
   }
   // compute centrod of bounding box
-  for(long i = 0; i < 3; i++) {
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     nodeBBOX.centroid[i] = Vector_DivScalar(
       Vector_AddVector(nodeBBOX.min[i], nodeBBOX.max[i]),
       2
@@ -140,17 +150,17 @@ void BBOXTree_GenerateSplittedList(
   BBOX nodeBBOX = node->bbox;
 
   // TODO: fix this ugliness
-  BBOX *left[3][100],
-      *right[3][100];
+  BBOX *left[BBOX_AXES_COUNT][100],
+      *right[BBOX_AXES_COUNT][100];
 
-  long leftLength[3], rightLength[3];
-  for(long i = 0; i < 3; i++) {
+  long leftLength[BBOX_AXES_COUNT], rightLength[BBOX_AXES_COUNT];
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     leftLength[i] = 0;
     rightLength[i] = 0;
   }
 
   for(BBOX *bbox = list->bbox; bbox; bbox = bbox->next) {
-    for(long i = 0; i < 3; i++) {
+    for(long i = 0; i < BBOX_AXES_COUNT; i++) {
       double dist = Vector_Dot(BBOX_GetAxis(i),
         Vector_SubVector(bbox->centroid[i], nodeBBOX.centroid[i])
       );
@@ -165,7 +175,7 @@ void BBOXTree_GenerateSplittedList(
   // check which axis is better balanced
   long dist = abs(rightLength[0] - leftLength[0]);
   long axisIndex = 0;
-  for(long i = 1; i < 3; i++) {
+  for(long i = 1; i < BBOX_AXES_COUNT; i++) {
     long temp = abs(rightLength[i] - leftLength[i]);
     if(temp < dist) {
       dist = temp;
@@ -329,11 +339,11 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
   if(bbox->isUnbounded) return 1;
 
-  double tMins[3] = {NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY},
-        tMaxs[3] = {POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
+  double tMins[BBOX_AXES_COUNT] = {NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY},
+        tMaxs[BBOX_AXES_COUNT] = {POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
 
   // calc plane intersection
-  for(long i = 0; i < 3; i++) {
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     Vector axis = BBOX_GetAxis(i);;
     Vector min = bbox->min[i];
     Vector max = bbox->max[i];
@@ -385,7 +395,7 @@ void BBOX_Sphere(BBOX *bbox) {
 
   Sphere *sphere = bbox->obj->primitive;
 
-  for( long i = 0; i < 3; i++) {
+  for( long i = 0; i < BBOX_AXES_COUNT; i++) {
     Vector axis = BBOX_GetAxis(i);
     double length = Vector_Dot(axis, sphere->center);
     Vector min = Vector_MulScalar(axis, length - sphere->radius);

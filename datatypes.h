@@ -80,11 +80,13 @@ typedef struct ObjectStruct {
 
 // ----------------------------------------
 
+#define BBOX_AXES_COUNT 3
+
 typedef struct BBOXStruct {
   Object *obj;
   int isUnbounded;
   struct BBOXStruct *next;
-  Vector min[3], max[3], centroid[3];
+  Vector min[BBOX_AXES_COUNT], max[BBOX_AXES_COUNT], centroid[BBOX_AXES_COUNT];
 } BBOX;
 
 typedef struct {
