@@ -3,11 +3,13 @@ default:
 
 install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				sphere.o plane.o \
+				texture.o \
 				scene.o shade.o quadtree.o shoot.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o
 	gcc raytracing.c -o bin/raytracing \
 				rgb.o vector.o matrix.o ray.o camera.o windowing.o \
+				texture.o \
 				sphere.o plane.o \
 				scene.o shade.o quadtree.o shoot.o \
 				octree_quantizer.o bmp.o tga.o \
@@ -31,6 +33,9 @@ matrix_test: datatypes.h vector.h vector.c matrix.h matrix.c
 	gcc -c vector.c
 	gcc -c matrix.c
 	gcc tests/matrix_test.c -o bin/matrix_test vector.o matrix.o -lm
+
+texture.o: datatypes.h rgb.h rgb.c vector.h vector.c texture.h texture.c
+	gcc -c texture.c
 
 ray.o: datatypes.h vector.h vector.c matrix.h matrix.c ray.h ray.c
 	gcc -c ray.c
@@ -67,10 +72,10 @@ tga.o: rgb.h rgb.c bmp.h bmp.c tga.h tga.c
 plane.o: datatypes.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c plane.h plane.c
 	gcc -c plane.c
 
-scene.o: datatypes.h scene.h scene.c
+scene.o: datatypes.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c sphere.h sphere.c plane.h plane.c texture.h texture.c scene.h scene.c
 	gcc -c scene.c
 
-shade.o: datatypes.h rgb.h rgb.c ray.h ray.c shade.h shade.c bbox.h bbox.c
+shade.o: datatypes.h rgb.h rgb.c vector.h vector.c camera.h camera.c ray.h ray.c shade.h shade.c bbox.h bbox.c texture.h texture.c
 	gcc -c shade.c
 
 shoot.o: datatypes.h rgb.h rgb.c shade.h shade.c shoot.h shoot.c

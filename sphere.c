@@ -1,6 +1,6 @@
 #include "sphere.h"
 
-Sphere *Sphere_New(Vector center, double radius, RGB color, Camera cam) {
+Sphere *Sphere_New(Vector center, double radius, Texture *tex, Camera cam) {
   Sphere *sphere = malloc(sizeof(Sphere));
   if(!sphere) return NULL;
 
@@ -10,7 +10,7 @@ Sphere *Sphere_New(Vector center, double radius, RGB color, Camera cam) {
   sphere->radius = radius;
   sphere->rSquared = radius*radius;
   sphere->invRadius = 1/radius;
-  sphere->color = color;
+  sphere->tex = tex;
 
   Matrix t1 = Matrix_New();
   t1._30 = -center.x;
@@ -62,20 +62,24 @@ Vector Sphere_Normal(Vector point, Sphere sphere) {
   return normal;
 }
 
-RGB Sphere_GetColor(void *_sphere) {
+RGB Sphere_GetColor(Vector p, Camera cam, void *_sphere) {
   Sphere *sphere = _sphere;
-  return sphere->color;
+
+  p = Vector_MulMatrix(p,cam.invLocal); // to world
+
+  return Texture_GetColorRGB(p,sphere->tex);
 }
 
 void Sphere_Print(void *_sphere) {
   Sphere *sphere = _sphere;
   printf("sphere center: (%5.5f %5.5f %5.5f)",
-                sphere->center.x,sphere->center.y,sphere->center.z);
-  printf(" radius: %5.5f", sphere->radius);
-  printf(" color: %d %d %d\n",
-                sphere->color.red,sphere->color.green,sphere->color.blue);
+    sphere->center.x,sphere->center.y,sphere->center.z);
+  printf(" radius: %5.5f\n", sphere->radius);
+  Texture_Print(sphere->tex);
 }
 
-void Sphere_Free(void *sphere) {
+void Sphere_Free(void *_sphere) {
+  Sphere *sphere = _sphere;
+  Texture_Free(sphere->tex);
   free(sphere);
 }
