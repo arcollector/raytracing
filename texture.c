@@ -33,7 +33,6 @@ Vector Texture_GetColorWithinLimit(double t, Texture *tex) {
 }
 
 Vector Texture_GetColor(Vector p, Texture *tex) {
-
   Vector color;
   // use spherical texturing
   if(tex->minRadius > 0 && tex->maxRadius) {

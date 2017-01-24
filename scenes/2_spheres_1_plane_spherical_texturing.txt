@@ -1,8 +1,8 @@
-FILE_NAME = test_aa_stochastic.bmp
+FILE_NAME = 2_spheres_1_plane_spherical_texturing.bmp
 
-WIDTH = 500
-HEIGHT = 500
-ANTI_ALIASING = STOCHASTIC
+WIDTH = 1000
+HEIGHT = 1000
+ANTI_ALIASING = none
 
 CAMERA {
   loc (10,0,-10)
@@ -23,6 +23,8 @@ SPHERE {
   radius 5
   TEXTURE {
     color 1, (1,0,0)
+    minRadius .6
+    maxRadius .8
   }
 }
 
@@ -30,7 +32,12 @@ SPHERE {
   loc (6,0,0)
   radius 5
   TEXTURE {
-    color 1, (0,0,1)
+    minRadius .6
+    maxRadius .3
+    color .3, (0,0,1)
+    color .8, (1,0,1)
+    color .9, (0,1,1)
+    color 1.01, (1,1,1)
   }
 }
 
