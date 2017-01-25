@@ -20,7 +20,7 @@
 RGB Shoot(
   long x, long y,
   Scene *scene,
-  BBOXTree *root, Object *unboundObjList
+  BBOXTree *root, Object *unboundedObjectList
 );
 
 Ray Shoot_BuildRay(double x, double y, Camera cam);
@@ -28,7 +28,7 @@ Ray Shoot_BuildRay(double x, double y, Camera cam);
 RGB Shoot_Single(
   double x, double y,
   Camera cam,
-  BBOXTree *root, Object *unboundObjList,
+  BBOXTree *root, Object *unboundedObjectList,
   Texture *sky
 );
 
@@ -37,7 +37,7 @@ void Shoot_Multi(
   Quadtree *n, int level,
   int isStochastic,
   Camera cam,
-  BBOXTree *root, Object *unboundObjList,
+  BBOXTree *root, Object *unboundedObjectList,
   Texture *sky
 );
 

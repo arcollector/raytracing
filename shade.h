@@ -12,8 +12,21 @@ RGB Shade(
   Ray ray,
   Camera cam,
   BBOXTree *root,
-  Object *unboundObjList,
+  Object *unboundedObjectList,
   Texture *sky
+);
+
+Object *Intersect(
+  Ray ray, 
+  Object *objectList,
+  double *lastT
+);
+
+RGB Shade_ComputeColor(
+  Object *obj,
+  Ray ray,
+  double t, 
+  Camera cam
 );
 
 #endif

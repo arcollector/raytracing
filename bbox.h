@@ -30,10 +30,10 @@ Vector BBOX_GetAxis(int index);
 BBOX *BBOX_New(Object *obj);
 BBOX *BBOXList_New(
   Object *objList,
-  Object **unboundObjList,
+  Object **unboundedObjectList,
   long *bboxListLength
 );
-BBOXTree *BBOXTree_New(Object *objList, Object **unboundObjList);
+BBOXTree *BBOXTree_New(Object *objList, Object **unboundedObjectList);
 void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
 int BBOXTree_GenerateSplitLists(
   BBOXTree *node,

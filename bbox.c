@@ -41,7 +41,7 @@ BBOX *BBOX_New(Object *obj) {
 
 BBOX *BBOXList_New(
   Object *objList,
-  Object **unboundObjList,
+  Object **unboundedObjectList,
   long *bboxListLength
 ) {
 
@@ -60,8 +60,8 @@ BBOX *BBOXList_New(
       ++*bboxListLength;
     } else {
       if(!aux) {
-        *unboundObjList = bbox->obj;
-        aux = *unboundObjList;
+        *unboundedObjectList = bbox->obj;
+        aux = *unboundedObjectList;
       } else {
         aux = aux->next = bbox->obj;
       }
@@ -71,13 +71,13 @@ BBOX *BBOXList_New(
   return first;
 }
 
-BBOXTree *BBOXTree_New(Object *objList, Object **unboundObjList) {
+BBOXTree *BBOXTree_New(Object *objList, Object **unboundedObjectList) {
 
   // setup bounding box of each primtive
   // and save them in a BBOX
   long bboxListLength;
   BBOX *bboxList = BBOXList_New(
-    objList, unboundObjList, &bboxListLength
+    objList, unboundedObjectList, &bboxListLength
   );
   //BBOXList_Print(bboxList); printf("\n");
 
