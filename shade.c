@@ -8,7 +8,7 @@ RGB Shade(
   Texture *sky
 ) {
 
-  double lastT = 1e10;
+  double lastT = POSITIVE_INFINITY;
   RGB lastColor = Texture_GetColorRGB(Vector_New(0,0,0),sky);
 
   // TODO: make a linked list

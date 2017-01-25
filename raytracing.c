@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
+  fclose(fp);
   Scene_Print(scene);
 
   long width = scene->width;
@@ -43,7 +44,6 @@ int main(int argc, char *argv[]) {
   BMP_Canvas canvas;
   if(!BMP_NewCanvas(&canvas,width,height)) {
     Scene_Free(scene);
-    fclose(fp);
     return 0;
   }
 
@@ -58,17 +58,21 @@ int main(int argc, char *argv[]) {
   unboundObjList = scene->objList;
   #endif
 
+  if(!root && !unboundObjList) {
+    printf("No objects to ray trace!\n");
+    BMP_Free(&canvas);
+    Scene_Free(scene);
+    return 0;
+  }
+
   Camera_PrepareForShooting(width,height,&scene->cam);
 
   printf("--- RAY TRACING GO! ---\n");
   ttTime();
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
-
       RGB pixel = Shoot(x,y,scene,root,unboundObjList);
-
       BMP_PushRGB(&canvas,pixel);
-
     }
   }
   printf("raytracing elaped time was: %f seconds\n",ttTime());
@@ -79,7 +83,6 @@ int main(int argc, char *argv[]) {
   BBOXTree_Free(root);
 
   Scene_Free(scene);
-  fclose(fp);
 
   return 0;
 }

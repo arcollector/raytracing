@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 #include "helpers.h"
 #include "datatypes.h"
@@ -10,29 +11,39 @@
 
 Vector BBOX_GetAxis(int index);
 BBOX *BBOX_New(Object *obj);
-BBOXList *BBOXList_New(Object *objList, Object **unboundObjList);
+BBOX *BBOXList_New(
+  Object *objList,
+  Object **unboundObjList,
+  long *bboxListLength
+);
 BBOXTree *BBOXTree_New(Object *objList, Object **unboundObjList);
-void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOXList *bboxList);
-void BBOXTree_GenerateSplittedList(
+void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
+int BBOXTree_GenerateSplitLists(
   BBOXTree *node,
-  BBOXList *list,
-  BBOXList *leftList,
-  BBOXList *rightList
+  BBOX *list,
+  BBOX **leftList,
+  long *leftListLength,
+  BBOX **rightList,
+  long *rightListLength
 );
 BBOXTree *BBOXTree_BuildHierarchy(
-  BBOXList *list,
+  BBOX *list,
+  long listLength,
   int forceGrouping
 );
-long BBOXList_ToObjectList(BBOXList *bboxList, Object **object);
-void BBOXTree_Free(BBOXTree *tree);
+
 void BBOX_Print(BBOX *bbox);
+void BBOX_Free(BBOX *bbox);
+
+long BBOX_ToObjectList(BBOX *bboxList, Object **object);
+void BBOXTree_Free(BBOXTree *tree);
 void BBOXTree_Print(BBOXTree *tree);
 
 int BBOX_Intersect(Ray ray, BBOX *bbox);
 int BBOXTree_NodeIntersect(Ray ray, BBOXTree *node);
 
-void BBOXList_Print(BBOXList *bboxList);
-void BBOXList_Free(BBOXList *bboxList);
+void BBOXList_Print(BBOX *bboxList);
+void BBOXList_Free(BBOX *bboxList);
 
 void BBOX_Sphere(BBOX *bbox);
 

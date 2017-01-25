@@ -89,11 +89,6 @@ typedef struct BBOXStruct {
   Vector min[BBOX_AXES_COUNT], max[BBOX_AXES_COUNT], centroid[BBOX_AXES_COUNT];
 } BBOX;
 
-typedef struct {
-  BBOX *bbox;
-  long length;
-} BBOXList;
-
 typedef struct BBOXTreeStruct {
   struct BBOXTreeStruct *left, *right;
   BBOX bbox;
