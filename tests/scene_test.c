@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "../datatypes.h"
 #include "../scene.h"
 
 int main(int argc, char *argv[]) {
@@ -12,13 +11,16 @@ int main(int argc, char *argv[]) {
 
   Scene *scene = Scene_New(fp);
   if(!scene) {
+    fclose(fp);
     return 0;
   }
 
   if(!Scene_Setup(fp, scene)) {
     Scene_Free(scene);
+    fclose(fp);
     return 0;
   }
+  fclose(fp);
 
   Scene_Print(scene);
 

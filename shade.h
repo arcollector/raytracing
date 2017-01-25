@@ -1,11 +1,10 @@
 #ifndef SHADE_H
 #define SHADE_H
 
-#include "datatypes.h"
-#include "ray.h"
-#include "vector.h"
-#include "camera.h"
 #include "rgb.h"
+#include "vector.h"
+#include "ray.h"
+#include "camera.h"
 #include "texture.h"
 #include "bbox.h"
 

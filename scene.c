@@ -111,30 +111,30 @@ double Scene_ParseFloat(FILE *fp) {
 
 int Scene_GetTexture(FILE *fp, Texture *tex) {
   int code;
+  double minRadius = 0, maxRadius = 0;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
 
     if(code == COLOR) {
       if(DEBUG) printf("FOUND COLOR\n");
-      long i = tex->length;
       code = Scene_GetString(fp);
-      tex->limit[i] = atof(stringBuf);
+      double limit = atof(stringBuf);
       code = Scene_GetString(fp);
-      tex->color[i].x = (unsigned char)atoi(stringBuf);
+      double r = (unsigned char)atof(stringBuf);
       code = Scene_GetString(fp);
-      tex->color[i].y = (unsigned char)atoi(stringBuf);
+      double g = (unsigned char)atof(stringBuf);
       code = Scene_GetString(fp);
-      tex->color[i].z = (unsigned char)atoi(stringBuf);
-      tex->length++;
+      double b = (unsigned char)atof(stringBuf);
+      Texture_AddColor(limit, Vector_New(r,g,b), tex);
     } else if(code == MINRADIUS) {
       if(DEBUG) printf("FOUND MIN RADIUS\n");
       code = Scene_GetString(fp);
-      tex->minRadius = atof(stringBuf);
+      minRadius = atof(stringBuf);
     } else if(code == MAXRADIUS) {
       if(DEBUG) printf("FOUND MAX RADIUS\n");
       code = Scene_GetString(fp);
-      tex->maxRadius = atof(stringBuf);
+      maxRadius = atof(stringBuf);
     } else {
       if(DEBUG) printf("TEXTURE PROPERTY INVALID %s\n", stringBuf);
       return code;
@@ -142,17 +142,19 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
 
   }
 
+  Texture_SetRadii(minRadius, maxRadius, tex);
+
   return code;
 }
 
 Object *Scene_AddBlankObject(Scene *scene) {
 
-  Object *obj = scene->objList;
-  if(scene->objectsTotal == 0) {
-    obj = scene->objList = malloc(sizeof(Object));
+  Object *obj = scene->objectList;
+  if(scene->objectListLength == 0) {
+    obj = scene->objectList = malloc(sizeof(Object));
     if(!obj) return NULL;
   } else {
-    for(long i = 0; i < scene->objectsTotal - 1; i++) {
+    for(long i = 0; i < scene->objectListLength - 1; i++) {
       obj = obj->next;
     }
     obj = obj->next = malloc(sizeof(Object));
@@ -160,7 +162,7 @@ Object *Scene_AddBlankObject(Scene *scene) {
   }
 
   obj->next = NULL;
-  scene->objectsTotal++;
+  scene->objectListLength++;
 
   return obj;
 }
@@ -175,8 +177,8 @@ Scene *Scene_New() {
   scene->width = 0;
   scene->height = 0;
 
-  scene->objectsTotal = 0;
-  scene->objList = NULL;
+  scene->objectListLength = 0;
+  scene->objectList = NULL;
 
   scene->sky = NULL;
 
@@ -187,8 +189,8 @@ Scene *Scene_New() {
 
 void Scene_Free(Scene *scene) {
   free(scene->fileName);
-  if(scene->objectsTotal) {
-    for(Object *node = scene->objList, *next; node; node = next) {
+  if(scene->objectListLength) {
+    for(Object *node = scene->objectList, *next; node; node = next) {
       next = node->next;
       (*node->free)(node->primitive);
       free(node);
@@ -464,8 +466,8 @@ void Scene_Print(Scene *scene) {
   printf("= SKY =====\n");
   Texture_Print(scene->sky);
   printf("= OBJECTS ====\n");
-  printf("total objects are: %ld\n", scene->objectsTotal);
-  for(Object *node = scene->objList; node; node = node->next) {
+  printf("total objects are: %ld\n", scene->objectListLength);
+  for(Object *node = scene->objectList; node; node = node->next) {
     printf("I am a: %d\n", node->type);
     (*node->print)(node->primitive);
   }

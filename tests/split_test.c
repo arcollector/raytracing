@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
 
 #include "../helpers.h"
-#include "../datatypes.h"
 #include "../vector.h"
 #include "../bbox.h"
 #include "../camera.h"
 #include "../sphere.h"
+#include "../texture.h"
 
 int main(int argc, char *argv[]) {
 
@@ -19,42 +18,42 @@ int main(int argc, char *argv[]) {
 
   Object *first, *objList;
   first = objList = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(1,0,0),1,RGB_New(255,0,0),cam);
+  objList->primitive = Sphere_New(Vector_New(1,0,0),1,Texture_FromRGB(RGB_New(255,0,0)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(3,0,0),1,RGB_New(0,255,0),cam);
+  objList->primitive = Sphere_New(Vector_New(3,0,0),1,Texture_FromRGB(RGB_New(0,255,0)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(7,0,0),1,RGB_New(0,0,255),cam);
+  objList->primitive = Sphere_New(Vector_New(7,0,0),1,Texture_FromRGB(RGB_New(0,0,255)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(1,0,4),1,RGB_New(255,255,0),cam);
+  objList->primitive = Sphere_New(Vector_New(1,0,4),1,Texture_FromRGB(RGB_New(255,255,0)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(3,0,4),1,RGB_New(255,255,255),cam);
+  objList->primitive = Sphere_New(Vector_New(3,0,4),1,Texture_FromRGB(RGB_New(255,255,255)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(1,0,-3),1,RGB_New(255,255,0),cam);
+  objList->primitive = Sphere_New(Vector_New(1,0,-3),1,Texture_FromRGB(RGB_New(255,255,0)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(3,0,-3),1,RGB_New(255,255,255),cam);
+  objList->primitive = Sphere_New(Vector_New(3,0,-3),1,Texture_FromRGB(RGB_New(255,255,255)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 
   objList = objList->next = malloc(sizeof(Object));
-  objList->primitive = Sphere_New(Vector_New(7,0,-3),1,RGB_New(0,0,255),cam);
+  objList->primitive = Sphere_New(Vector_New(7,0,-3),1,Texture_FromRGB(RGB_New(0,0,255)),cam);
   objList->type = OBJ_SPHERE;
   objList->print = Sphere_Print;
 

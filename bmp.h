@@ -9,7 +9,7 @@
 #include "rgb.h"
 
 #if !defined(BMP_DEBUG)
-  #define BMP_DEBUG 1 
+  #define BMP_DEBUG 1
 #endif
 
 #define BMP_HEADER_SIZE 40
@@ -30,11 +30,11 @@ struct BMP_HeaderStruct {
   uint16_t imagePlanes;
   uint16_t colorDepth;
   uint32_t compressionType;
-  uint32_t canvasSize; 
-  uint32_t ignore1; 
-  uint32_t ignore2; 
-  uint32_t ignore3; 
-  uint32_t ignore4; 
+  uint32_t canvasSize;
+  uint32_t ignore1;
+  uint32_t ignore2;
+  uint32_t ignore3;
+  uint32_t ignore4;
 };
 
 typedef struct BMP_HeaderStruct BMP_Header;
@@ -55,4 +55,3 @@ int BMP_Save( BMP_Canvas *canvas, char *filename );
 void BMP_Free( BMP_Canvas *canvas );
 
 #endif
-

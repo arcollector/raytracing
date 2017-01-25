@@ -6,18 +6,28 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "datatypes.h"
 #include "rgb.h"
 #include "vector.h"
 #include "matrix.h"
 #include "camera.h"
+#include "texture.h"
+#include "object.h"
 #include "sphere.h"
 #include "plane.h"
-#include "texture.h"
 
 #define AA_NONE 1
 #define AA_MULTI 2
 #define AA_STOCHASTIC 3
+
+typedef struct {
+  char *fileName;
+  long width, height;
+  Camera cam;
+  Object *objectList;
+  long objectListLength;
+  Texture *sky;
+  int aa;
+} Scene;
 
 // helpers
 int Scene_GetString(FILE *fp);

@@ -5,8 +5,11 @@
 #include <math.h>
 
 #include "helpers.h"
-#include "datatypes.h"
 #include "matrix.h"
+
+typedef struct {
+  double x,y,z,w;
+} Vector;
 
 Vector Vector_New(double x, double y, double z);
 

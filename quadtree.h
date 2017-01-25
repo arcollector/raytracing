@@ -12,7 +12,6 @@
 #include <stdlib.h>
 
 #include "helpers.h"
-#include "datatypes.h"
 #include "rgb.h"
 
 typedef struct QuadtreeStruct {

@@ -1,11 +1,11 @@
 #include <stdio.h>
 
-#include "../datatypes.h"
 #include "../rgb.h"
 #include "../sphere.h"
 #include "../ray.h"
 #include "../camera.h"
 #include "../bbox.h"
+#include "../texture.h"
 
 int main(int argc, char *argv[]) {
 
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   );
   Camera_Print(cam);
 
-  Sphere *sphere = Sphere_New(Vector_New(0,0,0),5,RGB_New(255,0,0),cam);
+  Sphere *sphere = Sphere_New(Vector_New(0,0,0),5,Texture_FromRGB(RGB_New(255,0,0)),cam);
   Sphere_Print(sphere);
 
   Ray ray;

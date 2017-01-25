@@ -3,10 +3,18 @@
 
 #include <stdio.h>
 
-#include "datatypes.h"
 #include "vector.h"
 #include "matrix.h"
 #include "windowing.h"
+
+typedef struct {
+  Vector pos;
+  Vector up,left,viewDir;
+  Matrix local, invLocal;
+  Vector viewerPos;
+  Vector min, max;
+  Matrix win;
+} Camera;
 
 Camera Camera_New(
   Vector pos,

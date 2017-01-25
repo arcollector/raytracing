@@ -4,12 +4,16 @@
 #include <stdio.h>
 
 #include "helpers.h"
-#include "datatypes.h"
 #include "rgb.h"
+#include "vector.h"
 #include "ray.h"
+#include "camera.h"
+#include "object.h"
 #include "shade.h"
 #include "quadtree.h"
 #include "scene.h"
+#include "bbox.h"
+#include "texture.h"
 
 #define JITTER(min,max) (rand()/(double)RAND_MAX*((min)+(max))+(min)-.125)
 

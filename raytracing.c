@@ -51,19 +51,12 @@ int main(int argc, char *argv[]) {
   BBOXTree *root = NULL;
   #if 1
   ttTime();
-  root = BBOXTree_New(scene->objList,&unboundObjList);
+  root = BBOXTree_New(scene->objectList,&unboundObjList);
   printf("hierarchy bbox tree builded in %f seconds\n",ttTime());
   #else
   // if 0 to raytracing without hierarchy bbox tree (for benchmarking use)
-  unboundObjList = scene->objList;
+  unboundObjList = scene->objectList;
   #endif
-
-  if(!root && !unboundObjList) {
-    printf("No objects to ray trace!\n");
-    BMP_Free(&canvas);
-    Scene_Free(scene);
-    return 0;
-  }
 
   Camera_PrepareForShooting(width,height,&scene->cam);
 

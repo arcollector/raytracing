@@ -23,9 +23,9 @@ int main(int argc, char *argv) {
 
   normal = Vector_New(1,0,0);
   m = Matrix_New();
-  m._00 = cam.left.x; m._01 = cam.up.x; m._02 = cam.view.x;
-  m._10 = cam.left.y; m._11 = cam.up.y; m._12 = cam.view.y;
-  m._20 = cam.left.z; m._21 = cam.up.z; m._22 = cam.view.z;
+  m._00 = cam.left.x; m._01 = cam.up.x; m._02 = cam.viewDir.x;
+  m._10 = cam.left.y; m._11 = cam.up.y; m._12 = cam.viewDir.y;
+  m._20 = cam.left.z; m._21 = cam.up.z; m._22 = cam.viewDir.z;
   printf("matrix is:\n"); Matrix_Print(m);
   normal = Vector_MulMatrix(normal,m);
   printf("normal is: "); Vector_Print(normal);

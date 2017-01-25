@@ -58,22 +58,22 @@ void trace(
   Quadtree *aux;
   // need more topleft refinement
   if(!c1) {
-    aux = n->children[QUADTREE_TOPLEFT] = Quadtree_New();
+    aux = n->topLeft = Quadtree_New();
     trace(x,y,half,aux,level+1);
   }
   // topright
   if(!c2) {
-    aux = n->children[QUADTREE_TOPRIGHT] = Quadtree_New();
+    aux = n->topRight = Quadtree_New();
     trace(x+half,y,half,aux,level+1);
   }
   // bottomleft
   if(!c3) {
-    aux = n->children[QUADTREE_BOTTOMLEFT] = Quadtree_New();
+    aux = n->bottomLeft = Quadtree_New();
     trace(x,y+half,half,aux,level+1);
   }
   // bottomright
   if(!c4) {
-    aux = n->children[QUADTREE_BOTTOMRIGHT] = Quadtree_New();
+    aux = n->bottomRight = Quadtree_New();
     trace(x+half,y+half,half,aux,level+1);
   }
 

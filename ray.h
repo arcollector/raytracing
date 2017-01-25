@@ -2,9 +2,12 @@
 #define RAY_H
 
 #include "helpers.h"
-#include "datatypes.h"
 #include "vector.h"
 #include "matrix.h"
+
+typedef struct {
+  Vector start, dir;
+} Ray;
 
 Ray Ray_New(Vector p1, Vector p2);
 Ray Ray_Transform(Ray ray, Matrix m);

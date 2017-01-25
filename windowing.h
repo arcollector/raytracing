@@ -4,8 +4,10 @@
 #include "vector.h"
 #include "matrix.h"
 
-Matrix Windowing_New(Vector minS, Vector maxS,
-                    Vector minT, Vector maxT,
-                    int isYAxisSourceInv);
+Matrix Windowing_New(
+  Vector minS, Vector maxS,
+  Vector minT, Vector maxT,
+  int isYAxisSourceInv
+);
 
 #endif

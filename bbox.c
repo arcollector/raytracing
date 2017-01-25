@@ -115,6 +115,7 @@ void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList) {
   // look global min, max
   BBOX nodeBBOX;
   nodeBBOX.isUnbounded = 0;
+  nodeBBOX.next = NULL;
 
   BBOX *bbox = bboxList;
   long totalObjects = 0;
@@ -176,6 +177,7 @@ int BBOXTree_GenerateSplitLists(
         BBOX_GetAxis(i),
         Vector_SubVector(bbox->centroid[i],nodeBBOX.centroid[i])
       );
+      // only c can handle this awesomeness!!
       BBOX **clone, **prev;
       if(dist >= 0) {
         rightLength[i]++;

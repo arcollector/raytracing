@@ -9,6 +9,21 @@ Texture *Texture_New() {
   return tex;
 }
 
+Texture *Texture_FromRGB(RGB color) {
+  Texture *tex = Texture_New();
+  Texture_AddColor(1, Vector_New(color.red,color.green,color.blue), tex);
+  return tex;
+}
+
+void Texture_AddColor(double t, Vector color, Texture *tex) {
+  long i = tex->length;
+  tex->limit[i] = t;
+  tex->color[i].x = color.x;
+  tex->color[i].y = color.y;
+  tex->color[i].z = color.z;
+  tex->length++;
+}
+
 Vector Texture_GetColorWithinLimit(double t, Texture *tex) {
   int index;
   for(index = 1; index < tex->length; index += 1) {
@@ -63,6 +78,11 @@ RGB Texture_GetColorRGB(Vector p, Texture *tex) {
     MAX(0,MIN(255,ROUND(color.y*255))),
     MAX(0,MIN(255,ROUND(color.z*255)))
   );
+}
+
+void Texture_SetRadii(double minRadius, double maxRadius, Texture *tex) {
+  tex->minRadius = minRadius;
+  tex->maxRadius = maxRadius;
 }
 
 double Texture_Spherical(Vector p, Texture *tex) {
