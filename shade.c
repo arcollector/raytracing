@@ -14,20 +14,22 @@ RGB Shade(
   Object *intersected = NULL, *tmp;
   RGB lastColor = Texture_GetColorRGB(Vector_New(0,0,0),sky);
 
-  BBOXTree **stack = BBOXTree_GetStack();
-  long stackLength = 0;
-  stack[stackLength++] = root;
-  // root may null if ie scene only contains unbounded objects
-  while(root && stackLength) {
-    BBOXTree *node = stack[--stackLength];
-    if(!BBOXTree_NodeIntersect(ray,node)) {
-      continue;
+  // root is null if the scene contains only unbounded objects
+  if(root) {
+    BBOXTree **stack = BBOXTree_GetStack();
+    long stackLength = 0;
+    stack[stackLength++] = root;
+    while(stackLength) {
+      BBOXTree *node = stack[--stackLength];
+      if(!BBOXTree_NodeIntersect(ray,node)) {
+        continue;
+      }
+      if(node->left) stack[stackLength++] = node->left;
+      if(node->right) stack[stackLength++] = node->right;
+      // node is leaf if node->objectList contains objects
+      if(node->objectListLength &&
+          (tmp = Intersect(ray,node->objectList,&lastT))) intersected = tmp;
     }
-    if(node->left) stack[stackLength++] = node->left;
-    if(node->right) stack[stackLength++] = node->right;
-    // node is a leaf if node->objectList contains Objects
-    if(node->objectListLength &&
-        (tmp = Intersect(ray,node->objectList,&lastT))) intersected = tmp;
   }
 
   if(unboundedObjectListLength &&
@@ -41,7 +43,7 @@ RGB Shade(
 Object *Intersect(Ray ray, Object *objectList, double *lastT) {
   Object *returnObj = NULL;
   for(Object *obj = objectList; obj; obj = obj->next) {
-    double t = (*obj->intersect)(ray, obj->primitive);
+    double t = (*obj->intersect)(ray,obj->primitive);
     if(t > 0 && t < *lastT) {
       *lastT = t;
       returnObj = obj;
