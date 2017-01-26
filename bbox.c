@@ -2,7 +2,6 @@
 
 #define BBOXTREE_LEAF_BUNCHING 4
 
-int gbIsEndRecursion = 0;
 BBOXTree **gbStack = NULL;
 
 Vector BBOX_GetAxis(int index) {
@@ -81,12 +80,12 @@ BBOXTree *BBOXTree_New(
   long *unboundedObjectListLength
 ) {
   // setup bounding box of each primtive
-  // and save them in a BBOX
+  // and save them in a BBOX list
   long bboxListLength;
   BBOX *bboxList = BBOXList_New(
     objectList,
     unboundedObjectList,
-    &bboxListLength, 
+    &bboxListLength,
     unboundedObjectListLength
   );
   //BBOXList_Print(bboxList); printf("\n");
@@ -103,7 +102,7 @@ BBOXTree *BBOXTree_New(
   return root;
 }
 
-long BBOX_ToObjectList(BBOX *bboxList, Object **object) {
+long BBOXList_ToObjectList(BBOX *bboxList, Object **object) {
 
   if(!bboxList) {
     return 0;
@@ -162,23 +161,23 @@ void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList) {
   //Vector_Print(nodeBBOX.centroid[0]); Vector_Print(nodeBBOX.centroid[1]); Vector_Print(nodeBBOX.centroid[2]);
 }
 
-int BBOXTree_GenerateSplitLists(
+void BBOXTree_GenerateSplitLists(
   BBOXTree *node,
   BBOX *list,
+  long listLength,
   BBOX **leftList,
   long *leftListLength,
   BBOX **rightList,
   long *rightListLength
 ) {
 
-  BBOX *left[BBOX_AXES_COUNT], *right[BBOX_AXES_COUNT];
-  BBOX *prevLeft[BBOX_AXES_COUNT], *prevRight[BBOX_AXES_COUNT];
+  BBOX **left[BBOX_AXES_COUNT], **right[BBOX_AXES_COUNT];
   long leftLength[BBOX_AXES_COUNT], rightLength[BBOX_AXES_COUNT];
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     leftLength[i] = 0;
     rightLength[i] = 0;
-    left[i] = NULL;
-    right[i] = NULL;
+    left[i] = calloc(listLength,sizeof(BBOX *));
+    right[i] = calloc(listLength,sizeof(BBOX *));
   }
 
   BBOX nodeBBOX = node->bbox;
@@ -188,21 +187,11 @@ int BBOXTree_GenerateSplitLists(
         BBOX_GetAxis(i),
         Vector_SubVector(bbox->centroid[i],nodeBBOX.centroid[i])
       );
-      // only c can handle this awesomeness!!
-      BBOX **clone, **prev;
       if(dist >= 0) {
-        rightLength[i]++;
-        prev = &prevRight[i];
-        clone = !right[i] ? &right[i] : &(prevRight[i]->next);
+        right[i][rightLength[i]++] = bbox;
       } else {
-        leftLength[i]++;
-        prev = &prevLeft[i];
-        clone = !left[i] ? &left[i] : &(prevLeft[i]->next);
+        left[i][leftLength[i]++] = bbox;
       }
-      *clone = malloc(sizeof(BBOX));
-      memcpy(*clone,bbox,sizeof(BBOX));
-      (*clone)->next = NULL;
-      *prev = *clone;
     }
   }
 
@@ -210,9 +199,9 @@ int BBOXTree_GenerateSplitLists(
   long dist = abs(rightLength[0] - leftLength[0]);
   long axisIndex = 0;
   for(long i = 1; i < BBOX_AXES_COUNT; i++) {
-    long temp = abs(rightLength[i] - leftLength[i]);
-    if(temp < dist) {
-      dist = temp;
+    long tmp = abs(rightLength[i] - leftLength[i]);
+    if(tmp < dist) {
+      dist = tmp;
       axisIndex = i;
     }
   }
@@ -221,26 +210,36 @@ int BBOXTree_GenerateSplitLists(
     printf("%ld) %ld %ld\n",i,leftLength[i],rightLength[i]);
   }*/
 
-  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
-    if(i == axisIndex) continue;
-    BBOXList_Free(left[i]);
-    BBOXList_Free(right[i]);
-  }
-
   printf("using axis %ld for splitting\n", axisIndex);
   if(!leftLength[axisIndex] || !rightLength[axisIndex]) {
-    BBOXList_Free(left[axisIndex]);
-    BBOXList_Free(right[axisIndex]);
     printf("FATAL ERROR leftLength[axisIndex] or rightLength[axisIndex] is 0\n");
-    return 1;
+    exit(0);
   }
 
-  *leftList = left[axisIndex];
-  *rightList = right[axisIndex];
   *leftListLength = leftLength[axisIndex];
-  *rightListLength = rightLength[axisIndex];
+  BBOXArr_ToList(leftList, left[axisIndex], *leftListLength);
 
-  return 0;
+  *rightListLength = rightLength[axisIndex];
+  BBOXArr_ToList(rightList, right[axisIndex], *rightListLength);
+
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+    free(left[i]);
+    free(right[i]);
+  }
+}
+
+void BBOXArr_ToList(
+  BBOX **dest,
+  BBOX **source,
+  long sourceLength
+) {
+
+  BBOX *aux;
+  aux = *dest = source[0];
+  for(long i = 1; i < sourceLength; i++) {
+    aux = aux->next = source[i];
+  }
+  aux->next = NULL;
 }
 
 BBOXTree *BBOXTree_BuildHierarchy(
@@ -249,10 +248,6 @@ BBOXTree *BBOXTree_BuildHierarchy(
   long *treeObjectLength,
   int forceGrouping
 ) {
-
-  if(gbIsEndRecursion) {
-    return NULL;
-  }
 
   if(!listLength) {
     return NULL;
@@ -268,16 +263,12 @@ BBOXTree *BBOXTree_BuildHierarchy(
   if(!forceGrouping && listLength > BBOXTREE_LEAF_BUNCHING) {
     BBOX *left, *right;
     long leftLength, rightLength;
-    int isFailure = BBOXTree_GenerateSplitLists(
-      node, list, &left, &leftLength, &right, &rightLength
+    BBOXTree_GenerateSplitLists(
+      node, list, listLength, &left, &leftLength, &right, &rightLength
     );
-    if(isFailure) {
-      gbIsEndRecursion = 1;
-      return NULL;
-    }
-    printf("splitting occurred\n");
-    printf("left.length: %ld ", leftLength);
-    printf("right.length: %ld\n", rightLength);
+    printf("splitting occurred");
+    printf("\tleft.length: %ld ", leftLength);
+    printf("\tright.length: %ld\n", rightLength);
 
     node->left = BBOXTree_BuildHierarchy(
       left, leftLength, treeObjectLength, 0
@@ -286,11 +277,8 @@ BBOXTree *BBOXTree_BuildHierarchy(
       right, rightLength, treeObjectLength, 0
     );
 
-    BBOXList_Free(left);
-    BBOXList_Free(right);
-
   } else {
-    node->objectListLength = BBOX_ToObjectList(
+    node->objectListLength = BBOXList_ToObjectList(
       list, &node->objectList
     );
     printf("leaf generated with %ld children\n", node->objectListLength);
@@ -301,7 +289,7 @@ BBOXTree *BBOXTree_BuildHierarchy(
 }
 
 void BBOXTree_InitStack(long treeObjectLength) {
-  if(!gbStack && 
+  if(!gbStack &&
       treeObjectLength) gbStack = calloc(treeObjectLength,sizeof(BBOXTree *));
 }
 

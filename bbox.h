@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <string.h>
 
 #include "helpers.h"
 #include "vector.h"
@@ -34,6 +33,7 @@ BBOX *BBOXList_New(
   long *bboxListLength,
   long *unboundedObjectListLength
 );
+long BBOXList_ToObjectList(BBOX *bboxList, Object **object);
 BBOXTree *BBOXTree_New(
   Object *objectList,
   long *treeObjectLength,
@@ -41,13 +41,19 @@ BBOXTree *BBOXTree_New(
   long *unboundedObjectListLength
 );
 void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
-int BBOXTree_GenerateSplitLists(
+void BBOXTree_GenerateSplitLists(
   BBOXTree *node,
   BBOX *list,
+  long listLength,
   BBOX **leftList,
   long *leftListLength,
   BBOX **rightList,
   long *rightListLength
+);
+void BBOXArr_ToList(
+  BBOX **dest,
+  BBOX **soure,
+  long sourceLength
 );
 BBOXTree *BBOXTree_BuildHierarchy(
   BBOX *list,
@@ -62,7 +68,6 @@ void BBOXTree_FreeStack();
 void BBOX_Print(BBOX *bbox);
 void BBOX_Free(BBOX *bbox);
 
-long BBOX_ToObjectList(BBOX *bboxList, Object **object);
 void BBOXTree_Free(BBOXTree *tree);
 void BBOXTree_Print(BBOXTree *tree);
 
