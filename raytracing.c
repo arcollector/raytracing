@@ -49,10 +49,17 @@ int main(int argc, char *argv[]) {
 
   Object *unboundedObjectList = NULL;
   BBOXTree *root = NULL;
+  long treeObjectLength, unboundedObjectListLength;
   #if 1
   ttTime();
-  root = BBOXTree_New(scene->objectList,&unboundedObjectList);
+  root = BBOXTree_New(
+    scene->objectList,
+    &treeObjectLength,
+    &unboundedObjectList,
+    &unboundedObjectListLength
+  );
   printf("hierarchy bbox tree builded in %f seconds\n",ttTime());
+  BBOXTree_InitStack(treeObjectLength);
   #else
   // if 0 to raytracing without hierarchy bbox tree (for benchmarking use)
   unboundedObjectList = scene->objectList;
@@ -64,7 +71,12 @@ int main(int argc, char *argv[]) {
   ttTime();
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
-      RGB pixel = Shoot(x,y,scene,root,unboundedObjectList);
+      RGB pixel = Shoot(
+        x,y,
+        scene,
+        root,treeObjectLength,
+        unboundedObjectList,unboundedObjectListLength
+      );
       BMP_PushRGB(&canvas,pixel);
     }
   }
@@ -74,6 +86,7 @@ int main(int argc, char *argv[]) {
   BMP_Free(&canvas);
 
   BBOXTree_Free(root);
+  BBOXTree_FreeStack();
 
   Scene_Free(scene);
 

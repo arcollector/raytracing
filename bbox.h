@@ -29,11 +29,17 @@ typedef struct BBOXTreeStruct {
 Vector BBOX_GetAxis(int index);
 BBOX *BBOX_New(Object *obj);
 BBOX *BBOXList_New(
-  Object *objList,
+  Object *objectList,
   Object **unboundedObjectList,
-  long *bboxListLength
+  long *bboxListLength,
+  long *unboundedObjectListLength
 );
-BBOXTree *BBOXTree_New(Object *objList, Object **unboundedObjectList);
+BBOXTree *BBOXTree_New(
+  Object *objectList,
+  long *treeObjectLength,
+  Object **unboundedObjectList,
+  long *unboundedObjectListLength
+);
 void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
 int BBOXTree_GenerateSplitLists(
   BBOXTree *node,
@@ -46,8 +52,12 @@ int BBOXTree_GenerateSplitLists(
 BBOXTree *BBOXTree_BuildHierarchy(
   BBOX *list,
   long listLength,
+  long *treeObjectLength,
   int forceGrouping
 );
+void BBOXTree_InitStack(long treeObjectLength);
+BBOXTree **BBOXTree_GetStack();
+void BBOXTree_FreeStack();
 
 void BBOX_Print(BBOX *bbox);
 void BBOX_Free(BBOX *bbox);

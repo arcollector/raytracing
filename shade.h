@@ -12,7 +12,9 @@ RGB Shade(
   Ray ray,
   Camera cam,
   BBOXTree *root,
+  long treeObjectLength,
   Object *unboundedObjectList,
+  long unboundedObjectListLength,
   Texture *sky
 );
 

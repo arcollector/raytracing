@@ -17,7 +17,8 @@ Ray Shoot_BuildRay(double x, double y, Camera cam) {
 RGB Shoot(
   long x, long y,
   Scene *scene,
-  BBOXTree *root, Object *unboundedObjectList
+  BBOXTree *root, long treeObjectLength,
+  Object *unboundedObjectList, long unboundedObjectListLength
 ) {
 
   Camera cam = scene->cam;
@@ -31,7 +32,8 @@ RGB Shoot(
       x,y,1,n,1,
       scene->aa == AA_STOCHASTIC,
       cam,
-      root,unboundedObjectList,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
       sky
     );
     pixel = Quadtree_GetAvg(n);
@@ -42,7 +44,8 @@ RGB Shoot(
     pixel = Shoot_Single(
       x,y,
       cam,
-      root,unboundedObjectList,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
       sky
     );
   }
@@ -53,12 +56,19 @@ RGB Shoot(
 RGB Shoot_Single(
   double x, double y,
   Camera cam,
-  BBOXTree *root, Object *unboundedObjectList,
+  BBOXTree *root, long treeObjectLength,
+  Object *unboundedObjectList, long unboundedObjectListLength,
   Texture *sky
 ) {
   // build ray
   Ray ray = Shoot_BuildRay(x+.5,y+.5,cam);
-  RGB pixel = Shade(ray, cam, root, unboundedObjectList, sky);
+  RGB pixel = Shade(
+    ray,
+    cam,
+    root,treeObjectLength,
+    unboundedObjectList,unboundedObjectListLength,
+    sky
+  );
   return pixel;
 }
 
@@ -67,7 +77,8 @@ void Shoot_Multi(
   Quadtree *n, int level,
   int isStochastic,
   Camera cam,
-  BBOXTree *root, Object *unboundedObjectList,
+  BBOXTree *root, long treeObjectLength,
+  Object *unboundedObjectList, long unboundedObjectListLength,
   Texture *sky
 ) {
 
@@ -97,30 +108,53 @@ void Shoot_Multi(
     y+half2 + r2,
     cam
   );
-  n->c1 = Shade(ray, cam, root, unboundedObjectList, sky);
+  n->c1 = Shade(
+    ray,
+    cam,
+    root,treeObjectLength,
+    unboundedObjectList,unboundedObjectListLength,
+    sky
+  );
   //printf("shoot %5.5f %5.5f\n", x+half32+ r3, y+half2+ r4);
   ray = Shoot_BuildRay(
     x+half32 + r3,
     y+half2 + r4,
     cam
   );
-  n->c2 = Shade(ray, cam, root, unboundedObjectList, sky);
+  n->c2 = Shade(
+    ray,
+    cam,
+    root,treeObjectLength,
+    unboundedObjectList,unboundedObjectListLength,
+    sky
+  );
   //printf("shoot %5.5f %5.5f\n", x+half2+ r5, y+half32+ r6);
   ray = Shoot_BuildRay(
     x+half2 + r5,
     y+half32 + r6,
     cam
   );
-  n->c3 = Shade(ray, cam, root, unboundedObjectList, sky);
+  n->c3 = Shade(
+    ray,
+    cam,
+    root,treeObjectLength,
+    unboundedObjectList,unboundedObjectListLength,
+    sky
+  );
+
   //printf("shoot %5.5f %5.5f\n", x+half32+ r7, y+half32+ r8);
   ray = Shoot_BuildRay(
     x+half32 + r7,
     y+half32 + r8,
     cam
   );
-  n->c4 = Shade(ray, cam, root, unboundedObjectList, sky);
-  //printf("\n");
-  //exit(0);
+  n->c4 = Shade(
+    ray,
+    cam,
+    root,treeObjectLength,
+    unboundedObjectList,unboundedObjectListLength,
+    sky
+  );
 
   //printf("corners colors\n");
   //RGB_Print(n->c1); RGB_Print(n->c2); RGB_Print(n->c3); RGB_Print(n->c4);
@@ -148,7 +182,8 @@ void Shoot_Multi(
     Shoot_Multi(
       x,y,half,aux,level+1,isStochastic,
       cam,
-      root,unboundedObjectList,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
       sky
     );
   } else {
@@ -160,7 +195,8 @@ void Shoot_Multi(
     Shoot_Multi(
       x+half,y,half,aux,level+1,isStochastic,
       cam,
-      root,unboundedObjectList,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
       sky
     );
   } else {
@@ -172,7 +208,8 @@ void Shoot_Multi(
     Shoot_Multi(
       x,y+half,half,aux,level+1,isStochastic,
       cam,
-      root,unboundedObjectList,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
       sky
     );
   } else {
@@ -184,7 +221,8 @@ void Shoot_Multi(
     Shoot_Multi(
       x+half,y+half,half,aux,level+1,isStochastic,
       cam,
-      root,unboundedObjectList,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
       sky
     );
   } else {

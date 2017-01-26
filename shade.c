@@ -4,7 +4,9 @@ RGB Shade(
   Ray ray,
   Camera cam,
   BBOXTree *root,
+  long treeObjectLength,
   Object *unboundedObjectList,
+  long unboundedObjectListLength,
   Texture *sky
 ) {
 
@@ -12,25 +14,26 @@ RGB Shade(
   Object *intersected = NULL, *tmp;
   RGB lastColor = Texture_GetColorRGB(Vector_New(0,0,0),sky);
 
-  // TODO: make a linked list
-  BBOXTree *stack[1000];
+  BBOXTree **stack = BBOXTree_GetStack();
   long stackLength = 0;
   stack[stackLength++] = root;
   // root may null if ie scene only contains unbounded objects
   while(root && stackLength) {
     BBOXTree *node = stack[--stackLength];
-    if(!BBOXTree_NodeIntersect(ray, node)) {
+    if(!BBOXTree_NodeIntersect(ray,node)) {
       continue;
     }
     if(node->left) stack[stackLength++] = node->left;
     if(node->right) stack[stackLength++] = node->right;
     // node is a leaf if node->objectList contains Objects
-    if((tmp = Intersect(ray, node->objectList, &lastT))) intersected = tmp;
+    if(node->objectListLength &&
+        (tmp = Intersect(ray,node->objectList,&lastT))) intersected = tmp;
   }
 
-  if((tmp = Intersect(ray, unboundedObjectList, &lastT))) intersected = tmp;
-  
-  if(intersected) lastColor = Shade_ComputeColor(intersected, ray, lastT, cam);
+  if(unboundedObjectListLength &&
+      (tmp = Intersect(ray,unboundedObjectList,&lastT))) intersected = tmp;
+
+  if(intersected) lastColor = Shade_ComputeColor(intersected,ray,lastT,cam);
 
   return lastColor;
 }
