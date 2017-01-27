@@ -121,11 +121,11 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       code = Scene_GetString(fp);
       double limit = atof(stringBuf);
       code = Scene_GetString(fp);
-      double r = (unsigned char)atof(stringBuf);
+      double r = atof(stringBuf);
       code = Scene_GetString(fp);
-      double g = (unsigned char)atof(stringBuf);
+      double g = atof(stringBuf);
       code = Scene_GetString(fp);
-      double b = (unsigned char)atof(stringBuf);
+      double b = atof(stringBuf);
       Texture_AddColor(limit, Vector_New(r,g,b), tex);
     } else if(code == MINRADIUS) {
       if(DEBUG) printf("FOUND MIN RADIUS\n");
@@ -353,9 +353,9 @@ int Scene_GetSky(FILE *fp, Scene *scene) {
       if(DEBUG) printf("\tSKY property invalid: %s\n", stringBuf);
       return ERROR;
     }
-
   }
 
+  tex->type = TEXTURE_SKY;
   scene->sky = tex;
 
   return code;

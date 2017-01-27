@@ -1,4 +1,4 @@
-FILE_NAME = test_aa_stochastic.bmp
+FILE_NAME = 2_spheres_and_1_plane_stochastic.bmp
 
 WIDTH = 500
 HEIGHT = 500
@@ -14,7 +14,7 @@ CAMERA {
 
 SKY {
   TEXTURE {
-    color 1, (.18,.218,0)
+    color 1, (.58,.218,0)
   }
 }
 

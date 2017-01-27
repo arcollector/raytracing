@@ -32,12 +32,12 @@ double Plane_Intersect(Ray ray, void *_plane) {
   return t;
 }
 
-RGB Plane_GetColor(Vector p, Camera cam, void *_plane) {
+Vector Plane_GetColor(Vector p, Camera cam, void *_plane) {
   Plane *plane = _plane;
 
   p = Vector_MulMatrix(p,cam.invLocal); // to world
 
-  return Texture_GetColorRGB(p,plane->tex);
+  return Texture_GetColor(p,plane->tex);
 }
 
 void Plane_Print(void *_plane) {

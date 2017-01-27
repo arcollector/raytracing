@@ -12,7 +12,7 @@ RGB Shade(
 
   double lastT = POSITIVE_INFINITY;
   Object *intersected = NULL, *tmp;
-  RGB lastColor = Texture_GetColorRGB(Vector_New(0,0,0),sky);
+  Vector lastColor;
 
   // root is null if the scene contains only unbounded objects
   if(root) {
@@ -35,9 +35,12 @@ RGB Shade(
   if(unboundedObjectListLength &&
       (tmp = Intersect(ray,unboundedObjectList,&lastT))) intersected = tmp;
 
-  if(intersected) lastColor = Shade_ComputeColor(intersected,ray,lastT,cam);
+  lastColor = intersected ?
+    Shade_ComputeColor(intersected,ray,lastT,cam)
+    :
+    Texture_GetColor(ray.dir,sky);
 
-  return lastColor;
+  return Vector_ToRGB(lastColor);
 }
 
 Object *Intersect(Ray ray, Object *objectList, double *lastT) {
@@ -52,6 +55,6 @@ Object *Intersect(Ray ray, Object *objectList, double *lastT) {
   return returnObj;
 }
 
-RGB Shade_ComputeColor(Object *obj, Ray ray, double t, Camera cam) {
+Vector Shade_ComputeColor(Object *obj, Ray ray, double t, Camera cam) {
   return (*obj->getColor)(Ray_PointAt(ray,t),cam,obj->primitive);
 }

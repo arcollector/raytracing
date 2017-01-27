@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "helpers.h"
+#include "rgb.h"
 #include "matrix.h"
 
 typedef struct {
@@ -14,6 +15,10 @@ typedef struct {
 Vector Vector_New(double x, double y, double z);
 
 Vector Vector_FromP1toP2(Vector p1,Vector p2);
+
+Vector Vector_FromRGB(RGB color);
+
+RGB Vector_ToRGB(Vector color);
 
 Vector Vector_AddVector(Vector v1,Vector v2);
 

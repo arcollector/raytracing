@@ -62,12 +62,12 @@ Vector Sphere_Normal(Vector point, Sphere sphere) {
   return normal;
 }
 
-RGB Sphere_GetColor(Vector p, Camera cam, void *_sphere) {
+Vector Sphere_GetColor(Vector p, Camera cam, void *_sphere) {
   Sphere *sphere = _sphere;
 
   p = Vector_MulMatrix(p,cam.invLocal); // to world
 
-  return Texture_GetColorRGB(p,sphere->tex);
+  return Texture_GetColor(p,sphere->tex);
 }
 
 void Sphere_Print(void *_sphere) {

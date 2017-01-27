@@ -24,7 +24,7 @@ Object *Intersect(
   double *lastT
 );
 
-RGB Shade_ComputeColor(
+Vector Shade_ComputeColor(
   Object *obj,
   Ray ray,
   double t, 

@@ -21,7 +21,7 @@ typedef struct {
 
 Plane *Plane_New(Vector center, Vector normal, Texture *tex, Camera cam);
 double Plane_Intersect(Ray ray, void *plane);
-RGB Plane_GetColor(Vector p, Camera cam, void *plane);
+Vector Plane_GetColor(Vector p, Camera cam, void *plane);
 void Plane_Print(void *plane);
 void Plane_Free(void *plane);
 

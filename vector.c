@@ -18,6 +18,22 @@ Vector Vector_FromP1toP2(Vector p1,Vector p2) {
   return res;
 }
 
+Vector Vector_FromRGB(RGB color) {
+  Vector res;
+  res.x = color.red / 255.;
+  res.y = color.green / 255.;
+  res.z = color.blue / 255.;
+  return res;
+}
+
+RGB Vector_ToRGB(Vector color) {
+  RGB res;
+  res.red = MAX(0,MIN(255,ROUND(color.x * 255)));
+  res.green = MAX(0,MIN(255,ROUND(color.y * 255)));
+  res.blue = MAX(0,MIN(255,ROUND(color.z * 255)));
+  return res;
+}
+
 Vector Vector_AddVector(Vector v1,Vector v2) {
   Vector res;
   res.x = v1.x + v2.x;
