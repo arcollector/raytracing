@@ -27,21 +27,16 @@ void Texture_AddColor(double t, Vector color, Texture *tex) {
 
 Vector Texture_GetColorAt(double t, Texture *tex) {
   int index;
-  for(index = 1; index < tex->length; index += 1) {
+  for(index = 1; index < tex->length; index++) {
     if(tex->limit[index] > t) break;
   }
   double prev = tex->limit[index-1];
   double next = tex->limit[index];
   double factor = (t - prev) / (next - prev);
-  Vector color = Vector_MulScalar(
-    Vector_SubVector(
-      tex->color[index],
-      tex->color[index-1]
-    ),
-    factor
-  );
-  color = Vector_AddVector(tex->color[index-1], color);
-
+  Vector max = tex->color[index];
+  Vector min = tex->color[index-1];
+  Vector color = Vector_MulScalar(Vector_SubVector(max,min),factor);
+  color = Vector_AddVector(min, color);
   return color;
 }
 

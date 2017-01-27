@@ -2,33 +2,22 @@
 
 #define DEBUG 1
 
-#define FILE_NAME 0
-#define WIDTH 1
-#define HEIGHT 2
-#define ANTIALIASING 3
-#define NONE 4
-#define MULTI 5
-#define STOCHASTIC 6
-#define LOC 7
-#define NORMAL 8
-#define CAMERA 9
-#define UPPOINT 10
-#define LOOKAT 11
-#define VIEWERDISTANCE 12
-#define WINDOW 13
-#define SKY 14
-#define TEXTURE 15
-#define COLOR 16
-#define MINRADIUS 17
-#define MAXRADIUS 18
-#define SPHERE 19
-#define RADIUS 20
-#define PLANE 21
-#define CURLY 22
-#define TOTAL_IDS 23
-#define ERROR 24
+enum {
+  FILE_NAME = 0,
+  WIDTH, HEIGHT, 
+  ANTIALIASING, NONE, MULTI, STOCHASTIC,
+  LOC, NORMAL,
+  CAMERA, UPPOINT, LOOKAT, VIEWERDISTANCE, WINDOW,
+  SKY,
+  TEXTURE, COLOR, MINRADIUS, MAXRADIUS,
+  SPHERE, RADIUS,
+  PLANE,
+  CURLY,
+  TOTAL_IDS,
+  ERROR
+} gbTypes;
 
-char stringTypes[][50] = {
+char gbStringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
   "ANTI_ALIASING", "NONE", "MULTI", "STOCHASTIC",
@@ -42,7 +31,7 @@ char stringTypes[][50] = {
   '\0'
 };
 
-char stringBuf[100];
+char gbStringBuf[100];
 
 int Scene_GetString(FILE *fp) {
 
@@ -50,7 +39,7 @@ int Scene_GetString(FILE *fp) {
   int flag = 0;
   int i;
 
-  stringBuf[0] = '\0';
+  gbStringBuf[0] = '\0';
   while((ch = toupper(fgetc(fp))) != EOF) {
     if(flag == 1) {
       if(ch == '*') {
@@ -66,7 +55,7 @@ int Scene_GetString(FILE *fp) {
         }
       }
       if(isalnum(ch) || ch == '.' || ch == '-' || ch == '}') {
-        stringBuf[0] = ch;
+        gbStringBuf[0] = ch;
         break;
       }
     }
@@ -74,14 +63,14 @@ int Scene_GetString(FILE *fp) {
   i = 1;
   while((ch = toupper(fgetc(fp))) != EOF) {
     if(isalnum(ch) || ch == '_' || ch == '.') {
-      stringBuf[i++] = ch;
+      gbStringBuf[i++] = ch;
     } else {
-      stringBuf[i] = '\0';
+      gbStringBuf[i] = '\0';
       break;
     }
   }
   for(i = 0; i < TOTAL_IDS; i++) {
-    if(strcmp(stringBuf, stringTypes[i]) == 0) {
+    if(strcmp(gbStringBuf, gbStringTypes[i]) == 0) {
       break;
     }
   }
@@ -93,11 +82,11 @@ Vector Scene_ParseVector(FILE *fp) {
   int code;
   double x,y,z;
   code = Scene_GetString(fp);
-  x = atof(stringBuf);
+  x = atof(gbStringBuf);
   code = Scene_GetString(fp);
-  y = atof(stringBuf);
+  y = atof(gbStringBuf);
   code = Scene_GetString(fp);
-  z = atof(stringBuf);
+  z = atof(gbStringBuf);
   return Vector_New(x,y,z);
 }
 
@@ -105,7 +94,7 @@ double Scene_ParseFloat(FILE *fp) {
   int code;
   double val;
   code = Scene_GetString(fp);
-  val = atof(stringBuf);
+  val = atof(gbStringBuf);
   return val;
 }
 
@@ -119,24 +108,24 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
     if(code == COLOR) {
       if(DEBUG) printf("FOUND COLOR\n");
       code = Scene_GetString(fp);
-      double limit = atof(stringBuf);
+      double limit = atof(gbStringBuf);
       code = Scene_GetString(fp);
-      double r = atof(stringBuf);
+      double r = atof(gbStringBuf);
       code = Scene_GetString(fp);
-      double g = atof(stringBuf);
+      double g = atof(gbStringBuf);
       code = Scene_GetString(fp);
-      double b = atof(stringBuf);
+      double b = atof(gbStringBuf);
       Texture_AddColor(limit, Vector_New(r,g,b), tex);
     } else if(code == MINRADIUS) {
       if(DEBUG) printf("FOUND MIN RADIUS\n");
       code = Scene_GetString(fp);
-      minRadius = atof(stringBuf);
+      minRadius = atof(gbStringBuf);
     } else if(code == MAXRADIUS) {
       if(DEBUG) printf("FOUND MAX RADIUS\n");
       code = Scene_GetString(fp);
-      maxRadius = atof(stringBuf);
+      maxRadius = atof(gbStringBuf);
     } else {
-      if(DEBUG) printf("TEXTURE PROPERTY INVALID %s\n", stringBuf);
+      if(DEBUG) printf("TEXTURE PROPERTY INVALID %s\n", gbStringBuf);
       return code;
     }
 
@@ -207,20 +196,20 @@ int Scene_Setup(FILE *fp, Scene *scene) {
     if(code == FILE_NAME) {
       if(DEBUG) printf("FILE_NAME found, ");
       code = Scene_GetString(fp);
-      if(DEBUG) printf("value is %s\n",stringBuf);
-      strcpy(scene->fileName,stringBuf);
+      if(DEBUG) printf("value is %s\n",gbStringBuf);
+      strcpy(scene->fileName,gbStringBuf);
 
     } else if(code == WIDTH) {
       if(DEBUG) printf("WIDTH found, ");
       code = Scene_GetString(fp);
-      if(DEBUG) printf("value is %s\n",stringBuf);
-      scene->width = atol(stringBuf);
+      if(DEBUG) printf("value is %s\n",gbStringBuf);
+      scene->width = atol(gbStringBuf);
 
     } else if(code == HEIGHT) {
       if(DEBUG) printf("HEIGHT found, ");
       code = Scene_GetString(fp);
-      if(DEBUG) printf("value is %s\n",stringBuf);
-      scene->height = atol(stringBuf);
+      if(DEBUG) printf("value is %s\n",gbStringBuf);
+      scene->height = atol(gbStringBuf);
 
     } else if(code == ANTIALIASING) {
       if(DEBUG) printf("ANTI_ALIASING found\n");
@@ -243,8 +232,8 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       code = Scene_GetPlane(fp, scene);
 
     } else {
-      if(strlen(stringBuf)) {
-        if(DEBUG) printf("UNKNOWN ID NAME: %s\n",stringBuf);
+      if(strlen(gbStringBuf)) {
+        if(DEBUG) printf("UNKNOWN ID NAME: %s\n",gbStringBuf);
         return 0;
       }
     }
@@ -271,7 +260,7 @@ int Scene_GetAntiAliasing(FILE *fp, Scene *scene) {
     if(DEBUG) printf("AA is STOCHASTIC\n");
     scene->aa = AA_STOCHASTIC;
   } else {
-    if(DEBUG) printf("ANTI_ALIASING unknown property value %s\n",stringBuf);
+    if(DEBUG) printf("ANTI_ALIASING unknown property value %s\n",gbStringBuf);
     code = ERROR;
   }
 
@@ -306,23 +295,23 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
     } else if(code == VIEWERDISTANCE) {
       if(DEBUG) printf("\tVIEWDISTANE found, ");
       Scene_GetString(fp);
-      viewerDistance = atof(stringBuf);
+      viewerDistance = atof(gbStringBuf);
       if(DEBUG) printf("%5.5f\n", viewerDistance);
 
     } else if(code == WINDOW) {
       if(DEBUG) printf("\tWINDOW found, ");
       Scene_GetString(fp);
-      minX = atof(stringBuf);
+      minX = atof(gbStringBuf);
       Scene_GetString(fp);
-      minY = atof(stringBuf);
+      minY = atof(gbStringBuf);
       Scene_GetString(fp);
-      maxX = atof(stringBuf);
+      maxX = atof(gbStringBuf);
       Scene_GetString(fp);
-      maxY = atof(stringBuf);
+      maxY = atof(gbStringBuf);
       if(DEBUG) printf("(%5.5f %5.5f)(%5.5f %5.5f)\n",minX,minY,maxX,maxY);
 
     } else {
-      if(DEBUG) printf("\tCAMERA property invalid: %s\n", stringBuf);
+      if(DEBUG) printf("\tCAMERA property invalid: %s\n", gbStringBuf);
       return ERROR;
     }
   }
@@ -350,7 +339,7 @@ int Scene_GetSky(FILE *fp, Scene *scene) {
       if(DEBUG) Texture_Print(tex);
 
     } else {
-      if(DEBUG) printf("\tSKY property invalid: %s\n", stringBuf);
+      if(DEBUG) printf("\tSKY property invalid: %s\n", gbStringBuf);
       return ERROR;
     }
   }
@@ -387,16 +376,14 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
       if(DEBUG) Texture_Print(tex);
 
     } else {
-      if(DEBUG) printf("\tSPHERE property invalid: %s\n", stringBuf);
+      if(DEBUG) printf("\tSPHERE property invalid: %s\n", gbStringBuf);
       return ERROR;
     }
 
   }
 
   Object *node = Scene_AddBlankObject(scene);
-  if(!node) {
-    return ERROR;
-  }
+  if(!node) return ERROR;
 
   node->primitive = Sphere_New(loc, radius, tex, scene->cam);
   node->print = Sphere_Print;
@@ -433,16 +420,14 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
       if(DEBUG) Texture_Print(tex);
 
     } else {
-      if(DEBUG) printf("\tPLANE property invalid: %s\n", stringBuf);
+      if(DEBUG) printf("\tPLANE property invalid: %s\n", gbStringBuf);
       return ERROR;
     }
 
   }
 
   Object *node = Scene_AddBlankObject(scene);
-  if(!node) {
-    return ERROR;
-  }
+  if(!node) return ERROR;
 
   node->primitive = Plane_New(loc, normal, tex, scene->cam);
   node->print = Plane_Print;

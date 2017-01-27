@@ -231,8 +231,7 @@ void BBOXArr_ToList(
   long sourceLength
 ) {
 
-  BBOX *aux;
-  aux = *dest = source[0];
+  BBOX *aux = *dest = source[0];
   for(long i = 1; i < sourceLength; i++) {
     aux = aux->next = source[i];
   }
@@ -246,9 +245,7 @@ BBOXTree *BBOXTree_BuildHierarchy(
   int forceGrouping
 ) {
 
-  if(!listLength) {
-    return NULL;
-  }
+  if(!listLength) return NULL;
 
   BBOXTree *node = malloc(sizeof(BBOXTree));
   node->left = node->right = NULL;
@@ -363,7 +360,6 @@ void BBOXTree_Print(BBOXTree *tree) {
 
 void BBOX_Free(BBOX *bbox) {
   free(bbox);
-  bbox = NULL;
 }
 
 void BBOXList_Free(BBOX *bboxList) {
@@ -372,7 +368,6 @@ void BBOXList_Free(BBOX *bboxList) {
     free(bbox);
     bbox = tmp;
   }
-  bboxList = NULL;
 }
 
 void BBOXTree_Free(BBOXTree *tree) {
@@ -383,12 +378,9 @@ void BBOXTree_Free(BBOXTree *tree) {
   BBOXTree_Free(tree->right);
 
   free(tree);
-  tree = NULL;
 }
 
-// ===============================
-// * BBOX Intersect functions *
-// ===============================
+// ********************************
 
 int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
