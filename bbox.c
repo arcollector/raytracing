@@ -46,14 +46,14 @@ BBOX *BBOXList_New(
   long *unboundedObjectListLength
 ) {
 
-  BBOX *first = NULL, *prev = NULL;
+  BBOX *first, *prev = NULL;
   *bboxListLength = 0;
 
   for(Object *node = objectList, *aux = NULL; node; node = node->next) {
     BBOX *bbox = BBOX_New(node);
     // unbounded objects cannot be part of the hierarchy bbox tree
     if(!bbox->isUnbounded) {
-      if(!first) {
+      if(!prev) {
         prev = first = bbox;
       } else {
         prev = prev->next = bbox;
@@ -61,8 +61,7 @@ BBOX *BBOXList_New(
       ++*bboxListLength;
     } else {
       if(!aux) {
-        *unboundedObjectList = bbox->obj;
-        aux = *unboundedObjectList;
+        aux = *unboundedObjectList = bbox->obj;
       } else {
         aux = aux->next = bbox->obj;
       }
@@ -88,7 +87,7 @@ BBOXTree *BBOXTree_New(
     &bboxListLength,
     unboundedObjectListLength
   );
-  //BBOXList_Print(bboxList); printf("\n");
+  //BBOXList_Print(bboxList);
 
   // build hierarchy tree
   *treeObjectLength = 0;
@@ -104,14 +103,11 @@ BBOXTree *BBOXTree_New(
 
 long BBOXList_ToObjectList(BBOX *bboxList, Object **object) {
 
-  if(!bboxList) {
-    return 0;
-  }
+  if(!bboxList) return 0;
 
   long totalObjects = 1;
   BBOX *bbox = bboxList;
-  *object = bbox->obj;
-  Object *aux = *object;
+  Object *aux = *object = bbox->obj;
   for(bbox = bbox->next; bbox; bbox = bbox->next) {
     aux = aux->next = bbox->obj;
     totalObjects++;
@@ -122,43 +118,45 @@ long BBOXList_ToObjectList(BBOX *bboxList, Object **object) {
 
 void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList) {
 
-  // look global min, max
-  BBOX nodeBBOX;
-  nodeBBOX.isUnbounded = 0;
-  nodeBBOX.next = NULL;
+  // look for global min, max
+  node->bbox.isUnbounded = 0;
+  node->bbox.next = NULL;
 
   BBOX *bbox = bboxList;
   long totalObjects = 0;
-  for(long i = 0; i < BBOX_AXES_COUNT; i++) { // use the first bbox as start point
+  // use the first bbox as start point
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     totalObjects++;
-    nodeBBOX.min[i] = bbox->min[i];
-    nodeBBOX.max[i] = bbox->max[i];
+    node->bbox.min[i] = bbox->min[i];
+    node->bbox.max[i] = bbox->max[i];
   }
-  for(bbox = bbox->next; bbox; bbox = bbox->next) { // keep iterating
+  for(bbox = bbox->next; bbox; bbox = bbox->next) { // keep iteratig
     totalObjects++;
     for(long i = 0; i < BBOX_AXES_COUNT; i++) {
-      nodeBBOX.min[i].x = MIN(nodeBBOX.min[i].x, bbox->min[i].x);
-      nodeBBOX.min[i].y = MIN(nodeBBOX.min[i].y, bbox->min[i].y);
-      nodeBBOX.min[i].z = MIN(nodeBBOX.min[i].z, bbox->min[i].z);
-      nodeBBOX.max[i].x = MAX(nodeBBOX.max[i].x, bbox->max[i].x);
-      nodeBBOX.max[i].y = MAX(nodeBBOX.max[i].y, bbox->max[i].y);
-      nodeBBOX.max[i].z = MAX(nodeBBOX.max[i].z, bbox->max[i].z);
+      node->bbox.min[i].x = MIN(node->bbox.min[i].x, bbox->min[i].x);
+      node->bbox.min[i].y = MIN(node->bbox.min[i].y, bbox->min[i].y);
+      node->bbox.min[i].z = MIN(node->bbox.min[i].z, bbox->min[i].z);
+      node->bbox.max[i].x = MAX(node->bbox.max[i].x, bbox->max[i].x);
+      node->bbox.max[i].y = MAX(node->bbox.max[i].y, bbox->max[i].y);
+      node->bbox.max[i].z = MAX(node->bbox.max[i].z, bbox->max[i].z);
     }
   }
   // compute centrod of bounding box
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
-    nodeBBOX.centroid[i] = Vector_DivScalar(
+    node->bbox.centroid[i] = Vector_DivScalar(
       Vector_AddVector(
-        nodeBBOX.min[i], nodeBBOX.max[i]
+        node->bbox.min[i], node->bbox.max[i]
       ),
       2
     );
   }
-
-  node->bbox = nodeBBOX;
-  //Vector_Print(nodeBBOX.min[0]); Vector_Print(nodeBBOX.min[1]); Vector_Print(nodeBBOX.min[2]);
-  //Vector_Print(nodeBBOX.max[0]); Vector_Print(nodeBBOX.max[1]); Vector_Print(nodeBBOX.max[2]);
-  //Vector_Print(nodeBBOX.centroid[0]); Vector_Print(nodeBBOX.centroid[1]); Vector_Print(nodeBBOX.centroid[2]);
+  /*
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+    Vector_Print(node->bbox.min[i]);
+    Vector_Print(node->bbox.max[i]);
+    Vector_Print(node->bbox.centroid[i]);
+  }
+  */
 }
 
 void BBOXTree_GenerateSplitLists(
@@ -180,12 +178,11 @@ void BBOXTree_GenerateSplitLists(
     right[i] = calloc(listLength,sizeof(BBOX *));
   }
 
-  BBOX nodeBBOX = node->bbox;
   for(BBOX *bbox = list; bbox; bbox = bbox->next) {
     for(long i = 0; i < BBOX_AXES_COUNT; i++) {
       double dist = Vector_Dot(
         BBOX_GetAxis(i),
-        Vector_SubVector(bbox->centroid[i],nodeBBOX.centroid[i])
+        Vector_SubVector(bbox->centroid[i],node->bbox.centroid[i])
       );
       if(dist >= 0) {
         right[i][rightLength[i]++] = bbox;
@@ -289,8 +286,8 @@ BBOXTree *BBOXTree_BuildHierarchy(
 }
 
 void BBOXTree_InitStack(long treeObjectLength) {
-  if(!gbStack &&
-      treeObjectLength) gbStack = calloc(treeObjectLength,sizeof(BBOXTree *));
+  if(treeObjectLength &&
+      !gbStack) gbStack = calloc(treeObjectLength,sizeof(BBOXTree *));
 }
 
 BBOXTree **BBOXTree_GetStack() {
@@ -309,18 +306,12 @@ void BBOX_Print(BBOX *bbox) {
     printf("object is unbounded\n");
     return;
   }
-  printf("x axis\n");
-  Vector_Print(bbox->min[0]);
-  Vector_Print(bbox->max[0]);
-  Vector_Print(bbox->centroid[0]);
-  printf("y axis\n");
-  Vector_Print(bbox->min[1]);
-  Vector_Print(bbox->max[1]);
-  Vector_Print(bbox->centroid[1]);
-  printf("z axis\n");
-  Vector_Print(bbox->min[2]);
-  Vector_Print(bbox->max[2]);
-  Vector_Print(bbox->centroid[2]);
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+    printf("%ld axis\n",i);
+    Vector_Print(bbox->min[i]);
+    Vector_Print(bbox->max[i]);
+    Vector_Print(bbox->centroid[i]);
+  }
   printf("==============\n");
 }
 
@@ -348,11 +339,13 @@ void BBOXTree_Print(BBOXTree *tree) {
   while(stackLength) {
 
     BBOXTree *node = stack[--stackLength];
-    BBOX nodeBBOX = node->bbox;
     printf("level %ld\n", level);
-    Vector_Print(nodeBBOX.min[0]); Vector_Print(nodeBBOX.min[1]); Vector_Print(nodeBBOX.min[2]);
-    Vector_Print(nodeBBOX.max[0]); Vector_Print(nodeBBOX.max[1]); Vector_Print(nodeBBOX.max[2]);
-
+    printf("bounding box is\n");
+    for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+      printf("%ld) min\n",i); Vector_Print(node->bbox.min[i]);
+      printf("%ld) max\n",i); Vector_Print(node->bbox.max[i]);
+      printf("%ld) centroid\n",i); Vector_Print(node->bbox.centroid[i]);
+    }
     if(node->left) stack[stackLength++] = node->left;
     if(node->right) stack[stackLength++] = node->right;
     if(node->objectListLength) {

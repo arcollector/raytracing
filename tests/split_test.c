@@ -59,9 +59,13 @@ int main(int argc, char *argv[]) {
 
   objList->next = NULL;
 
+  long treeObjectLength;
+  long unboundedObjectListLength;
   Object *unboundedObjectList = NULL;
 
-  BBOXTree *root = BBOXTree_New(first, &unboundedObjectList);
+  BBOXTree *root = BBOXTree_New(
+    first,&treeObjectLength,&unboundedObjectList,&unboundedObjectListLength
+  );
   if(unboundedObjectList) {
     printf("there are unbounded objects!\n");
   }
