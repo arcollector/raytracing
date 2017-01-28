@@ -38,7 +38,7 @@ RGB Shade(
   lastColor = intersected ?
     Shade_ComputeColor(intersected,ray,lastT,cam)
     :
-    Texture_GetColor(ray.dir,sky);
+    Texture_GetColor(ray,VECTOR_NULL,VECTOR_NULL,sky);
 
   return Vector_ToRGB(lastColor);
 }
@@ -56,5 +56,11 @@ Object *Intersect(Ray ray, Object *objectList, double *lastT) {
 }
 
 Vector Shade_ComputeColor(Object *obj, Ray ray, double t, Camera cam) {
-  return (*obj->getColor)(Ray_PointAt(ray,t),cam,obj->primitive);
+  return (*obj->getColor)(
+    ray,
+    Ray_PointAt(ray,t),
+    VECTOR_NULL,
+    cam,
+    obj->primitive
+  );
 }

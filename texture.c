@@ -4,6 +4,7 @@ Texture *Texture_New() {
   Texture *tex = malloc(sizeof(Texture));
   tex->length = 0;
   tex->type = TEXTURE_DEFAULT;
+  tex->scale = Vector_New(1,1,1);
   // used in spherical texturing
   tex->minRadius = 0;
   tex->maxRadius = 0;
@@ -26,7 +27,12 @@ void Texture_AddColor(double t, Vector color, Texture *tex) {
 }
 
 Vector Texture_GetColorAt(double t, Texture *tex) {
-  int index;
+  if(tex->length == 1) return tex->color[0];
+<<<<<<< HEAD
+=======
+  t = fmod(t,1.01);
+>>>>>>> 199c9d5... This file got deleted, also a fix some small error
+  long index;
   for(index = 1; index < tex->length; index++) {
     if(tex->limit[index] > t) break;
   }
@@ -40,12 +46,17 @@ Vector Texture_GetColorAt(double t, Texture *tex) {
   return color;
 }
 
-Vector Texture_GetColor(Vector p, Texture *tex) {
+Vector Texture_GetColor(
+  Ray ray,
+  Vector p,
+  Vector normal,
+  Texture *tex
+) {
   Vector color;
 
   if(tex->type == TEXTURE_SKY) {
-    double t = Texture_Sky(p,tex);
-    color = Texture_GetColorAt(t,tex);
+    double t = Texture_Sky(ray,tex);
+    color = Vector_MulScalar(Texture_GetColorAt(t,tex),t);
 
   // use spherical texturing
   } else if(tex->minRadius > 0 && tex->maxRadius > 0) {
@@ -60,8 +71,19 @@ Vector Texture_GetColor(Vector p, Texture *tex) {
   return color;
 }
 
-RGB Texture_GetColorRGB(Vector p, Texture *tex) {
-  return Vector_ToRGB(Texture_GetColor(p,tex));
+RGB Texture_GetColorRGB(
+  Ray ray,
+  Vector p,
+  Vector normal,
+  Texture *tex   
+) {
+  return Vector_ToRGB(Texture_GetColor(ray,p,normal,tex));
+}
+
+void Texture_SetScale(Vector v, Texture *tex) {
+  tex->scale.x = v.x > 0 ? v.x : 1; // avoid dividing by 0
+  tex->scale.y = v.y > 0 ? v.y : 1;
+  tex->scale.z = v.z > 0 ? v.z : 1;
 }
 
 void Texture_SetRadii(double minRadius, double maxRadius, Texture *tex) {
@@ -80,6 +102,8 @@ void Texture_Print(Texture *tex) {
     Vector c = tex->color[i];
     printf("%ld) %f %f %f\n",i,c.x,c.y,c.z);
   }
+  printf("scale is: ");
+  Vector_Print(tex->scale);
   printf("minRadius %f and maxRadius %f (if any)\n",
     tex->minRadius, tex->maxRadius
   );
@@ -88,8 +112,12 @@ void Texture_Print(Texture *tex) {
 
 // ********************************
 
-double Texture_Sky(Vector p, Texture *tex) {
-  return Vector_Dot(Vector_Normalize(Vector_New(p.x,0,1)),p);
+double Texture_Sky(Ray ray, Texture *tex) {
+  Vector pvp = Ray_PointAt(
+    ray,
+    -Vector_Dot(ray.start,ray.start) / Vector_Dot(ray.start,ray.dir)
+  );
+  return 1 - (fabs(pvp.y) / tex->scale.y);
 }
 
 double Texture_Spherical(Vector p, Texture *tex) {

@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
   ttTime();
   for(long y = 0; y < height; y++) {
     for(long x = 0; x < width; x++) {
+      //printf("(%ld %ld)\n",x,y);
       RGB pixel = Shoot(
         x,y,
         scene,

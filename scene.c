@@ -4,12 +4,12 @@
 
 enum {
   FILE_NAME = 0,
-  WIDTH, HEIGHT, 
+  WIDTH, HEIGHT,
   ANTIALIASING, NONE, MULTI, STOCHASTIC,
   LOC, NORMAL,
   CAMERA, UPPOINT, LOOKAT, VIEWERDISTANCE, WINDOW,
   SKY,
-  TEXTURE, COLOR, MINRADIUS, MAXRADIUS,
+  TEXTURE, COLOR, SCALE, MINRADIUS, MAXRADIUS,
   SPHERE, RADIUS,
   PLANE,
   CURLY,
@@ -24,7 +24,7 @@ char gbStringTypes[][50] = {
   "LOC", "NORMAL",
   "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
   "SKY",
-  "TEXTURE", "COLOR", "MINRADIUS", "MAXRADIUS",
+  "TEXTURE", "COLOR", "SCALE", "MINRADIUS", "MAXRADIUS",
   "SPHERE", "RADIUS",
   "PLANE",
   "}",
@@ -101,6 +101,7 @@ double Scene_ParseFloat(FILE *fp) {
 int Scene_GetTexture(FILE *fp, Texture *tex) {
   int code;
   double minRadius = 0, maxRadius = 0;
+  Vector tmp;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -115,7 +116,11 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       double g = atof(gbStringBuf);
       code = Scene_GetString(fp);
       double b = atof(gbStringBuf);
-      Texture_AddColor(limit, Vector_New(r,g,b), tex);
+      Texture_AddColor(limit,Vector_New(r,g,b),tex);
+    } else if(code == SCALE) {
+      if(DEBUG) printf("FOUND SCALE\n");
+      tmp = Scene_ParseVector(fp);
+      Texture_SetScale(tmp,tex);
     } else if(code == MINRADIUS) {
       if(DEBUG) printf("FOUND MIN RADIUS\n");
       code = Scene_GetString(fp);

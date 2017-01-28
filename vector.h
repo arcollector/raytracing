@@ -8,6 +8,8 @@
 #include "rgb.h"
 #include "matrix.h"
 
+#define VECTOR_NULL Vector_New(0,0,0)
+
 typedef struct {
   double x,y,z,w;
 } Vector;

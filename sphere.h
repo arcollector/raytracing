@@ -22,7 +22,13 @@ typedef struct {
 
 Sphere *Sphere_New(Vector center, double radius, Texture *tex, Camera cam);
 double Sphere_Intersect(Ray ray, void *sphere);
-Vector Sphere_GetColor(Vector p, Camera cam, void *sphere);
+Vector Sphere_GetColor(
+  Ray ray,
+  Vector p,
+  Vector normal,
+  Camera cam,
+  void *sphere
+);
 Vector Sphere_Normal(Vector point, Sphere sphere);
 void Sphere_Print(void *sphere);
 void Sphere_Free(void *sphere);

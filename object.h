@@ -15,7 +15,13 @@ typedef struct ObjectStruct {
   int type;
   struct ObjectStruct *next;
   double (*intersect)(Ray ray, void *primitive);
-  Vector (*getColor)(Vector p, Camera cam, void *primitive);
+  Vector (*getColor)(
+    Ray ray,
+    Vector p,
+    Vector normal,
+    Camera cam,
+    void *primitive
+  );
   void (*print)(void *primitive);
   void (*free)(void *primitive);
 } Object;
