@@ -28,10 +28,7 @@ void Texture_AddColor(double t, Vector color, Texture *tex) {
 
 Vector Texture_GetColorAt(double t, Texture *tex) {
   if(tex->length == 1) return tex->color[0];
-<<<<<<< HEAD
-=======
   t = fmod(t,1.01);
->>>>>>> 199c9d5... This file got deleted, also a fix some small error
   long index;
   for(index = 1; index < tex->length; index++) {
     if(tex->limit[index] > t) break;

@@ -33,15 +33,15 @@ BBOX *BBOXList_New(
   long *bboxListLength,
   long *unboundedObjectListLength
 );
-long BBOXList_ToObjectList(BBOX *bboxList, Object **object);
+static long BBOXList_ToObjectList(BBOX *bboxList, Object **object);
 BBOXTree *BBOXTree_New(
   Object *objectList,
   long *treeObjectLength,
   Object **unboundedObjectList,
   long *unboundedObjectListLength
 );
-void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
-void BBOXTree_GenerateSplitLists(
+static void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
+static void BBOXTree_GenerateSplitLists(
   BBOXTree *node,
   BBOX *list,
   long listLength,
@@ -50,12 +50,12 @@ void BBOXTree_GenerateSplitLists(
   BBOX **rightList,
   long *rightListLength
 );
-void BBOXArr_ToList(
+static void BBOXArr_ToList(
   BBOX **dest,
   BBOX **soure,
   long sourceLength
 );
-BBOXTree *BBOXTree_BuildHierarchy(
+static BBOXTree *BBOXTree_BuildHierarchy(
   BBOX *list,
   long listLength,
   long *treeObjectLength,
