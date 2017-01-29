@@ -169,11 +169,12 @@ void BBOXTree_GenerateSplitLists(
   long *rightListLength
 ) {
 
-  BBOX **left[BBOX_AXES_COUNT], **right[BBOX_AXES_COUNT];
-  long leftLength[BBOX_AXES_COUNT], rightLength[BBOX_AXES_COUNT];
+  BBOX **left[BBOX_AXES_COUNT],
+       **right[BBOX_AXES_COUNT];
+  long leftLength[BBOX_AXES_COUNT] = {0},
+      rightLength[BBOX_AXES_COUNT] = {0};
+
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
-    leftLength[i] = 0;
-    rightLength[i] = 0;
     left[i] = calloc(listLength,sizeof(BBOX *));
     right[i] = calloc(listLength,sizeof(BBOX *));
   }
