@@ -151,7 +151,7 @@ RGB Quadtree_GetAvg(Quadtree *n) {
 
   RGB avg = RGB_New(0,0,0);
   double deno = totalNodes * 4.;
-  // avg = color / totalNodes / 4
+  // avg = color / (totalNodes * 4)
   avg.red = MIN(255,ROUND(sum.red / deno));
   avg.green = MIN(255,ROUND(sum.green / deno));
   avg.blue = MIN(255,ROUND(sum.blue / deno));
