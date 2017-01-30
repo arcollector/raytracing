@@ -13,7 +13,6 @@
 
 typedef struct BBOXStruct {
   Object *obj;
-  int isUnbounded;
   struct BBOXStruct *next;
   Vector min[BBOX_AXES_COUNT], max[BBOX_AXES_COUNT], centroid[BBOX_AXES_COUNT];
 } BBOX;
@@ -29,8 +28,8 @@ Vector BBOX_GetAxis(int index);
 BBOX *BBOX_New(Object *obj);
 BBOX *BBOXList_New(
   Object *objectList,
-  Object **unboundedObjectList,
   long *bboxListLength,
+  Object **unboundedObjectList,
   long *unboundedObjectListLength
 );
 static long BBOXList_ToObjectList(BBOX *bboxList, Object **object);

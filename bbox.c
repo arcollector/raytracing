@@ -24,51 +24,46 @@ Vector BBOX_GetAxis(int index) {
 
 BBOX *BBOX_New(Object *obj) {
 
+  // not bounding box possible
+  if(obj->type == OBJ_PLANE) return NULL;
+
   BBOX *bbox = malloc(sizeof(BBOX));
   bbox->obj = obj;
-  bbox->isUnbounded = 0;
   bbox->next = NULL;
 
-  if(obj->type == OBJ_PLANE) { // not bounding box possible
-    bbox->isUnbounded = 1;
-
-  } else if(obj->type == OBJ_SPHERE) {
-    BBOX_Sphere(bbox);
-  }
+  if(obj->type == OBJ_SPHERE) BBOX_Sphere(bbox);
 
   return bbox;
 }
 
 BBOX *BBOXList_New(
   Object *objectList,
-  Object **unboundedObjectList,
   long *bboxListLength,
+  Object **unboundedObjectList,
   long *unboundedObjectListLength
 ) {
 
   BBOX *first, *prev = NULL;
   *bboxListLength = 0;
-
-  for(Object *node = objectList, *aux = NULL; node; node = node->next) {
-    BBOX *bbox = BBOX_New(node);
+  for(Object *obj = objectList, *aux = NULL; obj; obj = obj->next) {
+    BBOX *bbox = BBOX_New(obj);
     // unbounded objects cannot be part of the hierarchy bbox tree
-    if(!bbox->isUnbounded) {
+    if(!bbox) {
+      if(!aux) {
+        aux = *unboundedObjectList = obj;
+      } else {
+        aux = aux->next = obj;
+      }
+      ++*unboundedObjectListLength;
+    } else {
       if(!prev) {
         prev = first = bbox;
       } else {
         prev = prev->next = bbox;
       }
       ++*bboxListLength;
-    } else {
-      if(!aux) {
-        aux = *unboundedObjectList = bbox->obj;
-      } else {
-        aux = aux->next = bbox->obj;
-      }
-      ++*unboundedObjectListLength;
     }
   }
-
   return first;
 }
 
@@ -83,8 +78,8 @@ BBOXTree *BBOXTree_New(
   long bboxListLength;
   BBOX *bboxList = BBOXList_New(
     objectList,
-    unboundedObjectList,
     &bboxListLength,
+    unboundedObjectList,
     unboundedObjectListLength
   );
   //BBOXList_Print(bboxList);
@@ -119,7 +114,6 @@ long BBOXList_ToObjectList(BBOX *bboxList, Object **object) {
 void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList) {
 
   // look for global min, max
-  node->bbox.isUnbounded = 0;
   node->bbox.next = NULL;
 
   BBOX *bbox = bboxList;
@@ -300,10 +294,6 @@ void BBOX_Print(BBOX *bbox) {
 
   printf("object is %d\n",bbox->obj->type);
   (*bbox->obj->print)(bbox->obj->primitive);
-  if(bbox->isUnbounded) {
-    printf("object is unbounded\n");
-    return;
-  }
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     printf("%ld axis\n",i);
     Vector_Print(bbox->min[i]);
@@ -384,8 +374,6 @@ void BBOXTree_Free(BBOXTree *tree) {
 // ********************************
 
 int BBOX_Intersect(Ray ray, BBOX *bbox) {
-
-  if(bbox->isUnbounded) return 1;
 
   double tMins[BBOX_AXES_COUNT] = {NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY},
         tMaxs[BBOX_AXES_COUNT] = {POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
