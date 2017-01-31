@@ -1,6 +1,6 @@
 #include  "bbox.h"
 
-#define BBOXTREE_LEAF_BUNCHING 4
+#define BBOXTREE_LEAF_BUNCHING 3
 
 BBOXTree **gbStack = NULL;
 
@@ -11,8 +11,6 @@ Vector BBOX_GetAxis(int index) {
     axes[0] = Vector_New(1,0,0);
     axes[1] = Vector_New(0,1,0);
     axes[2] = Vector_New(0,0,1);
-    // TODO adding more axes, make the raytracer slower
-    // check if can find a solution for this situation
     axes[3] = Vector_Normalize(Vector_New(1,1,1));
     axes[4] = Vector_Normalize(Vector_New(-1,1,1));
     axes[5] = Vector_Normalize(Vector_New(-1,-1,1));
@@ -375,8 +373,8 @@ void BBOXTree_Free(BBOXTree *tree) {
 
 int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
-  double tMins[BBOX_AXES_COUNT] = {NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY},
-        tMaxs[BBOX_AXES_COUNT] = {POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
+  double tMins[BBOX_AXES_COUNT] = {NEGATIVE_INFINITY},
+        tMaxs[BBOX_AXES_COUNT] = {POSITIVE_INFINITY};
 
   // calc plane intersection
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
