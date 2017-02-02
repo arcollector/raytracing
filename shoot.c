@@ -1,10 +1,44 @@
 #include "shoot.h"
 
+/* Used for multisampling
+<<<<<<< HEAD
+ * this struct represents a pixel where
+ * each coordinate (in the struct) refers
+ * to a offset of the pixel where is stored
+ * the color of the pixel multisampled
+=======
+ * this represents a pixel wide
+ * each coordinate refer to a position
+ * in pixel/flag array that store
+ * the color of the pixel multisampling
+>>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
+ *
+ * (0,0), (1,0), (2,0), (3,0), (4,0)
+ * (0,1), (1,1), (2,1), (3,1), (4,1)
+ * (0,2), (1,2), (2,2), (3,2), (4,2)
+ * (0,3), (1,3), (2,3), (3,3), (4,3)
+ * (0,4), (1,4), (2,4), (3,4), (4,4)
+ */
+struct WindowStruct {
+  RGB pixel[5][5];
+  int flag[5][5];
+};
+
+// maximum diff between avg color and corner colors
+// used in multi/stochastic sampling
+#define AVG_DIFF 2
+
+// stochastic jittering used to generate a poisson disk
+// distribution of the ray samples
+#define JITTER() (rand()/(double)RAND_MAX*-.125)
+
 Ray Shoot_BuildRay(double x, double y, Camera cam) {
 
   // windowing
-  Vector ps = Vector_New(x,y,0); // from screen space
-  Vector pvp = Vector_MulMatrix(ps,cam.win); // to view plane space
+  // from screen space
+  Vector ps = Vector_New(x,y,0);
+  // to view plane space
+  Vector pvp = Vector_MulMatrix(ps,cam.win);
   //Vector_Print(ps); Vector_Print(pvp); printf("\n");
 
   // build ray
@@ -21,32 +55,36 @@ RGB Shoot(
   Object *unboundedObjectList, long unboundedObjectListLength
 ) {
 
-  Camera cam = scene->cam;
   RGB pixel;
-  Texture *sky = scene->sky;
-
   // if stochastic or multisamplig
   if(scene->aa == AA_STOCHASTIC || scene->aa == AA_MULTI) {
-    Quadtree *n = Quadtree_New();
-    Shoot_Multi(
-      x,y,1,n,1,
+<<<<<<< HEAD
+    Window window = { .flag = {0} };
+=======
+    Window window;
+    // reset pixel window
+    for(long i = 0; i < 5; i++) {
+      for(long j = 0; j < 5; j++) {
+         window.pixel[i][j] = RGB_New(0,0,0);
+         window.flag[i][j] = 0;
+      }
+    }
+>>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
+    pixel = Shoot_Multi(
+      x,y,0,0,&window,4,
       scene->aa == AA_STOCHASTIC,
-      cam,
       root,treeObjectLength,
       unboundedObjectList,unboundedObjectListLength,
-      sky
+      scene
     );
-    pixel = Quadtree_GetAvg(n);
-    Quadtree_Free(n);
 
   // else if single ray shooting
   } else {
     pixel = Shoot_Single(
       x,y,
-      cam,
       root,treeObjectLength,
       unboundedObjectList,unboundedObjectListLength,
-      sky
+      scene
     );
   }
 
@@ -55,177 +93,239 @@ RGB Shoot(
 
 RGB Shoot_Single(
   double x, double y,
-  Camera cam,
   BBOXTree *root, long treeObjectLength,
   Object *unboundedObjectList, long unboundedObjectListLength,
-  Texture *sky
+  Scene *scene
 ) {
   // build ray
-  Ray ray = Shoot_BuildRay(x+.5,y+.5,cam);
+  Ray ray = Shoot_BuildRay(x+.5,y+.5,scene->cam);
   RGB pixel = Shade(
     ray,
-    cam,
     root,treeObjectLength,
     unboundedObjectList,unboundedObjectListLength,
-    sky
+    scene
   );
   return pixel;
 }
 
-void Shoot_Multi(
-  double x, double y, double length,
-  Quadtree *n, int level,
+RGB Shoot_Multi(
+  double x, double y, int i, int j,
+  Window *window, int upto,
   int isStochastic,
-  Camera cam,
   BBOXTree *root, long treeObjectLength,
   Object *unboundedObjectList, long unboundedObjectListLength,
-  Texture *sky
+  Scene *scene
 ) {
 
-  double half = length / 2.;
-  double half2 = half / 2.;
-  double half32 = half * 3. / 2.;
   Ray ray;
 
   double r1,r2,r3,r4,r5,r6,r7,r8;
   if(isStochastic) {
-    r1 = JITTER(-half2,half2);
-    r2 = JITTER(-half2,half2);
-    r3 = JITTER(-half2,half2);
-    r4 = JITTER(-half2,half2);
-    r5 = JITTER(-half2,half2);
-    r6 = JITTER(-half2,half2);
-    r7 = JITTER(-half2,half2);
-    r8 = JITTER(-half2,half2);
+    r1 = JITTER();
+    r2 = JITTER();
+    r3 = JITTER();
+    r4 = JITTER();
+    r5 = JITTER();
+    r6 = JITTER();
+    r7 = JITTER();
+    r8 = JITTER();
   } else {
     r1 = r2 = r3 = r4 = r5 = r6 = r7 = r8 = 0;
   }
 
   // compute topleft, topright, bottomleft and bottomright colors
-  //printf("shoot %5.5f %5.5f\n", x+half2+ r1, y+half2+ r2);
-  ray = Shoot_BuildRay(
-    x+half2 + r1,
-    y+half2 + r2,
-    cam
-  );
-  n->c1 = Shade(
-    ray,
-    cam,
-    root,treeObjectLength,
-    unboundedObjectList,unboundedObjectListLength,
-    sky
-  );
-  //printf("shoot %5.5f %5.5f\n", x+half32+ r3, y+half2+ r4);
-  ray = Shoot_BuildRay(
-    x+half32 + r3,
-    y+half2 + r4,
-    cam
-  );
-  n->c2 = Shade(
-    ray,
-    cam,
-    root,treeObjectLength,
-    unboundedObjectList,unboundedObjectListLength,
-    sky
-  );
-  //printf("shoot %5.5f %5.5f\n", x+half2+ r5, y+half32+ r6);
-  ray = Shoot_BuildRay(
-    x+half2 + r5,
-    y+half32 + r6,
-    cam
-  );
-  n->c3 = Shade(
-    ray,
-    cam,
-    root,treeObjectLength,
-    unboundedObjectList,unboundedObjectListLength,
-    sky
-  );
+  RGB c1, c2, c3, c4, avg;
 
-  //printf("shoot %5.5f %5.5f\n", x+half32+ r7, y+half32+ r8);
-  ray = Shoot_BuildRay(
-    x+half32 + r7,
-    y+half32 + r8,
-    cam
-  );
-  n->c4 = Shade(
-    ray,
-    cam,
-    root,treeObjectLength,
-    unboundedObjectList,unboundedObjectListLength,
-    sky
-  );
+<<<<<<< HEAD
+  #define AVG_4_COLORS(x,y,z,w) \
+    RGB_New( \
+        MIN(255,ROUND((x.red +   y.red +   z.red +   w.red)/4.)), \
+        MIN(255,ROUND((x.green + y.green + z.green + w.green)/4.)), \
+        MIN(255,ROUND((x.blue +  y.blue +  z.blue +  w.blue)/4.)) \
+      )
 
-  //printf("corners colors\n");
-  //RGB_Print(n->c1); RGB_Print(n->c2); RGB_Print(n->c3); RGB_Print(n->c4);
-  //exit(0);
+  #define COMPUTE_CORNER_COLOR(ii,jj,rx,ry) \
+    if(!window->flag[jj][ii]) { \
+      ray = Shoot_BuildRay( \
+        x + (ii)/4. + rx, \
+        y + (jj)/4. + ry, \
+        scene->cam \
+      ); \
+      window->pixel[jj][ii] = Shade( \
+        ray, \
+        root,treeObjectLength, \
+        unboundedObjectList,unboundedObjectListLength, \
+        scene \
+      ); \
+      window->flag[jj][ii] = 1; \
+    }
 
-  // compute avg color
-  Quadtree_NodeAvgRGB(n);
+  // x + i, y + j
+  COMPUTE_CORNER_COLOR(i,j,r1,r2);
+  c1 = window->pixel[j][i];
 
-  // not much difference between avg and corners colors
-  int c1 = Quadtree_CmpRGB(n->avg,n->c1,QUADTREE_THRESHOLD);
-  int c2 = Quadtree_CmpRGB(n->avg,n->c2,QUADTREE_THRESHOLD);
-  int c3 = Quadtree_CmpRGB(n->avg,n->c3,QUADTREE_THRESHOLD);
-  int c4 = Quadtree_CmpRGB(n->avg,n->c4,QUADTREE_THRESHOLD);
+  // x + i+offset, y + j
+  COMPUTE_CORNER_COLOR(i+upto,j,r3,r4);
+  c2 = window->pixel[j][i+upto];
 
-  if((c1 && c2 && c3 && c4) || level == QUADTREE_MAXLEVEL) {
+  // x + i, y + j+offset
+  COMPUTE_CORNER_COLOR(i,j+upto,r5,r6);
+  c3 = window->pixel[j+upto][i];
+
+  // x + i+offset, y + j+offset
+  COMPUTE_CORNER_COLOR(i+upto,j+upto,r7,r8);
+  c4 = window->pixel[j+upto][i+upto];
+
+  //RGB_Print(c1); RGB_Print(c2); RGB_Print(c3); RGB_Print(c4); printf("\n");
+
+  avg = AVG_4_COLORS(c1,c2,c3,c4);
+=======
+  // x + i, y + j
+  if(!window->flag[j][i]) {
+    ray = Shoot_BuildRay(
+      x + i/4. + r1,
+      y + j/4. + r2,
+      scene->cam
+    );
+    window->pixel[j][i] = Shade(
+      ray,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
+      scene
+    );
+    window->flag[j][i] = 1;
+  }
+  c1 = window->pixel[j][i];
+
+  // x + i+offset, y + j
+  if(!window->flag[j][i+upto]) {
+    ray = Shoot_BuildRay(
+      x + (i+upto)/4. + r3,
+      y + j/4. + r4,
+      scene->cam
+    );
+    window->pixel[j][i+upto] = Shade(
+      ray,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
+      scene
+    );
+    window->flag[j][i+upto] = 1;
+  }
+  c2 = window->pixel[j][i+upto];
+
+  // x + i, y + j+offset
+  if(!window->flag[j+upto][i]) {
+    ray = Shoot_BuildRay(
+      x + i/4. + r5,
+      y + (j+upto)/4. + r6,
+      scene->cam
+    );
+    window->pixel[j+upto][i] = Shade(
+      ray,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
+      scene
+    );
+    window->flag[j+upto][i] = 1;
+  }
+  c3 = window->pixel[j+upto][i];
+
+  // x + i+offset, y + j+offset
+  if(!window->flag[j+upto][i+upto]) {
+    ray = Shoot_BuildRay(
+      x + (i+upto)/4. + r7,
+      y + (j+upto)/4. + r8,
+      scene->cam
+    );
+    window->pixel[j+upto][i+upto] = Shade(
+      ray,
+      root,treeObjectLength,
+      unboundedObjectList,unboundedObjectListLength,
+      scene
+    );
+    window->flag[j+upto][i+upto] = 1;
+  }
+  c4 = window->pixel[j+upto][i+upto];
+
+  avg = Shoot_Avg4RGB(c1,c2,c3,c4);
+>>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
+  // how much differ avg and corners colors
+  if(upto == 1 ||
+      abs(avg.red - c1.red) <= AVG_DIFF &&
+      abs(avg.green - c1.green) <= AVG_DIFF &&
+      abs(avg.blue - c1.blue) <= AVG_DIFF &&
+      abs(avg.red - c2.red) <= AVG_DIFF &&
+      abs(avg.green - c2.green) <= AVG_DIFF &&
+      abs(avg.blue - c2.blue) <= AVG_DIFF &&
+      abs(avg.red - c3.red) <= AVG_DIFF &&
+      abs(avg.green - c3.green) <= AVG_DIFF &&
+      abs(avg.blue - c3.blue) <= AVG_DIFF &&
+      abs(avg.red - c4.red) <= AVG_DIFF &&
+      abs(avg.green - c4.green) <= AVG_DIFF &&
+      abs(avg.blue - c4.blue) <= AVG_DIFF) {
     // enough
-    Quadtree_NodeToLeaf(n,n);
-    return;
+    return avg;
   }
 
-  Quadtree *aux;
-  aux = n->topLeft = Quadtree_New();
-  // need more topleft refinement
-  if(!c1) {
-    Shoot_Multi(
-      x,y,half,aux,level+1,isStochastic,
-      cam,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      sky
-    );
-  } else {
-    Quadtree_NodeToLeaf(n,aux);
-  }
-  // topright
-  aux = n->topRight = Quadtree_New();
-  if(!c2) {
-    Shoot_Multi(
-      x+half,y,half,aux,level+1,isStochastic,
-      cam,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      sky
-    );
-  } else {
-    Quadtree_NodeToLeaf(n,aux);
-  }
-  // bottomleft
-  aux = n->bottomLeft = Quadtree_New();
-  if(!c3) {
-    Shoot_Multi(
-      x,y+half,half,aux,level+1,isStochastic,
-      cam,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      sky
-    );
-  } else {
-    Quadtree_NodeToLeaf(n,aux);
-  }
-  // bottomright
-  aux = n->bottomRight = Quadtree_New();
-  if(!c4) {
-    Shoot_Multi(
-      x+half,y+half,half,aux,level+1,isStochastic,
-      cam,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      sky
-    );
-  } else {
-    Quadtree_NodeToLeaf(n,aux);
-  }
+  upto /= 2;
+<<<<<<< HEAD
+
+  #define SHOOT_AGAIN(ii,jj) \
+    Shoot_Multi( \
+      x,y, ii,jj, \
+      window, upto, isStochastic, \
+      root, treeObjectLength, \
+      unboundedObjectList, unboundedObjectListLength, \
+      scene \
+     )
+
+  // keep sampling pixel
+  c1 = SHOOT_AGAIN(i,j);
+  c2 = SHOOT_AGAIN(i+upto,j);
+  c3 = SHOOT_AGAIN(i,j+upto);
+  c4 = SHOOT_AGAIN(i+upto,j+upto);
+
+  return AVG_4_COLORS(c1,c2,c3,c4);
+=======
+  // keep sampling pixel
+  c1 = Shoot_Multi(
+    x,y, i,j,
+    window, upto, isStochastic,
+    root, treeObjectLength,
+    unboundedObjectList, unboundedObjectListLength,
+    scene
+  );
+  c2 = Shoot_Multi(
+    x,y, i+upto,j,
+    window, upto, isStochastic,
+    root, treeObjectLength,
+    unboundedObjectList, unboundedObjectListLength,
+    scene
+  );
+  c3 = Shoot_Multi(
+    x,y, i,j+upto,
+    window, upto, isStochastic,
+    root, treeObjectLength,
+    unboundedObjectList, unboundedObjectListLength,
+    scene
+  );
+  c4 = Shoot_Multi(
+    x,y, i+upto,j+upto,
+    window, upto, isStochastic,
+    root, treeObjectLength,
+    unboundedObjectList, unboundedObjectListLength,
+    scene
+  );
+
+  return Shoot_Avg4RGB(c1,c2,c3,c4);
+}
+
+RGB Shoot_Avg4RGB(RGB c1, RGB c2, RGB c3, RGB c4) {
+  return RGB_New(
+    MIN(255,ROUND((c1.red +   c2.red +   c3.red +   c4.red)/4.)),
+    MIN(255,ROUND((c1.green + c2.green + c3.green + c4.green)/4.)),
+    MIN(255,ROUND((c1.blue +  c2.blue +  c3.blue +  c4.blue)/4.))
+  );
+>>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
 }

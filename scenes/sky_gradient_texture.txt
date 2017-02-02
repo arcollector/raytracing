@@ -2,7 +2,7 @@ FILE_NAME = sky_gradrient_texture.bmp
 
 WIDTH = 500
 HEIGHT = 500
-ANTI_ALIASING = none
+ANTI_ALIASING = stochastic
 
 CAMERA {
   loc (10,0,-10)

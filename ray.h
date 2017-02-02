@@ -5,6 +5,8 @@
 #include "vector.h"
 #include "matrix.h"
 
+extern int gbDebug;
+
 typedef struct {
   Vector start, dir;
 } Ray;

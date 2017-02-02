@@ -373,9 +373,11 @@ void BBOXTree_Free(BBOXTree *tree) {
 
 int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
-  double tMins[BBOX_AXES_COUNT] = {NEGATIVE_INFINITY},
-        tMaxs[BBOX_AXES_COUNT] = {POSITIVE_INFINITY};
-
+  double tMins[BBOX_AXES_COUNT], tMaxs[BBOX_AXES_COUNT];
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+    tMins[i] = NEGATIVE_INFINITY;
+    tMaxs[i] = POSITIVE_INFINITY;
+  }
   // calc plane intersection
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     Vector axis = BBOX_GetAxis(i);;
@@ -410,9 +412,11 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
     tMaxs[i] = tMax;
   }
 
-  double tMin = MAX(MAX(tMins[0], tMins[1]), tMins[2]);
-  double tMax = MIN(MIN(tMaxs[0], tMaxs[1]), tMaxs[2]);
-  //printf("\ttMin %5.5f, tMax %5.5f\n", tMin,tMax);
+  double tMin = tMins[0], tMax = tMaxs[0];
+  for(long i = 1; i < BBOX_AXES_COUNT; i++) {
+    tMin = MAX(tMin,tMins[i]);
+    tMax = MIN(tMax,tMaxs[i]);
+  }
 
   if(tMax < tMin) {
     return 0; // not intersecion with bounding box

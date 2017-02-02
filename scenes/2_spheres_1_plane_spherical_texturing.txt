@@ -2,7 +2,7 @@ FILE_NAME = 2_spheres_1_plane_spherical_texturing.bmp
 
 WIDTH = 1000
 HEIGHT = 1000
-ANTI_ALIASING = none
+ANTI_ALIASING = multi
 
 CAMERA {
   loc (10,0,-10)

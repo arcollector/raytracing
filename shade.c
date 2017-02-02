@@ -2,12 +2,11 @@
 
 RGB Shade(
   Ray ray,
-  Camera cam,
   BBOXTree *root,
   long treeObjectLength,
   Object *unboundedObjectList,
   long unboundedObjectListLength,
-  Texture *sky
+  Scene *scene
 ) {
 
   double lastT = POSITIVE_INFINITY;
@@ -36,9 +35,9 @@ RGB Shade(
       (tmp = Intersect(ray,unboundedObjectList,&lastT))) intersected = tmp;
 
   lastColor = intersected ?
-    Shade_ComputeColor(intersected,ray,lastT,cam)
+    Shade_ComputeColor(intersected,ray,lastT,scene->cam)
     :
-    Texture_GetColor(ray,VECTOR_NULL,VECTOR_NULL,sky);
+    Texture_GetColor(ray,VECTOR_NULL,VECTOR_NULL,scene->sky);
 
   return Vector_ToRGB(lastColor);
 }

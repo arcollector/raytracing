@@ -11,6 +11,8 @@
 
 #define BBOX_AXES_COUNT 3
 
+extern int gbDebug;
+
 typedef struct BBOXStruct {
   Object *obj;
   struct BBOXStruct *next;

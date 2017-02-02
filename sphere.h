@@ -11,6 +11,8 @@
 #include "camera.h"
 #include "texture.h"
 
+extern int gbDebug;
+
 typedef struct {
   Vector center;
   double radius;

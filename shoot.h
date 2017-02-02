@@ -2,6 +2,7 @@
 #define SHOOT_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "helpers.h"
 #include "rgb.h"
@@ -10,12 +11,17 @@
 #include "camera.h"
 #include "object.h"
 #include "shade.h"
-#include "quadtree.h"
 #include "scene.h"
 #include "bbox.h"
-#include "texture.h"
 
-#define JITTER(min,max) (rand()/(double)RAND_MAX*((min)+(max))+(min)-.125)
+extern int gbDebug;
+
+typedef struct WindowStruct Window;
+<<<<<<< HEAD
+=======
+
+static RGB Shoot_Avg4RGB(RGB c1, RGB c2, RGB c3, RGB c4);
+>>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
 
 RGB Shoot(
   long x, long y,
@@ -24,24 +30,22 @@ RGB Shoot(
   Object *unboundedObjectList, long unboundedObjectListLength
 );
 
-Ray Shoot_BuildRay(double x, double y, Camera cam);
+static Ray Shoot_BuildRay(double x, double y, Camera cam);
 
-RGB Shoot_Single(
+static RGB Shoot_Single(
   double x, double y,
-  Camera cam,
   BBOXTree *root, long treeObjectLength,
   Object *unboundedObjectList, long unboundedObjectListLength,
-  Texture *sky
+  Scene *scene
 );
 
-void Shoot_Multi(
-  double x, double y, double length,
-  Quadtree *n, int level,
+static RGB Shoot_Multi(
+  double x, double y, int i, int j,
+  Window *window, int upto,
   int isStochastic,
-  Camera cam,
   BBOXTree *root, long treeObjectLength,
   Object *unboundedObjectList, long unboundedObjectListLength,
-  Texture *sky
+  Scene *scene
 );
 
 #endif

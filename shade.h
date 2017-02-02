@@ -4,18 +4,19 @@
 #include "rgb.h"
 #include "vector.h"
 #include "ray.h"
-#include "camera.h"
 #include "texture.h"
 #include "bbox.h"
+#include "scene.h"
+
+extern int gbDebug;
 
 RGB Shade(
   Ray ray,
-  Camera cam,
   BBOXTree *root,
   long treeObjectLength,
   Object *unboundedObjectList,
   long unboundedObjectListLength,
-  Texture *sky
+  Scene *scene
 );
 
 Object *Intersect(
