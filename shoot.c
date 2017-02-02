@@ -1,18 +1,10 @@
 #include "shoot.h"
 
 /* Used for multisampling
-<<<<<<< HEAD
  * this struct represents a pixel where
  * each coordinate (in the struct) refers
  * to a offset of the pixel where is stored
  * the color of the pixel multisampled
-=======
- * this represents a pixel wide
- * each coordinate refer to a position
- * in pixel/flag array that store
- * the color of the pixel multisampling
->>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
- *
  * (0,0), (1,0), (2,0), (3,0), (4,0)
  * (0,1), (1,1), (2,1), (3,1), (4,1)
  * (0,2), (1,2), (2,2), (3,2), (4,2)
@@ -58,18 +50,7 @@ RGB Shoot(
   RGB pixel;
   // if stochastic or multisamplig
   if(scene->aa == AA_STOCHASTIC || scene->aa == AA_MULTI) {
-<<<<<<< HEAD
     Window window = { .flag = {0} };
-=======
-    Window window;
-    // reset pixel window
-    for(long i = 0; i < 5; i++) {
-      for(long j = 0; j < 5; j++) {
-         window.pixel[i][j] = RGB_New(0,0,0);
-         window.flag[i][j] = 0;
-      }
-    }
->>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
     pixel = Shoot_Multi(
       x,y,0,0,&window,4,
       scene->aa == AA_STOCHASTIC,
@@ -136,7 +117,6 @@ RGB Shoot_Multi(
   // compute topleft, topright, bottomleft and bottomright colors
   RGB c1, c2, c3, c4, avg;
 
-<<<<<<< HEAD
   #define AVG_4_COLORS(x,y,z,w) \
     RGB_New( \
         MIN(255,ROUND((x.red +   y.red +   z.red +   w.red)/4.)), \
@@ -179,77 +159,6 @@ RGB Shoot_Multi(
   //RGB_Print(c1); RGB_Print(c2); RGB_Print(c3); RGB_Print(c4); printf("\n");
 
   avg = AVG_4_COLORS(c1,c2,c3,c4);
-=======
-  // x + i, y + j
-  if(!window->flag[j][i]) {
-    ray = Shoot_BuildRay(
-      x + i/4. + r1,
-      y + j/4. + r2,
-      scene->cam
-    );
-    window->pixel[j][i] = Shade(
-      ray,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      scene
-    );
-    window->flag[j][i] = 1;
-  }
-  c1 = window->pixel[j][i];
-
-  // x + i+offset, y + j
-  if(!window->flag[j][i+upto]) {
-    ray = Shoot_BuildRay(
-      x + (i+upto)/4. + r3,
-      y + j/4. + r4,
-      scene->cam
-    );
-    window->pixel[j][i+upto] = Shade(
-      ray,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      scene
-    );
-    window->flag[j][i+upto] = 1;
-  }
-  c2 = window->pixel[j][i+upto];
-
-  // x + i, y + j+offset
-  if(!window->flag[j+upto][i]) {
-    ray = Shoot_BuildRay(
-      x + i/4. + r5,
-      y + (j+upto)/4. + r6,
-      scene->cam
-    );
-    window->pixel[j+upto][i] = Shade(
-      ray,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      scene
-    );
-    window->flag[j+upto][i] = 1;
-  }
-  c3 = window->pixel[j+upto][i];
-
-  // x + i+offset, y + j+offset
-  if(!window->flag[j+upto][i+upto]) {
-    ray = Shoot_BuildRay(
-      x + (i+upto)/4. + r7,
-      y + (j+upto)/4. + r8,
-      scene->cam
-    );
-    window->pixel[j+upto][i+upto] = Shade(
-      ray,
-      root,treeObjectLength,
-      unboundedObjectList,unboundedObjectListLength,
-      scene
-    );
-    window->flag[j+upto][i+upto] = 1;
-  }
-  c4 = window->pixel[j+upto][i+upto];
-
-  avg = Shoot_Avg4RGB(c1,c2,c3,c4);
->>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
   // how much differ avg and corners colors
   if(upto == 1 ||
       abs(avg.red - c1.red) <= AVG_DIFF &&
@@ -268,9 +177,6 @@ RGB Shoot_Multi(
     return avg;
   }
 
-  upto /= 2;
-<<<<<<< HEAD
-
   #define SHOOT_AGAIN(ii,jj) \
     Shoot_Multi( \
       x,y, ii,jj, \
@@ -280,6 +186,7 @@ RGB Shoot_Multi(
       scene \
      )
 
+  upto /= 2;
   // keep sampling pixel
   c1 = SHOOT_AGAIN(i,j);
   c2 = SHOOT_AGAIN(i+upto,j);
@@ -287,45 +194,4 @@ RGB Shoot_Multi(
   c4 = SHOOT_AGAIN(i+upto,j+upto);
 
   return AVG_4_COLORS(c1,c2,c3,c4);
-=======
-  // keep sampling pixel
-  c1 = Shoot_Multi(
-    x,y, i,j,
-    window, upto, isStochastic,
-    root, treeObjectLength,
-    unboundedObjectList, unboundedObjectListLength,
-    scene
-  );
-  c2 = Shoot_Multi(
-    x,y, i+upto,j,
-    window, upto, isStochastic,
-    root, treeObjectLength,
-    unboundedObjectList, unboundedObjectListLength,
-    scene
-  );
-  c3 = Shoot_Multi(
-    x,y, i,j+upto,
-    window, upto, isStochastic,
-    root, treeObjectLength,
-    unboundedObjectList, unboundedObjectListLength,
-    scene
-  );
-  c4 = Shoot_Multi(
-    x,y, i+upto,j+upto,
-    window, upto, isStochastic,
-    root, treeObjectLength,
-    unboundedObjectList, unboundedObjectListLength,
-    scene
-  );
-
-  return Shoot_Avg4RGB(c1,c2,c3,c4);
-}
-
-RGB Shoot_Avg4RGB(RGB c1, RGB c2, RGB c3, RGB c4) {
-  return RGB_New(
-    MIN(255,ROUND((c1.red +   c2.red +   c3.red +   c4.red)/4.)),
-    MIN(255,ROUND((c1.green + c2.green + c3.green + c4.green)/4.)),
-    MIN(255,ROUND((c1.blue +  c2.blue +  c3.blue +  c4.blue)/4.))
-  );
->>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
 }

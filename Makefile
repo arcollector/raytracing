@@ -7,14 +7,14 @@ clean:
 install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				sphere.o plane.o \
 				texture.o \
-				scene.o shade.o quadtree.o shoot.o \
+				scene.o shade.o shoot.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o
 	gcc raytracing.c -o bin/raytracing \
 				rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				texture.o \
 				sphere.o plane.o \
-				scene.o shade.o quadtree.o shoot.o \
+				scene.o shade.o shoot.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o \
 				-lm
@@ -87,11 +87,7 @@ shade.o: rgb.h rgb.c vector.h vector.c ray.h ray.c camera.h camera.c texture.c t
 				shade.h shade.c
 	gcc -c shade.c
 
-quadtree.o: helpers.h rgb.h rgb.c \
-						quadtree.h quadtree.c
-	gcc -c quadtree.c
-
-shoot.o: helpers.h rgb.h rgb.c vector.h vector.h ray.h ray.c camera.h camera.c object.h shade.h shade.c quadtree.h quadtree.c scene.h scene.c texture.h texture.c bbox.h bbox.c\
+shoot.o: helpers.h rgb.h rgb.c vector.h vector.h ray.h ray.c camera.h camera.c object.h shade.h shade.c scene.h scene.c texture.h texture.c bbox.h bbox.c\
 				shoot.h shoot.c
 	gcc -c shoot.c
 
@@ -113,11 +109,6 @@ camera_test:
 	gcc -c camera.c
 	gcc -c windowing.c
 	gcc -g tests/camera_test.c -o bin/camera_test vector.o matrix.o windowing.o camera.o -lm
-
-quadtree_test:
-	gcc -c rgb.c
-	gcc -c quadtree.c
-	gcc -g tests/quadtree_test.c -o bin/quadtree_test rgb.o quadtree.o -lm
 
 scene_test:
 	gcc -c scene.c

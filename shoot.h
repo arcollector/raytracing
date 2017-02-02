@@ -17,11 +17,6 @@
 extern int gbDebug;
 
 typedef struct WindowStruct Window;
-<<<<<<< HEAD
-=======
-
-static RGB Shoot_Avg4RGB(RGB c1, RGB c2, RGB c3, RGB c4);
->>>>>>> c4ce2f5... Massive update (no more quadtree is needed and fix big bug in bbox)
 
 RGB Shoot(
   long x, long y,
