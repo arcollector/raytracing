@@ -50,6 +50,7 @@ typedef struct BMP_CanvasStruct BMP_Canvas;
 int BMP_NewCanvas( BMP_Canvas *canvas, long width, long height );
 int BMP_IsBMP( FILE *fp );
 int BMP_Read( FILE *fp, BMP_Header *header, BMP_Canvas *canvas );
+int BMP_SetPixel( BMP_Canvas *canvas, long x, long y, RGB color );
 int BMP_PushRGB( BMP_Canvas *canvas, RGB color );
 int BMP_Save( BMP_Canvas *canvas, char *filename );
 void BMP_Free( BMP_Canvas *canvas );

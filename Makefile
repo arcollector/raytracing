@@ -17,7 +17,7 @@ install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				scene.o shade.o shoot.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o \
-				-lm
+				-lm -lpthread -Wall -g
 
 # ---- Global --------------------
 
