@@ -1,5 +1,14 @@
 #include "shoot.h"
 
+static Ray Shoot_BuildRay(double x, double y, Camera cam);
+
+static RGB Shoot_Single(
+  double x, double y,
+  BBOXTree *root, long treeObjectLength,
+  Object *unboundedObjectList, long unboundedObjectListLength,
+  Scene *scene
+);
+
 /* Used for multisampling
  * this struct represents a pixel where
  * each coordinate (in the struct) refers
@@ -11,10 +20,19 @@
  * (0,3), (1,3), (2,3), (3,3), (4,3)
  * (0,4), (1,4), (2,4), (3,4), (4,4)
  */
-struct WindowStruct {
+typedef struct {
   RGB pixel[5][5];
   int flag[5][5];
-};
+} Window;
+
+static RGB Shoot_Multi(
+  double x, double y, int i, int j,
+  Window *window, int upto,
+  int isStochastic,
+  BBOXTree *root, long treeObjectLength,
+  Object *unboundedObjectList, long unboundedObjectListLength,
+  Scene *scene
+);
 
 // maximum diff between avg color and corner colors
 // used in multi/stochastic sampling

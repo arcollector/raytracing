@@ -15,7 +15,7 @@ RGB Shade(
 
   // root is null if the scene contains only unbounded objects
   if(root) {
-    BBOXTree **stack = BBOXTree_GetStack();
+    BBOXTree **stack = calloc(treeObjectLength,sizeof(BBOXTree *));
     long stackLength = 0;
     stack[stackLength++] = root;
     while(stackLength) {
@@ -31,6 +31,7 @@ RGB Shade(
          intersected = tmp;
       }
     }
+    free(stack);
   }
 
   if(unboundedObjectListLength &&

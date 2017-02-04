@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
 
 #define TT_IMPLEMENTATION
 #include "3rdparty/tinytime.h"
@@ -11,87 +14,150 @@
 
 int gbDebug = 0;
 
+Scene *gbScene = NULL;
+BBOXTree *gbRoot = NULL;
+long gbTreeObjectLength = 0;
+Object *gbUnboundedObjectList = NULL;
+long gbUnboundedObjectListLength = 0;
+BMP_Canvas gbCanvas;
+
+typedef struct {
+  long width, height;
+  long yStart, yEnd;
+} ThreadArg;
+
+void *trace(void *arg) {
+  printf("i am thread %ld\n",pthread_self());
+  ThreadArg threadArg = *(ThreadArg *)arg;
+  long yStart = threadArg.yStart;
+  long yEnd = threadArg.yEnd;
+  long width = threadArg.width;
+  //printf("y %ld yEnd %ld x %ld xEnd %ld\n",y,yEnd,xStart,xEnd);
+  for(long y = yStart; y < yEnd; y++) {
+    for(long x = 0; x < width; x++) {
+      //printf("(%ld %ld)\n",x,y);
+      RGB pixel = Shoot(
+        x,y,
+        gbScene,
+        gbRoot,gbTreeObjectLength,
+        gbUnboundedObjectList,gbUnboundedObjectListLength
+      );
+      BMP_SetPixel(&gbCanvas,x,y,pixel);
+    }
+  }
+  printf("end thread %ld\n",pthread_self());
+  return NULL;
+}
+
 int main(int argc, char *argv[]) {
 
-  if(argc != 2) {
+  if(argc < 2) {
     printf("missing scene file\n");
     return 0;
   }
 
-  FILE *fp = fopen(argv[1],"rb");
+  struct {
+    char *sceneFile;
+    long cores;
+  } options = {
+    .cores = 1
+  };
+
+  for(long i = 1; i < argc; i++) {
+    char *arg = argv[i];
+    if(strncmp(arg,"--cores=",8) == 0) {
+      options.cores = atoi(strchr(arg,'=')+1);
+      if(options.cores == 0) {
+        printf("bad --cores= value\n");
+        return 0;
+      }
+    } else {
+      options.sceneFile = arg;
+    }
+  }
+
+  FILE *fp = fopen(options.sceneFile,"rb");
   if(!fp) {
-    printf("file %s does not exist\n",argv[1]);
+    printf("file %s does not exist\n",options.sceneFile);
     return 0;
   }
 
-  Scene *scene = Scene_New();
-  if(!scene) {
+  if(!(gbScene = Scene_New())) {
     fclose(fp);
     return 0;
   }
 
-  if(!Scene_Setup(fp, scene)) {
-    Scene_Free(scene);
+  if(!Scene_Setup(fp, gbScene)) {
+    Scene_Free(gbScene);
     fclose(fp);
     return 0;
   }
 
   fclose(fp);
-  Scene_Print(scene);
+  Scene_Print(gbScene);
 
-  long width = scene->width;
-  long height = scene->height;
+  long width = gbScene->width;
+  long height = gbScene->height;
 
   // resulted image
-  BMP_Canvas canvas;
-  if(!BMP_NewCanvas(&canvas,width,height)) {
-    Scene_Free(scene);
+  if(!BMP_NewCanvas(&gbCanvas,width,height)) {
+    Scene_Free(gbScene);
     return 0;
   }
 
-  Object *unboundedObjectList = NULL;
-  BBOXTree *root = NULL;
-  long treeObjectLength, unboundedObjectListLength;
   #if 1
   ttTime();
-  root = BBOXTree_New(
-    scene->objectList,
-    &treeObjectLength,
-    &unboundedObjectList,
-    &unboundedObjectListLength
+  gbRoot = BBOXTree_New(
+    gbScene->objectList,
+    &gbTreeObjectLength,
+    &gbUnboundedObjectList,
+    &gbUnboundedObjectListLength
   );
   printf("hierarchy bbox tree builded in %f seconds\n",ttTime());
-  BBOXTree_InitStack(treeObjectLength);
   #else
   // if 0 to raytracing without hierarchy bbox tree (for benchmarking use)
-  unboundedObjectList = scene->objectList;
+  gbUnboundedObjectList = gbScene->objectList;
+  gbUnboundedObjectListLength = gbScene->objectListLength;
   #endif
 
-  Camera_PrepareForShooting(width,height,&scene->cam);
+  Camera_PrepareForShooting(width,height,&gbScene->cam);
 
   printf("--- RAY TRACING GO! ---\n");
   ttTime();
-  for(long y = 0; y < height; y++) {
-    for(long x = 0; x < width; x++) {
-      //printf("(%ld %ld)\n",x,y);
-      RGB pixel = Shoot(
-        x,y,
-        scene,
-        root,treeObjectLength,
-        unboundedObjectList,unboundedObjectListLength
-      );
-      BMP_PushRGB(&canvas,pixel);
-    }
+
+  long threadsNum = options.cores;
+  pthread_t *threads = calloc(threadsNum,sizeof(pthread_t));
+  ThreadArg *threadsArg = calloc(threadsNum,sizeof(ThreadArg));
+  long yOffset = 0;
+  long yPadding = height / threadsNum;
+  for(long i = 0; i < threadsNum; i++) {
+    ThreadArg *arg = &threadsArg[i];
+    arg->width = width;
+    arg->height = height;
+    arg->yStart = yOffset;
+    arg->yEnd = yOffset + yPadding;
+    if(i+1 == threadsNum &&
+        arg->yEnd < height) arg->yEnd = height;
+    printf("thread %ld yStart %ld yEnd %ld\n",i,arg->yStart,arg->yEnd);
+    yOffset += yPadding;
+    pthread_create(&threads[i],NULL,trace,(void *)arg);
   }
+
+  for(long i = 0; i < threadsNum; i++) {
+    pthread_join(threads[i],NULL);
+  }
+
+  free(threads);
+  free(threadsArg);
+
   printf("raytracing elaped time was: %f seconds\n",ttTime());
 
-  BMP_Save(&canvas,scene->fileName);
-  BMP_Free(&canvas);
+  BMP_Save(&gbCanvas,gbScene->fileName);
+  BMP_Free(&gbCanvas);
 
-  BBOXTree_Free(root);
-  BBOXTree_FreeStack();
+  BBOXTree_Free(gbRoot);
 
-  Scene_Free(scene);
+  Scene_Free(gbScene);
 
   return 0;
 }

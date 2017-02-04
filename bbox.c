@@ -1,11 +1,31 @@
 #include  "bbox.h"
 
+static long BBOXList_ToObjectList(BBOX *bboxList, Object **object);
+static void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList);
+static void BBOXTree_GenerateSplitLists(
+  BBOXTree *node,
+  BBOX *list,
+  long listLength,
+  BBOX **leftList,
+  long *leftListLength,
+  BBOX **rightList,
+  long *rightListLength
+);
+static void BBOXArr_ToList(
+  BBOX **dest,
+  BBOX **soure,
+  long sourceLength
+);
+static BBOXTree *BBOXTree_BuildHierarchy(
+  BBOX *list,
+  long listLength,
+  int forceGrouping
+);
+
 #define BBOXTREE_LEAF_BUNCHING 3
 
-BBOXTree **gbStack = NULL;
-
 Vector BBOX_GetAxis(int index) {
-  static Vector axes[BBOX_AXES_COUNT];
+  static Vector axes[7];
   static int areCreated = 0;
   if(!areCreated) {
     axes[0] = Vector_New(1,0,0);
@@ -71,21 +91,22 @@ BBOXTree *BBOXTree_New(
   Object **unboundedObjectList,
   long *unboundedObjectListLength
 ) {
-  // setup bounding box of each primtive
+  // setup bounding box of each primitive
   // and save them in a BBOX list
-  long bboxListLength;
+  // treeObjectLength will contain
+  // the total number of objects that the
+  // BBOXTree will hold
   BBOX *bboxList = BBOXList_New(
     objectList,
-    &bboxListLength,
+    treeObjectLength,
     unboundedObjectList,
     unboundedObjectListLength
   );
   //BBOXList_Print(bboxList);
 
   // build hierarchy tree
-  *treeObjectLength = 0;
   BBOXTree *root = BBOXTree_BuildHierarchy(
-    bboxList, bboxListLength, treeObjectLength, 0
+    bboxList, *treeObjectLength, 0
   );
 
   // no more need it
@@ -94,7 +115,7 @@ BBOXTree *BBOXTree_New(
   return root;
 }
 
-long BBOXList_ToObjectList(BBOX *bboxList, Object **object) {
+static long BBOXList_ToObjectList(BBOX *bboxList, Object **object) {
 
   if(!bboxList) return 0;
 
@@ -234,7 +255,6 @@ void BBOXArr_ToList(
 BBOXTree *BBOXTree_BuildHierarchy(
   BBOX *list,
   long listLength,
-  long *treeObjectLength,
   int forceGrouping
 ) {
 
@@ -251,41 +271,26 @@ BBOXTree *BBOXTree_BuildHierarchy(
     BBOX *left, *right;
     long leftLength, rightLength;
     BBOXTree_GenerateSplitLists(
-      node, list, listLength, &left, &leftLength, &right, &rightLength
+      node,
+      list, listLength,
+      &left, &leftLength,
+      &right, &rightLength
     );
     printf("splitting occurred");
     printf("\tleft.length: %ld ", leftLength);
     printf("\tright.length: %ld\n", rightLength);
 
-    node->left = BBOXTree_BuildHierarchy(
-      left, leftLength, treeObjectLength, 0
-    );
-    node->right = BBOXTree_BuildHierarchy(
-      right, rightLength, treeObjectLength, 0
-    );
+    node->left = BBOXTree_BuildHierarchy(left, leftLength, 0);
+    node->right = BBOXTree_BuildHierarchy(right, rightLength, 0);
 
   } else {
     node->objectListLength = BBOXList_ToObjectList(
       list, &node->objectList
     );
     printf("leaf generated with %ld children\n", node->objectListLength);
-    ++*treeObjectLength;
   }
 
   return node;
-}
-
-void BBOXTree_InitStack(long treeObjectLength) {
-  if(treeObjectLength &&
-      !gbStack) gbStack = calloc(treeObjectLength,sizeof(BBOXTree *));
-}
-
-BBOXTree **BBOXTree_GetStack() {
-  return gbStack;
-}
-
-void BBOXTree_FreeStack() {
-  free(gbStack);
 }
 
 void BBOX_Print(BBOX *bbox) {

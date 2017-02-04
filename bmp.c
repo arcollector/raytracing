@@ -161,6 +161,16 @@ int BMP_Read( FILE *fp, BMP_Header *header, BMP_Canvas *canvas ) {
   return 1;
 }
 
+int BMP_SetPixel( BMP_Canvas *canvas, long x, long y, RGB color ) {
+  long address = y*canvas->width + x;
+  if(address < 0 || address >= canvas->expectedLength) {
+    return 0;
+  }
+  canvas->data[address] = color;
+  canvas->length++;
+  return 1;
+}
+
 int BMP_PushRGB( BMP_Canvas *canvas, RGB color ) {
   if( canvas->length >= canvas->expectedLength ) {
     return 0;
