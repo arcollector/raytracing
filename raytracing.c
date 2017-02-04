@@ -28,10 +28,10 @@ typedef struct {
 
 void *trace(void *arg) {
   printf("i am thread %ld\n",pthread_self());
-  ThreadArg threadArg = *(ThreadArg *)arg;
-  long yStart = threadArg.yStart;
-  long yEnd = threadArg.yEnd;
-  long width = threadArg.width;
+  ThreadArg *threadArg = (ThreadArg *)arg;
+  long yStart = threadArg->yStart;
+  long yEnd = threadArg->yEnd;
+  long width = threadArg->width;
   //printf("y %ld yEnd %ld x %ld xEnd %ld\n",y,yEnd,xStart,xEnd);
   for(long y = yStart; y < yEnd; y++) {
     for(long x = 0; x < width; x++) {
@@ -58,17 +58,17 @@ int main(int argc, char *argv[]) {
 
   struct {
     char *sceneFile;
-    long cores;
+    long threads;
   } options = {
-    .cores = 1
+    .threads = 1
   };
 
   for(long i = 1; i < argc; i++) {
     char *arg = argv[i];
-    if(strncmp(arg,"--cores=",8) == 0) {
-      options.cores = atoi(strchr(arg,'=')+1);
-      if(options.cores == 0) {
-        printf("bad --cores= value\n");
+    if(strncmp(arg,"--threads=",8) == 0) {
+      options.threads = atoi(strchr(arg,'=')+1);
+      if(options.threads == 0) {
+        printf("bad --threads= value\n");
         return 0;
       }
     } else {
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   printf("--- RAY TRACING GO! ---\n");
   ttTime();
 
-  long threadsNum = options.cores;
+  long threadsNum = options.threads;
   pthread_t *threads = calloc(threadsNum,sizeof(pthread_t));
   ThreadArg *threadsArg = calloc(threadsNum,sizeof(ThreadArg));
   long yOffset = 0;
@@ -136,11 +136,14 @@ int main(int argc, char *argv[]) {
     arg->height = height;
     arg->yStart = yOffset;
     arg->yEnd = yOffset + yPadding;
-    if(i+1 == threadsNum &&
-        arg->yEnd < height) arg->yEnd = height;
+    if(i+1 == threadsNum && arg->yEnd < height) arg->yEnd = height;
     printf("thread %ld yStart %ld yEnd %ld\n",i,arg->yStart,arg->yEnd);
     yOffset += yPadding;
-    pthread_create(&threads[i],NULL,trace,(void *)arg);
+    if(pthread_create(&threads[i],NULL,trace,(void *)arg)) {
+      printf("fail to create thread\n");
+      threadsNum = 0;
+      break;
+    }
   }
 
   for(long i = 0; i < threadsNum; i++) {
