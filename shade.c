@@ -27,12 +27,16 @@ RGB Shade(
       if(node->right) stack[stackLength++] = node->right;
       // node is leaf if node->objectList contains objects
       if(node->objectListLength &&
-          (tmp = Intersect(ray,node->objectList,&lastT))) intersected = tmp;
+        (tmp = Intersect(ray,node->objectList,&lastT))) {
+         intersected = tmp;
+      }
     }
   }
 
   if(unboundedObjectListLength &&
-      (tmp = Intersect(ray,unboundedObjectList,&lastT))) intersected = tmp;
+    (tmp = Intersect(ray,unboundedObjectList,&lastT))) {
+     intersected = tmp;
+  }
 
   lastColor = intersected ?
     Shade_ComputeColor(intersected,ray,lastT,scene->cam)

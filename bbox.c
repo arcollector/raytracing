@@ -433,7 +433,7 @@ void BBOX_Sphere(BBOX *bbox) {
 
   Sphere *sphere = bbox->obj->primitive;
 
-  for( long i = 0; i < BBOX_AXES_COUNT; i++) {
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
     Vector axis = BBOX_GetAxis(i);
     double length = Vector_Dot(axis, sphere->center);
     Vector min = Vector_MulScalar(axis, length - sphere->radius);
