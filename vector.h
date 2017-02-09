@@ -6,15 +6,18 @@
 
 #include "helpers.h"
 #include "rgb.h"
-#include "matrix.h"
-
-#define VECTOR_NULL Vector_New(0,0,0)
 
 typedef struct {
   double x,y,z,w;
 } Vector;
 
+#include "matrix.h"
+
+#define VECTOR_NULL Vector_New(0,0,0)
+
 Vector Vector_New(double x, double y, double z);
+Vector Vector2d_New(double x, double y);
+Vector Vector4d_New(double x, double y, double z, double w);
 
 Vector Vector_FromP1toP2(Vector p1,Vector p2);
 

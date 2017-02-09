@@ -4,5 +4,6 @@
 bin/*
 *.BMP
 *.bmp
+*.out
 
 !.gitignore

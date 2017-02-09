@@ -207,10 +207,10 @@ void BBOXTree_GenerateSplitLists(
   }
 
   // check which axis is better balanced
-  long dist = abs(rightLength[0] - leftLength[0]);
+  long dist = labs(rightLength[0] - leftLength[0]);
   long axisIndex = 0;
   for(long i = 1; i < BBOX_AXES_COUNT; i++) {
-    long tmp = abs(rightLength[i] - leftLength[i]);
+    long tmp = labs(rightLength[i] - leftLength[i]);
     if(tmp < dist) {
       dist = tmp;
       axisIndex = i;

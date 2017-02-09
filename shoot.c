@@ -46,7 +46,7 @@ Ray Shoot_BuildRay(double x, double y, Camera cam) {
 
   // windowing
   // from screen space
-  Vector ps = Vector_New(x,y,0);
+  Vector ps = Vector2d_New(x,y);
   // to view plane space
   Vector pvp = Vector_MulMatrix(ps,cam.win);
   //Vector_Print(ps); Vector_Print(pvp); printf("\n");

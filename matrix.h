@@ -12,7 +12,12 @@ typedef struct {
   double _30,_31,_32,_33;
 } Matrix;
 
+#include "vector.h"
+
 Matrix Matrix_New();
+Matrix Matrix_FromVectorsAsRows(
+  Vector row1, Vector row2, Vector row3, Vector row4
+);
 Matrix Matrix_Mul(Matrix left, Matrix right);
 Matrix Matrix_Transpose(Matrix m);
 void Matrix_Print(Matrix m);

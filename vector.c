@@ -9,6 +9,24 @@ Vector Vector_New(double x, double y, double z) {
   return res;
 }
 
+Vector Vector2d_New(double x, double y) {
+  Vector res;
+  res.x = x;
+  res.y = y;
+  res.z = 0;
+  res.w = 1;
+  return res;
+}
+
+Vector Vector4d_New(double x, double y, double z, double w) {
+  Vector res;
+  res.x = x;
+  res.y = y;
+  res.z = z;
+  res.w = w;
+  return res;
+}
+
 Vector Vector_FromP1toP2(Vector p1,Vector p2) {
   Vector res;
   res.x = p2.x - p1.x;

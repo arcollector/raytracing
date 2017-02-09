@@ -63,8 +63,21 @@ Matrix Matrix_Mul(Matrix left, Matrix right) {
   return m;
 }
 
+Matrix Matrix_FromVectorsAsRows(
+  Vector row1, Vector row2, Vector row3, Vector row4
+) {
+  Matrix t;
+  
+  t._00 = row1.x; t._01 = row1.y; t._02 = row1.z; t._03 = row1.w;
+  t._10 = row2.x; t._11 = row2.y; t._12 = row2.z; t._13 = row2.w;
+  t._20 = row3.x; t._21 = row3.y; t._22 = row3.z; t._23 = row3.w;
+  t._30 = row4.x; t._31 = row4.y; t._32 = row4.z; t._33 = row4.w;
+
+  return t;
+}
+
 Matrix Matrix_Transpose(Matrix m) {
-  Matrix t = Matrix_New();
+  Matrix t;
   
   t._00 = m._00; t._01 = m._10; t._02 = m._20; t._03 = m._30;
   t._10 = m._01; t._11 = m._11; t._12 = m._21; t._13 = m._31;
