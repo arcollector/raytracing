@@ -12,8 +12,11 @@
 #include "shoot.h"
 #include "bbox.h"
 
-int gbDebug = 0;
+static void *trace(void *arg);
 
+// **** GLOBALS ****
+
+int gbDebug = 0;
 Scene *gbScene = NULL;
 BBOXTree *gbRoot = NULL;
 long gbTreeObjectLength = 0;
@@ -21,17 +24,66 @@ Object *gbUnboundedObjectList = NULL;
 long gbUnboundedObjectListLength = 0;
 BMP_Canvas gbCanvas;
 
+// **** END GLOBALS ****
+
+// **** THREAD STUFF ****
+
 typedef struct {
   long width, height;
   long yStart, yEnd;
-} ThreadArg;
+} ThreadData;
+
+static int Thread_Create(
+  long width,
+  long height,
+  long threadsCount,
+  pthread_t **threads,
+  ThreadData **data
+) {
+  *threads = calloc(threadsCount,sizeof(pthread_t));
+  *data = calloc(threadsCount,sizeof(ThreadData));
+  long yOffset = 0;
+  long yPadding = height / threadsCount;
+  for(long i = 0; i < threadsCount; i++) {
+    ThreadData *tmp = &(*data)[i];
+    tmp->width = width;
+    tmp->height = height;
+    tmp->yStart = yOffset;
+    tmp->yEnd = yOffset + yPadding;
+    if(i+1 == threadsCount && tmp->yEnd < height) tmp->yEnd = height;
+    printf("thread %ld yStart %ld yEnd %ld\n",i,tmp->yStart,tmp->yEnd);
+    yOffset += yPadding;
+    if(pthread_create(&(*threads)[i],NULL,trace,(void *)tmp)) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static int Thread_Join(long threadsCount, pthread_t *threads) {
+  for(long i = 0; i < threadsCount; i++) {
+    if(pthread_join(threads[i],NULL)) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static void Thread_Free(pthread_t *threads, ThreadData *data) {
+  if(data) free(data);
+  if(threads) free(threads);
+}
+
+// **** END THREAD STUFF ****
+
+// **** THREAD CALLBACK FUNCTION ****
 
 void *trace(void *arg) {
   printf("i am thread %ld\n",pthread_self());
-  ThreadArg *threadArg = (ThreadArg *)arg;
-  long yStart = threadArg->yStart;
-  long yEnd = threadArg->yEnd;
-  long width = threadArg->width;
+  ThreadData *data = (ThreadData *)arg;
+  long yStart = data->yStart;
+  long yEnd = data->yEnd;
+  long width = data->width;
   //printf("y %ld yEnd %ld x %ld xEnd %ld\n",y,yEnd,xStart,xEnd);
   for(long y = yStart; y < yEnd; y++) {
     for(long x = 0; x < width; x++) {
@@ -48,6 +100,8 @@ void *trace(void *arg) {
   printf("end thread %ld\n",pthread_self());
   return NULL;
 }
+
+// **** END THREAD CALLBACK FUNCTION ****
 
 int main(int argc, char *argv[]) {
 
@@ -125,33 +179,12 @@ int main(int argc, char *argv[]) {
   printf("--- RAY TRACING GO! ---\n");
   ttTime();
 
-  long threadsNum = options.threads;
-  pthread_t *threads = calloc(threadsNum,sizeof(pthread_t));
-  ThreadArg *threadsArg = calloc(threadsNum,sizeof(ThreadArg));
-  long yOffset = 0;
-  long yPadding = height / threadsNum;
-  for(long i = 0; i < threadsNum; i++) {
-    ThreadArg *arg = &threadsArg[i];
-    arg->width = width;
-    arg->height = height;
-    arg->yStart = yOffset;
-    arg->yEnd = yOffset + yPadding;
-    if(i+1 == threadsNum && arg->yEnd < height) arg->yEnd = height;
-    printf("thread %ld yStart %ld yEnd %ld\n",i,arg->yStart,arg->yEnd);
-    yOffset += yPadding;
-    if(pthread_create(&threads[i],NULL,trace,(void *)arg)) {
-      printf("fail to create thread\n");
-      threadsNum = 0;
-      break;
-    }
+  pthread_t *threads = NULL;
+  ThreadData *data = NULL;
+  if(Thread_Create(width,height,options.threads,&threads,&data)) {
+    Thread_Join(options.threads,threads);
+    Thread_Free(threads,data);
   }
-
-  for(long i = 0; i < threadsNum; i++) {
-    pthread_join(threads[i],NULL);
-  }
-
-  free(threads);
-  free(threadsArg);
 
   printf("raytracing elaped time was: %f seconds\n",ttTime());
 
