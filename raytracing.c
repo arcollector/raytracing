@@ -136,12 +136,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  if(!(gbScene = Scene_New())) {
-    fclose(fp);
-    return 0;
-  }
-
-  if(!Scene_Setup(fp, gbScene)) {
+  if(!Scene_Setup(fp, &gbScene)) {
     Scene_Free(gbScene);
     fclose(fp);
     return 0;
@@ -149,6 +144,7 @@ int main(int argc, char *argv[]) {
 
   fclose(fp);
   Scene_Print(gbScene);
+  //exit(0);
 
   long width = gbScene->width;
   long height = gbScene->height;
@@ -174,7 +170,7 @@ int main(int argc, char *argv[]) {
   gbUnboundedObjectListLength = gbScene->objectListLength;
   #endif
 
-  Camera_PrepareForShooting(width,height,&gbScene->cam);
+  Camera_PrepareForShooting(width,height,gbScene->cam);
 
   printf("--- RAY TRACING GO! ---\n");
   ttTime();

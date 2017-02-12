@@ -12,6 +12,8 @@ typedef struct {
 } Ray;
 
 Ray Ray_New(Vector p1, Vector p2);
+Ray Ray_Normalize(Ray ray);
+double Ray_Length(Ray ray);
 Ray Ray_Transform(Ray ray, Matrix m);
 Vector Ray_PointAt(Ray ray, double t);
 void Ray_Print(Ray ray);

@@ -2,6 +2,22 @@
 
 #define DEBUG 1
 
+static Scene *Scene_New();
+static void Scene_LoadDefaults(Scene *scene);
+
+static int Scene_GetString(FILE *fp);
+static Vector Scene_ParseVector(FILE *fp);
+static double Scene_ParseFloat(FILE *fp);
+static int Scene_GetTexture(FILE *fp, Texture *tex);
+static Object *Scene_AddBlankObject(Scene *scene);
+
+static int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
+static int Scene_GetCamera(FILE *fp, Scene *scene);
+static int Scene_GetSky(FILE *fp, Scene *scene);
+static int Scene_GetLamp(FILE *fp, Scene *scene);
+static int Scene_GetSphere(FILE *fp, Scene *scene);
+static int Scene_GetPlane(FILE *fp, Scene *scene);
+
 enum {
   FILE_NAME = 0,
   WIDTH, HEIGHT,
@@ -9,7 +25,13 @@ enum {
   LOC, NORMAL,
   CAMERA, UPPOINT, LOOKAT, VIEWERDISTANCE, WINDOW,
   SKY,
-  TEXTURE, COLOR, SCALE, MINRADIUS, MAXRADIUS,
+  TEXTURE,
+    COLOR,
+    AMBIENT,
+    PHONG, PHONG_EXP, METALLIC,
+    SCALE,
+    MINRADIUS, MAXRADIUS,
+  LAMP,
   SPHERE, RADIUS,
   PLANE,
   CURLY,
@@ -24,7 +46,8 @@ char gbStringTypes[][50] = {
   "LOC", "NORMAL",
   "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
   "SKY",
-  "TEXTURE", "COLOR", "SCALE", "MINRADIUS", "MAXRADIUS",
+  "TEXTURE", "COLOR", "AMBIENT", "PHONG", "PHONG_EXP", "METALLIC", "SCALE", "MINRADIUS", "MAXRADIUS",
+  "LAMP",
   "SPHERE", "RADIUS",
   "PLANE",
   "}",
@@ -100,6 +123,7 @@ double Scene_ParseFloat(FILE *fp) {
 
 int Scene_GetTexture(FILE *fp, Texture *tex) {
   int code;
+  double phong = 0; long phongExp = 0; int isMetallic = 0;
   double minRadius = 0, maxRadius = 0;
   Vector tmp;
 
@@ -117,6 +141,22 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       code = Scene_GetString(fp);
       double b = atof(gbStringBuf);
       Texture_AddColor(limit,Vector_New(r,g,b),tex);
+    } else if(code == AMBIENT) {
+      if(DEBUG) printf("FOUND AMBIENT\n");
+      code = Scene_GetString(fp);
+      double ambient = atof(gbStringBuf);
+      Texture_SetAmbient(ambient, tex);
+    } else if(code == PHONG) {
+      if(DEBUG) printf("FOUND PHONG\n");
+      code = Scene_GetString(fp);
+      phong = atof(gbStringBuf);
+    } else if(code == PHONG_EXP) {
+      if(DEBUG) printf("FOUND PHONG_EXP\n");
+      code = Scene_GetString(fp);
+      phongExp = atol(gbStringBuf);
+    } else if(code == METALLIC) {
+      if(DEBUG) printf("FOUND METALLIC\n");
+      isMetallic = 1;
     } else if(code == SCALE) {
       if(DEBUG) printf("FOUND SCALE\n");
       tmp = Scene_ParseVector(fp);
@@ -136,6 +176,7 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
 
   }
 
+  Texture_SetPhong(phong, phongExp, isMetallic, tex);
   Texture_SetRadii(minRadius, maxRadius, tex);
 
   return code;
@@ -163,22 +204,47 @@ Object *Scene_AddBlankObject(Scene *scene) {
 
 Scene *Scene_New() {
 
-  // TODO: create a scene with various defaults
-  // for an easy test scenes
-
   Scene *scene = malloc(sizeof(Scene));
+  if(!scene) return NULL;
   scene->fileName = malloc(256);
+  if(!scene->fileName) return NULL;
   scene->width = 0;
   scene->height = 0;
+
+  scene->cam = NULL;
 
   scene->objectListLength = 0;
   scene->objectList = NULL;
 
   scene->sky = NULL;
 
-  scene->aa = AA_NONE;
+  scene->lampList = NULL;
+  scene->lampListLength = 0;
 
   return scene;
+}
+
+void Scene_LoadDefaults(Scene *scene) {
+
+  if(!scene->cam) {
+    scene->cam = Camera_New(
+      Vector_New(0,0,-1), // camera location
+      Vector_New(0,1,0), // camera up vector (tilt)
+      Vector_New(0,0,0), // camera point of interest
+      10, // how far viewer is behind camera view plane
+      Vector2d_New(-10,-10), Vector2d_New(10,10) // view plane dims
+    );
+  }
+  if(!scene->sky) {
+    Texture *tex = Texture_New();
+    tex->type = TEXTURE_SKY;
+    Texture_AddColor(0,Vector_FromRGB(RGB_New(70,70,70)),tex);
+    scene->sky = tex;
+  }
+  if(!scene->lampList) {
+    scene->lampList = Lamp_New(scene->cam->viewerPos);
+  }
+
 }
 
 void Scene_Free(Scene *scene) {
@@ -190,11 +256,17 @@ void Scene_Free(Scene *scene) {
       free(node);
     }
   }
+  if(scene->lampListLength) {
+    Lamp_Free(scene->lampList);
+  }
   Texture_Free(scene->sky);
   free(scene);
 }
 
-int Scene_Setup(FILE *fp, Scene *scene) {
+int Scene_Setup(FILE *fp, Scene **scene) {
+
+  *scene = Scene_New();
+  if(!*scene) return 0;
 
   while(!feof(fp)) {
     int code = Scene_GetString(fp);
@@ -202,39 +274,43 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       if(DEBUG) printf("FILE_NAME found, ");
       code = Scene_GetString(fp);
       if(DEBUG) printf("value is %s\n",gbStringBuf);
-      strcpy(scene->fileName,gbStringBuf);
+      strcpy((*scene)->fileName,gbStringBuf);
 
     } else if(code == WIDTH) {
       if(DEBUG) printf("WIDTH found, ");
       code = Scene_GetString(fp);
       if(DEBUG) printf("value is %s\n",gbStringBuf);
-      scene->width = atol(gbStringBuf);
+      (*scene)->width = atol(gbStringBuf);
 
     } else if(code == HEIGHT) {
       if(DEBUG) printf("HEIGHT found, ");
       code = Scene_GetString(fp);
       if(DEBUG) printf("value is %s\n",gbStringBuf);
-      scene->height = atol(gbStringBuf);
+      (*scene)->height = atol(gbStringBuf);
 
     } else if(code == ANTIALIASING) {
       if(DEBUG) printf("ANTI_ALIASING found\n");
-      code = Scene_GetAntiAliasing(fp, scene);
+      code = Scene_GetAntiAliasing(fp, *scene);
 
     } else if(code == CAMERA) {
       if(DEBUG) printf("CAMERA found\n");
-      code = Scene_GetCamera(fp, scene);
+      code = Scene_GetCamera(fp, *scene);
 
     } else if(code == SKY) {
       if(DEBUG) printf("SKY found\n");
-      code = Scene_GetSky(fp, scene);
+      code = Scene_GetSky(fp, *scene);
+
+    } else if(code == LAMP) {
+      if(DEBUG) printf("LAMP found\n");
+      code = Scene_GetLamp(fp, *scene);
 
     } else if(code == SPHERE) {
       if(DEBUG) printf("SPHERE found\n");
-      code = Scene_GetSphere(fp, scene);
+      code = Scene_GetSphere(fp, *scene);
 
     } else if(code == PLANE) {
       if(DEBUG) printf("PLANE found\n");
-      code = Scene_GetPlane(fp, scene);
+      code = Scene_GetPlane(fp, *scene);
 
     } else {
       if(strlen(gbStringBuf)) {
@@ -248,6 +324,8 @@ int Scene_Setup(FILE *fp, Scene *scene) {
       return 0;
     }
   }
+
+  Scene_LoadDefaults(*scene);
 
   return 1;
 }
@@ -324,7 +402,7 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
   scene->cam = Camera_New(
     loc, upPoint, lookAt,
     viewerDistance,
-    Vector_New(minX,minY,0),Vector_New(maxX,maxY,0)
+    Vector2d_New(minX,minY),Vector2d_New(maxX,maxY)
   );
 
   return code;
@@ -351,6 +429,35 @@ int Scene_GetSky(FILE *fp, Scene *scene) {
 
   tex->type = TEXTURE_SKY;
   scene->sky = tex;
+
+  return code;
+}
+
+int Scene_GetLamp(FILE *fp, Scene *scene) {
+
+  int code;
+  Vector loc;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == LOC) {
+      if(DEBUG) printf("\tLOC found, ");
+      loc = Scene_ParseVector(fp);
+      if(DEBUG) Vector_Print(loc);
+
+    } else {
+      if(DEBUG) printf("\tLAMP property invalid: %s\n", gbStringBuf);
+      return ERROR;
+    }
+
+  }
+
+  Lamp *lamp = Lamp_New(loc);
+  lamp->next = scene->lampList;
+  scene->lampList = lamp;
+
+  scene->lampListLength++;
 
   return code;
 }
@@ -390,10 +497,11 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
   Object *node = Scene_AddBlankObject(scene);
   if(!node) return ERROR;
 
-  node->primitive = Sphere_New(loc, radius, tex, scene->cam);
+  node->primitive = Sphere_New(loc, radius, tex);
   node->print = Sphere_Print;
   node->intersect = Sphere_Intersect;
-  node->getColor = Sphere_GetColor;
+  node->normal = Sphere_Normal;
+  node->texture = tex;
   node->free = Sphere_Free;
   node->type = OBJ_SPHERE;
 
@@ -434,10 +542,11 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
   Object *node = Scene_AddBlankObject(scene);
   if(!node) return ERROR;
 
-  node->primitive = Plane_New(loc, normal, tex, scene->cam);
+  node->primitive = Plane_New(loc, normal, tex);
   node->print = Plane_Print;
   node->intersect = Plane_Intersect;
-  node->getColor = Plane_GetColor;
+  node->normal = Plane_Normal;
+  node->texture = tex;
   node->free = Plane_Free;
   node->type = OBJ_PLANE;
 
@@ -453,6 +562,10 @@ void Scene_Print(Scene *scene) {
   printf("antiAliasing: %d\n", scene->aa);
   printf("= CAMERA =====\n");
   Camera_Print(scene->cam);
+  printf("= LAMP =====\n");
+  for(Lamp *lamp = scene->lampList; lamp; lamp = lamp->next) {
+    Lamp_Print(lamp);
+  }
   printf("= SKY =====\n");
   Texture_Print(scene->sky);
   printf("= OBJECTS ====\n");

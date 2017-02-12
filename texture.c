@@ -1,9 +1,18 @@
 #include "texture.h"
 
+static Vector Texture_GetColorAt(double t, Texture *tex);
+
+static double Texture_Sky(Vector p, Texture *tex);
+static double Texture_Spherical(Vector p, Texture *tex);
+
 Texture *Texture_New() {
   Texture *tex = malloc(sizeof(Texture));
   tex->length = 0;
   tex->type = TEXTURE_DEFAULT;
+  tex->kA = 0.1;
+  tex->kS = 0;
+  tex->expS = 0;
+  tex->isMetallic = 0;
   tex->scale = Vector_New(1,1,1);
   // used in spherical texturing
   tex->minRadius = 0;
@@ -44,15 +53,14 @@ Vector Texture_GetColorAt(double t, Texture *tex) {
 }
 
 Vector Texture_GetColor(
-  Ray ray,
   Vector p,
   Vector normal,
   Texture *tex
 ) {
-  Vector color;
 
+  Vector color;
   if(tex->type == TEXTURE_SKY) {
-    double t = Texture_Sky(ray,tex);
+    double t = Texture_Sky(p,tex);
     color = Vector_MulScalar(Texture_GetColorAt(t,tex),t);
 
   // use spherical texturing
@@ -69,18 +77,30 @@ Vector Texture_GetColor(
 }
 
 RGB Texture_GetColorRGB(
-  Ray ray,
   Vector p,
   Vector normal,
-  Texture *tex   
+  Texture *tex
 ) {
-  return Vector_ToRGB(Texture_GetColor(ray,p,normal,tex));
+  return Vector_ToRGB(Texture_GetColor(p,normal,tex));
+}
+
+void Texture_SetAmbient(double ambient, Texture *tex) {
+  tex->kA = ambient;
 }
 
 void Texture_SetScale(Vector v, Texture *tex) {
-  tex->scale.x = v.x > 0 ? v.x : 1; // avoid dividing by 0
-  tex->scale.y = v.y > 0 ? v.y : 1;
-  tex->scale.z = v.z > 0 ? v.z : 1;
+  tex->scale = v;
+}
+
+void Texture_SetPhong(
+  double phong,
+  long phongExp,
+  int isMetallic,
+  Texture *tex
+) {
+  tex->kS = phong;
+  tex->expS = phongExp;
+  tex->isMetallic = isMetallic;
 }
 
 void Texture_SetRadii(double minRadius, double maxRadius, Texture *tex) {
@@ -99,6 +119,8 @@ void Texture_Print(Texture *tex) {
     Vector c = tex->color[i];
     printf("%ld) %f %f %f\n",i,c.x,c.y,c.z);
   }
+  printf("kA is %f\n", tex->kA);
+  printf("kS is %f and expS is %ld\n", tex->kS, tex->expS);
   printf("scale is: ");
   Vector_Print(tex->scale);
   printf("minRadius %f and maxRadius %f (if any)\n",
@@ -109,12 +131,8 @@ void Texture_Print(Texture *tex) {
 
 // ********************************
 
-double Texture_Sky(Ray ray, Texture *tex) {
-  Vector pvp = Ray_PointAt(
-    ray,
-    -Vector_Dot(ray.start,ray.start) / Vector_Dot(ray.start,ray.dir)
-  );
-  return 1 - (fabs(pvp.y) / tex->scale.y);
+double Texture_Sky(Vector p, Texture *tex) {
+  return 1 - (fabs(p.y) / tex->scale.y);
 }
 
 double Texture_Spherical(Vector p, Texture *tex) {

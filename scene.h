@@ -11,6 +11,7 @@
 #include "matrix.h"
 #include "camera.h"
 #include "texture.h"
+#include "lamp.h"
 #include "object.h"
 #include "sphere.h"
 #include "plane.h"
@@ -22,29 +23,17 @@
 typedef struct {
   char *fileName;
   long width, height;
-  Camera cam;
+  Camera *cam;
   Object *objectList;
   long objectListLength;
   Texture *sky;
   int aa;
+  Lamp *lampList;
+  long lampListLength;
 } Scene;
 
-// helpers
-int Scene_GetString(FILE *fp);
-Vector Scene_ParseVector(FILE *fp);
-double Scene_ParseFloat(FILE *fp);
-int Scene_GetTexture(FILE *fp, Texture *tex);
-Object *Scene_AddBlankObject(Scene *scene);
-
-Scene *Scene_New();
+int Scene_Setup(FILE *fp, Scene **scene);
 void Scene_Free(Scene *scene);
-int Scene_Setup(FILE *fp, Scene *scene);
 void Scene_Print(Scene *scene);
-
-int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
-int Scene_GetCamera(FILE *fp, Scene *scene);
-int Scene_GetSky(FILE *fp, Scene *scene);
-int Scene_GetSphere(FILE *fp, Scene *scene);
-int Scene_GetPlane(FILE *fp, Scene *scene);
 
 #endif

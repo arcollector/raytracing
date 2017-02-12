@@ -1,12 +1,16 @@
 #ifndef SHADE_H
 #define SHADE_H
 
+#include <math.h>
+
 #include "rgb.h"
 #include "vector.h"
 #include "ray.h"
 #include "texture.h"
+#include "lamp.h"
 #include "bbox.h"
 #include "scene.h"
+#include "intersect.h"
 
 extern int gbDebug;
 
@@ -17,19 +21,6 @@ RGB Shade(
   Object *unboundedObjectList,
   long unboundedObjectListLength,
   Scene *scene
-);
-
-Object *Intersect(
-  Ray ray, 
-  Object *objectList,
-  double *lastT
-);
-
-Vector Shade_ComputeColor(
-  Object *obj,
-  Ray ray,
-  double t, 
-  Camera cam
 );
 
 #endif
