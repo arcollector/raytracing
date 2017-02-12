@@ -1,7 +1,7 @@
 FILE_NAME = pyramid_of_spheres.bmp
 
-WIDTH = 2000
-HEIGHT = 2000
+WIDTH = 1000
+HEIGHT = 1000
 ANTI_ALIASING = stochastic
 
 CAMERA {
@@ -18,6 +18,15 @@ SKY {
   }
 }
 
+LAMP {
+  loc (7,15,-6)
+}
+
+LAMP {
+  loc (-7,15,-6)
+}
+
+
 /*** pyramid start ***/
 /* first plane */
 /* first row */
@@ -27,6 +36,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -35,6 +46,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -43,6 +56,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -51,6 +66,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -59,6 +76,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -67,6 +86,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -75,6 +96,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -83,6 +106,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -91,6 +116,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -99,6 +126,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -109,6 +138,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -117,6 +148,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -125,6 +158,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -133,6 +168,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -141,6 +178,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -149,6 +188,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -157,6 +198,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -165,6 +208,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -175,6 +220,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -183,6 +230,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -191,6 +240,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -199,6 +250,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -207,6 +260,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -215,6 +270,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -225,6 +282,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -233,6 +292,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -241,6 +302,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -249,6 +312,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -259,6 +324,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -267,6 +334,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -277,6 +346,9 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
+    metallic
   }
 }
 
@@ -288,6 +360,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -296,6 +370,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -304,6 +380,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -312,6 +390,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -320,6 +400,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -328,6 +410,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -336,6 +420,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -344,6 +430,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -352,6 +440,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -360,6 +450,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -370,6 +462,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -378,6 +472,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -386,6 +482,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -394,6 +492,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -402,6 +502,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -410,6 +512,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -418,6 +522,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -426,6 +532,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -436,6 +544,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -444,6 +554,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -452,6 +564,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -460,6 +574,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -468,6 +584,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -476,6 +594,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -486,6 +606,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -494,6 +616,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -502,6 +626,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -510,6 +636,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -520,6 +648,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -528,6 +658,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -538,6 +670,9 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
+    metallic
   }
 }
 
@@ -549,6 +684,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -557,6 +694,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -565,6 +704,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -573,6 +714,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -581,6 +724,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -589,6 +734,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -597,6 +744,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -605,6 +754,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -613,6 +764,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -621,6 +774,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -631,6 +786,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -639,6 +796,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -647,6 +806,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -655,6 +816,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -663,6 +826,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -671,6 +836,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -679,6 +846,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -687,6 +856,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -697,6 +868,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -705,6 +878,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -713,6 +888,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -721,6 +898,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -729,6 +908,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -737,6 +918,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -747,6 +930,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -755,6 +940,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -763,6 +950,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -771,6 +960,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -781,6 +972,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -789,6 +982,8 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
   }
 }
 
@@ -799,6 +994,9 @@ SPHERE {
   radius .95
   TEXTURE {
     color 1, (1,0,0)
+    phong .8
+    phong_exp 100
+    metallic
   }
 }
 

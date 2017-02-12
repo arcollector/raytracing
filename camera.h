@@ -16,7 +16,7 @@ typedef struct {
   Matrix win;
 } Camera;
 
-Camera Camera_New(
+Camera *Camera_New(
   Vector pos,
   Vector upPoint,
   Vector viewPoint,
@@ -31,6 +31,6 @@ void Camera_PrepareForShooting(
   Camera *cam
 );
 
-void Camera_Print(Camera cam);
+void Camera_Print(Camera *cam);
 
 #endif

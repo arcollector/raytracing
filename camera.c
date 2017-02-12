@@ -1,7 +1,6 @@
 #include "camera.h"
-#define CAMERA_DEBUG 0
 
-Camera Camera_New(
+Camera *Camera_New(
   Vector pos,
   Vector upPoint,
   Vector viewPoint,
@@ -32,12 +31,14 @@ Camera Camera_New(
   //printf("viewDir: "); Vector_Print(viewDir);
   //printf("are normal? %5.5f %5.5f %5.5f\n",Vector_Dot(up,left),Vector_Dot(up,viewDir),Vector_Dot(viewDir,left));
 
-  Camera cam;
-  cam.pos = pos;
+  Camera *cam = malloc(sizeof(Camera));
+  if(!cam) return NULL;
+
+  cam->pos = pos;
   // save basis vectors
-  cam.up = up;
-  cam.left = left;
-  cam.viewDir = viewDir;
+  cam->up = up;
+  cam->left = left;
+  cam->viewDir = viewDir;
 
   // create orthnormal matrix
   Matrix t1 = Matrix_New();
@@ -50,8 +51,8 @@ Camera Camera_New(
   t2._10 = left.y; t2._11 = up.y; t2._12 = viewDir.y;
   t2._20 = left.z; t2._21 = up.z; t2._22 = viewDir.z;
 
-  cam.local = Matrix_Mul(t1,t2);
-  //Matrix_Print(cam.local); printf("==============\n");
+  cam->local = Matrix_Mul(t1,t2);
+  //Matrix_Print(cam->local); printf("==============\n");
 
   // create inverse orthonormal matrix
   t1._30 = pos.x;
@@ -60,14 +61,17 @@ Camera Camera_New(
 
   t2 = Matrix_Transpose(t2);
 
-  cam.invLocal = Matrix_Mul(t2,t1);
-  //Matrix_Print(cam.invLocal); printf("============\n");
+  cam->invLocal = Matrix_Mul(t2,t1);
+  //Matrix_Print(cam->invLocal); printf("============\n");
 
-  //Matrix_Print(Matrix_Mul(cam.local,cam.invLocal)); printf("==========\n");
+  //Matrix_Print(Matrix_Mul(cam->local,cam->invLocal)); printf("==========\n");
 
-  cam.viewerPos = Vector_New(0,0,-viewerDistance);
-  cam.min = min;
-  cam.max = max;
+  cam->viewerPos = Vector_MulMatrix(
+    // from cam space to world space
+    Vector_New(0,0,-viewerDistance), cam->invLocal
+  );
+  cam->min = min;
+  cam->max = max;
 
   return cam;
 }
@@ -87,18 +91,18 @@ void Camera_PrepareForShooting(
   cam->win = win;
 }
 
-void Camera_Print(Camera cam) {
+void Camera_Print(Camera *cam) {
   printf("==== CAMERA CONFIG ===\n");
   printf("left: %5.5f %5.5f %5.5f\n",
-          cam.left.x,cam.left.y,cam.left.z);
+          cam->left.x,cam->left.y,cam->left.z);
   printf("up: %5.5f %5.5f %5.5f\n",
-          cam.up.x,cam.up.y,cam.up.z);
+          cam->up.x,cam->up.y,cam->up.z);
   printf("viewDir: %5.5f %5.5f %5.5f\n",
-        cam.viewDir.x,cam.viewDir.y,cam.viewDir.z);
-  printf("viewerPos: "); Vector_Print(cam.viewerPos);
+        cam->viewDir.x,cam->viewDir.y,cam->viewDir.z);
+  printf("viewerPos: "); Vector_Print(cam->viewerPos);
   printf("min and max:\n");
-  Vector_Print(cam.min);
-  Vector_Print(cam.max);
+  Vector_Print(cam->min);
+  Vector_Print(cam->max);
   printf("win\n");
-  Matrix_Print(cam.win);
+  Matrix_Print(cam->win);
 }

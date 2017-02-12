@@ -3,8 +3,17 @@
 Ray Ray_New(Vector p1, Vector p2) {
   Ray ray;
   ray.start = p1;
-  ray.dir = Vector_Normalize(Vector_FromP1toP2(ray.start,p2));
+  ray.dir = Vector_FromP1toP2(ray.start,p2);
   return ray;
+}
+
+Ray Ray_Normalize(Ray ray) {
+  ray.dir = Vector_Normalize(ray.dir);
+  return ray;
+}
+
+double Ray_Length(Ray ray) {
+  return Vector_Length(ray.dir);
 }
 
 Ray Ray_Transform(Ray ray, Matrix m) {

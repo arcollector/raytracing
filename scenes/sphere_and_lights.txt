@@ -1,0 +1,58 @@
+FILE_NAME = spheres_and_shadows.bmp
+WIDTH = 500
+HEIGHT = 500
+ANTI_ALIASING = none
+
+CAMERA {
+  loc (0,0,-1)
+  upPoint (0,1,0)
+  lookAt (0,0,0)
+  viewerDistance 10
+  window (-5,-5) (5,5)
+}
+
+LAMP {
+  loc (5,20,10)
+}
+
+LAMP {
+  loc (-5,20,10)
+}
+
+SPHERE {
+  loc (-3,0,10)
+  radius 2.5
+  TEXTURE {
+    color 1, (1,0,0)
+    phong .9
+    phong_exp 100
+  }
+}
+
+SPHERE {
+  loc (3,0,10)
+  radius 2.5
+  TEXTURE {
+    color 1, (1,0,0)
+    phong .9
+    phong_exp 100
+  }
+}
+
+SPHERE {
+  loc (0,5,10)
+  radius 2.5
+  TEXTURE {
+    color 1, (1,0,0)
+    phong .9
+    phong_exp 100
+  }
+}
+
+PLANE {
+  loc (0,-10,0)
+  normal (0,1,0)
+  TEXTURE {
+    color 1, (0,1,0)
+  }
+}

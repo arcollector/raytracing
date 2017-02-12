@@ -1,6 +1,6 @@
 #include "shoot.h"
 
-static Ray Shoot_BuildRay(double x, double y, Camera cam);
+static Ray Shoot_BuildRay(double x, double y, Camera *cam);
 
 static RGB Shoot_Single(
   double x, double y,
@@ -42,17 +42,18 @@ static RGB Shoot_Multi(
 // distribution of the ray samples
 #define JITTER() (rand()/(double)RAND_MAX*-.125)
 
-Ray Shoot_BuildRay(double x, double y, Camera cam) {
+Ray Shoot_BuildRay(double x, double y, Camera *cam) {
 
-  // windowing
   // from screen space
   Vector ps = Vector2d_New(x,y);
-  // to view plane space
-  Vector pvp = Vector_MulMatrix(ps,cam.win);
+  // to view plane space (windowing)
+  Vector pvp = Vector_MulMatrix(ps,cam->win);
   //Vector_Print(ps); Vector_Print(pvp); printf("\n");
-
-  // build ray
-  Ray ray = Ray_New(cam.viewerPos,pvp);
+  // to world space (change of axes)
+  Vector pw = Vector_MulMatrix(pvp,cam->invLocal);
+  
+  // build ray (world space)
+  Ray ray = Ray_Normalize(Ray_New(cam->viewerPos,pw));
   //Ray_Print(ray); exit(0);
 
   return ray;

@@ -1,18 +1,20 @@
 #include "plane.h"
 
-Plane *Plane_New(Vector center, Vector normal, Texture *tex, Camera cam) {
+Plane *Plane_New(Vector center, Vector normal, Texture *tex) {
+
   Plane *plane = malloc(sizeof(Plane));
   if(!plane) return NULL;
 
-  plane->center = Vector_MulMatrix(center, cam.local);
-  normal = Vector_MulMatrixNotTranslation(normal, cam.local);
+  plane->center = center;
   plane->normal = Vector_Normalize(normal);
+
   plane->tex = tex;
 
   return plane;
 }
 
 double Plane_Intersect(Ray ray, void *_plane) {
+
   Plane *plane = _plane;
 
   double deno = Vector_Dot(plane->normal, ray.dir);
@@ -32,16 +34,9 @@ double Plane_Intersect(Ray ray, void *_plane) {
   return t;
 }
 
-Vector Plane_GetColor(
-  Ray ray,
-  Vector p,
-  Vector normal,
-  Camera cam,
-  void *_plane
-) {
+Vector Plane_Normal(Vector point, void *_plane) {
   Plane *plane = _plane;
-  p = Vector_MulMatrix(p,cam.invLocal); // to world
-  return Texture_GetColor(ray,p,normal,plane->tex);
+  return plane->normal;  
 }
 
 void Plane_Print(void *_plane) {

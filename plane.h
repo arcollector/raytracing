@@ -10,7 +10,6 @@
 #include "vector.h"
 #include "matrix.h"
 #include "ray.h"
-#include "camera.h"
 #include "texture.h"
 
 typedef struct {
@@ -19,15 +18,9 @@ typedef struct {
   Texture *tex;
 } Plane;
 
-Plane *Plane_New(Vector center, Vector normal, Texture *tex, Camera cam);
+Plane *Plane_New(Vector center, Vector normal, Texture *tex);
 double Plane_Intersect(Ray ray, void *plane);
-Vector Plane_GetColor(
-  Ray ray,
-  Vector p,
-  Vector normal,
-  Camera cam,
-  void *plane
-);
+Vector Plane_Normal(Vector point, void *plane);
 void Plane_Print(void *plane);
 void Plane_Free(void *plane);
 

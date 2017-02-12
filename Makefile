@@ -5,16 +5,16 @@ clean:
 	rm -f *.o *.bmp *.BMP
 
 install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
+				lamp.o texture.o \
 				sphere.o plane.o \
-				texture.o \
-				scene.o shade.o shoot.o \
+				scene.o shade.o shoot.o intersect.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o
 	gcc raytracing.c -o bin/raytracing \
 				rgb.o vector.o matrix.o ray.o camera.o windowing.o \
-				texture.o \
+				lamp.o texture.o \
 				sphere.o plane.o \
-				scene.o shade.o shoot.o \
+				scene.o shade.o shoot.o intersect.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o \
 				-lm -lpthread -Wall -g $(On)
@@ -53,6 +53,9 @@ vector.o: matrix.h matrix.c \
 matrix.o: matrix.h matrix.c
 	gcc -c matrix.c
 
+lamp.o: vector.h vector.c matrix.h matrix.c lamp.h lamp.c
+	gcc -c lamp.c
+
 texture.o: rgb.h rgb.c vector.h vector.c \
 					texture.h texture.c
 	gcc -c texture.c
@@ -61,11 +64,11 @@ ray.o: vector.h vector.c matrix.h matrix.c \
 			ray.h ray.c
 	gcc -c ray.c
 
-sphere.o: helpers.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c ray.h ray.c camera.h camera.c texture.h texture.c \
+sphere.o: helpers.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c \
 					sphere.h sphere.c
 	gcc -c sphere.c
 
-plane.o: helpers.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c ray.h ray.c camera.h camera.c texture.h texture.c \
+plane.o: helpers.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c \
 				plane.h plane.c
 	gcc -c plane.c
 
@@ -77,13 +80,13 @@ camera.o: vector.h vector.c matrix.h matrix.c windowing.h windowing.c \
 					camera.h camera.c
 	gcc -c camera.c
 
-scene.o: rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c object.h texture.h texture.c \
+scene.o: rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c object.h texture.h texture.c lamp.h lamp.c \
 				sphere.h sphere.c \
 				plane.h plane.c \
 				scene.h scene.c
 	gcc -c scene.c
 
-shade.o: rgb.h rgb.c vector.h vector.c ray.h ray.c camera.h camera.c texture.c texture.h bbox.h bbox.c \
+shade.o: rgb.h rgb.c vector.h vector.c ray.h ray.c camera.h camera.c texture.c texture.h bbox.h bbox.c lamp.h lamp.c \
 				shade.h shade.c
 	gcc -c shade.c
 
@@ -94,6 +97,9 @@ shoot.o: helpers.h rgb.h rgb.c vector.h vector.h ray.h ray.c camera.h camera.c o
 bbox.o: vector.h vector.c object.h sphere.h sphere.c \
 				bbox.h bbox.c
 	gcc -c bbox.c
+
+intersect.o: rgb.h rgb.c vector.h vector.c ray.h ray.c bbox.h bbox.c intersect.h intersect.c
+	gcc -c intersect.c 
 
 # ------ Tests ----------------
 
