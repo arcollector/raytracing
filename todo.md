@@ -21,4 +21,10 @@
 
 * stochastic ray shooting -- **done!**
 
-  * quad tree may not necessary for such task
+  * quad tree may not necessary for such task -- **done! *(02/02/2017)***
+
+
+* polygon object
+
+
+* checker texture
