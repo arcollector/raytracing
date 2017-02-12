@@ -83,7 +83,7 @@ void Camera_PrepareForShooting(
 ) {
 
   Matrix win = Windowing_New(
-      Vector_New(0,0,0),Vector_New(width,height,0),
+      Vector2d_New(0,0),Vector2d_New(width,height),
       cam->min,cam->max,
       1 // invert y screen axis
   );

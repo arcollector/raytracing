@@ -3,13 +3,22 @@
 #define DEBUG 1
 
 static Scene *Scene_New();
+static int Scene_AddObject(
+  void *primitive,
+  Texture *tex,
+  int type,
+  double (*intersect)(Ray ray, void *primitive),
+  Vector (*normal)(Vector point, void *primitive),
+  void (*print)(void *primitive),
+  void (*free)(void *primitive),
+  Scene *scene
+);
 static void Scene_LoadDefaults(Scene *scene);
 
 static int Scene_GetString(FILE *fp);
 static Vector Scene_ParseVector(FILE *fp);
 static double Scene_ParseFloat(FILE *fp);
 static int Scene_GetTexture(FILE *fp, Texture *tex);
-static Object *Scene_AddBlankObject(Scene *scene);
 
 static int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
 static int Scene_GetCamera(FILE *fp, Scene *scene);
@@ -21,9 +30,16 @@ static int Scene_GetPlane(FILE *fp, Scene *scene);
 enum {
   FILE_NAME = 0,
   WIDTH, HEIGHT,
-  ANTIALIASING, NONE, MULTI, STOCHASTIC,
+  ANTIALIASING,
+    NONE,
+    MULTI,
+    STOCHASTIC,
   LOC, NORMAL,
-  CAMERA, UPPOINT, LOOKAT, VIEWERDISTANCE, WINDOW,
+  CAMERA,
+    UPPOINT,
+    LOOKAT,
+    VIEWERDISTANCE,
+    WINDOW,
   SKY,
   TEXTURE,
     COLOR,
@@ -32,7 +48,8 @@ enum {
     SCALE,
     MINRADIUS, MAXRADIUS,
   LAMP,
-  SPHERE, RADIUS,
+  SPHERE,
+    RADIUS,
   PLANE,
   CURLY,
   TOTAL_IDS,
@@ -42,13 +59,27 @@ enum {
 char gbStringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
-  "ANTI_ALIASING", "NONE", "MULTI", "STOCHASTIC",
+  "ANTI_ALIASING",
+    "NONE", "MULTI", "STOCHASTIC",
   "LOC", "NORMAL",
-  "CAMERA", "UPPOINT", "LOOKAT", "VIEWERDISTANCE", "WINDOW",
+  "CAMERA",
+    "UPPOINT",
+    "LOOKAT",
+    "VIEWERDISTANCE",
+    "WINDOW",
   "SKY",
-  "TEXTURE", "COLOR", "AMBIENT", "PHONG", "PHONG_EXP", "METALLIC", "SCALE", "MINRADIUS", "MAXRADIUS",
+  "TEXTURE",
+    "COLOR",
+    "AMBIENT",
+    "PHONG",
+    "PHONG_EXP",
+    "METALLIC",
+    "SCALE",
+    "MINRADIUS",
+    "MAXRADIUS",
   "LAMP",
-  "SPHERE", "RADIUS",
+  "SPHERE",
+    "RADIUS",
   "PLANE",
   "}",
   '\0'
@@ -182,24 +213,34 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
   return code;
 }
 
-Object *Scene_AddBlankObject(Scene *scene) {
+int Scene_AddObject(
+  void *primitive,
+  Texture *tex,
+  int type,
+  double (*intersect)(Ray ray, void *primitive),
+  Vector (*normal)(Vector point, void *primitive),
+  void (*print)(void *primitive),
+  void (*free)(void *primitive),
+  Scene *scene
+) {
 
-  Object *obj = scene->objectList;
-  if(scene->objectListLength == 0) {
-    obj = scene->objectList = malloc(sizeof(Object));
-    if(!obj) return NULL;
-  } else {
-    for(long i = 0; i < scene->objectListLength - 1; i++) {
-      obj = obj->next;
-    }
-    obj = obj->next = malloc(sizeof(Object));
-    if(!obj) return NULL;
-  }
+  Object *obj = malloc(sizeof(Object));
+  if(!obj) return 0;
 
-  obj->next = NULL;
+  obj->primitive = primitive;
+  obj->type = type;
+  obj->texture = tex;
+  obj->intersect = intersect;
+  obj->normal = normal;
+  obj->print = print;
+  obj->free = free;
+
+  obj->next = scene->objectList;
+  scene->objectList = obj;
+
   scene->objectListLength++;
 
-  return obj;
+  return 1;
 }
 
 Scene *Scene_New() {
@@ -402,7 +443,7 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
   scene->cam = Camera_New(
     loc, upPoint, lookAt,
     viewerDistance,
-    Vector2d_New(minX,minY),Vector2d_New(maxX,maxY)
+    Vector2d_New(minX,minY), Vector2d_New(maxX,maxY)
   );
 
   return code;
@@ -494,16 +535,17 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
 
   }
 
-  Object *node = Scene_AddBlankObject(scene);
-  if(!node) return ERROR;
-
-  node->primitive = Sphere_New(loc, radius, tex);
-  node->print = Sphere_Print;
-  node->intersect = Sphere_Intersect;
-  node->normal = Sphere_Normal;
-  node->texture = tex;
-  node->free = Sphere_Free;
-  node->type = OBJ_SPHERE;
+  if(!Scene_AddObject(
+    Sphere_New(loc, radius, tex),
+    tex,
+    OBJ_SPHERE,
+    Sphere_Intersect,
+    Sphere_Normal,
+    Sphere_Print,
+    Sphere_Free,
+    scene
+    )
+  ) return ERROR;
 
   return code;
 }
@@ -539,16 +581,17 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
 
   }
 
-  Object *node = Scene_AddBlankObject(scene);
-  if(!node) return ERROR;
-
-  node->primitive = Plane_New(loc, normal, tex);
-  node->print = Plane_Print;
-  node->intersect = Plane_Intersect;
-  node->normal = Plane_Normal;
-  node->texture = tex;
-  node->free = Plane_Free;
-  node->type = OBJ_PLANE;
+  if(!Scene_AddObject(
+    Plane_New(loc, normal, tex),
+    tex,
+    OBJ_PLANE,
+    Plane_Intersect,
+    Plane_Normal,
+    Plane_Print,
+    Plane_Free,
+    scene
+    )
+  ) return ERROR;
 
   return code;
 }
