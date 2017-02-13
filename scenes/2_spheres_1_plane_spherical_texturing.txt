@@ -18,10 +18,15 @@ SKY {
   }
 }
 
+LAMP {
+  loc (10,10,-10)
+}
+
 SPHERE {
   loc (-6,0,0)
   radius 5
   TEXTURE {
+    ambient .3
     color 1, (1,0,0)
     minRadius .6
     maxRadius .8
@@ -32,6 +37,7 @@ SPHERE {
   loc (6,0,0)
   radius 5
   TEXTURE {
+    ambient .3
     minRadius .6
     maxRadius .3
     color .3, (0,0,1)

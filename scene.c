@@ -45,6 +45,7 @@ enum {
     COLOR,
     AMBIENT,
     PHONG, PHONG_EXP, METALLIC,
+    REFLECT,
     SCALE,
     MINRADIUS, MAXRADIUS,
     CHECKER,
@@ -73,6 +74,7 @@ char gbStringTypes[][50] = {
     "COLOR",
     "AMBIENT",
     "PHONG", "PHONG_EXP", "METALLIC",
+    "REFLECT",
     "SCALE",
     "MINRADIUS", "MAXRADIUS",
     "CHECKER",
@@ -154,6 +156,7 @@ double Scene_ParseFloat(FILE *fp) {
 int Scene_GetTexture(FILE *fp, Texture *tex) {
   int code;
   double phong = 0; long phongExp = 0; int isMetallic = 0;
+  double rfl = 0;
   double minRadius = 0, maxRadius = 0;
   Vector tmp;
 
@@ -184,6 +187,10 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       if(DEBUG) printf("FOUND PHONG_EXP\n");
       code = Scene_GetString(fp);
       phongExp = atol(gbStringBuf);
+    } else if(code == REFLECT) {
+      if(DEBUG) printf("FOUND REFLECT\n");
+      code = Scene_GetString(fp);
+      rfl =  atof(gbStringBuf);
     } else if(code == METALLIC) {
       if(DEBUG) printf("FOUND METALLIC\n");
       isMetallic = 1;
@@ -201,7 +208,7 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       maxRadius = atof(gbStringBuf);
     } else if(code == CHECKER) {
       if(DEBUG) printf("FOUND CHECKER\n");
-      tex->type = TEXTURE_CHECKER;        
+      tex->type = TEXTURE_CHECKER;
     } else {
       if(DEBUG) printf("TEXTURE PROPERTY INVALID %s\n", gbStringBuf);
       return code;
@@ -210,6 +217,7 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
   }
 
   Texture_SetPhong(phong, phongExp, isMetallic, tex);
+  Texture_SetReflect(rfl, tex);
   Texture_SetRadii(minRadius, maxRadius, tex);
 
   Texture_Setup(tex);

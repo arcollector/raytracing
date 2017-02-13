@@ -61,7 +61,7 @@ BBOX *BBOXList_New(
   long *unboundedObjectListLength
 ) {
 
-  BBOX *first, *prev = NULL;
+  BBOX *first = NULL, *prev = NULL;
   *bboxListLength = 0;
   for(Object *obj = objectList, *aux = NULL; obj; obj = obj->next) {
     BBOX *bbox = BBOX_New(obj);

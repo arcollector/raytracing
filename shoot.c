@@ -2,7 +2,7 @@
 
 static Ray Shoot_BuildRay(double x, double y, Camera *cam);
 
-static RGB Shoot_Single(
+static Vector Shoot_Single(
   double x, double y,
   BBOXTree *root, long treeObjectLength,
   Object *unboundedObjectList, long unboundedObjectListLength,
@@ -21,11 +21,11 @@ static RGB Shoot_Single(
  * (0,4), (1,4), (2,4), (3,4), (4,4)
  */
 typedef struct {
-  RGB pixel[5][5];
+  Vector pixel[5][5];
   int flag[5][5];
 } Window;
 
-static RGB Shoot_Multi(
+static Vector Shoot_Multi(
   double x, double y, int i, int j,
   Window *window, int upto,
   int isStochastic,
@@ -36,7 +36,7 @@ static RGB Shoot_Multi(
 
 // maximum diff between avg color and corner colors
 // used in multi/stochastic sampling
-#define AVG_DIFF 2
+#define AVG_DIFF 5./255.
 
 // stochastic jittering used to generate a poisson disk
 // distribution of the ray samples
@@ -51,9 +51,9 @@ Ray Shoot_BuildRay(double x, double y, Camera *cam) {
   //Vector_Print(ps); Vector_Print(pvp); printf("\n");
   // to world space (change of axes)
   Vector pw = Vector_MulMatrix(pvp,cam->invLocal);
-  
+
   // build ray (world space)
-  Ray ray = Ray_Normalize(Ray_New(cam->viewerPos,pw));
+  Ray ray = Ray_Normalize(Ray_FromP1toP2(cam->viewerPos,pw));
   //Ray_Print(ray); exit(0);
 
   return ray;
@@ -66,7 +66,7 @@ RGB Shoot(
   Object *unboundedObjectList, long unboundedObjectListLength
 ) {
 
-  RGB pixel;
+  Vector pixel;
   // if stochastic or multisamplig
   if(scene->aa == AA_STOCHASTIC || scene->aa == AA_MULTI) {
     Window window = { .flag = {0} };
@@ -88,10 +88,10 @@ RGB Shoot(
     );
   }
 
-  return pixel;
+  return Vector_ToRGB(pixel);
 }
 
-RGB Shoot_Single(
+Vector Shoot_Single(
   double x, double y,
   BBOXTree *root, long treeObjectLength,
   Object *unboundedObjectList, long unboundedObjectListLength,
@@ -99,8 +99,9 @@ RGB Shoot_Single(
 ) {
   // build ray
   Ray ray = Shoot_BuildRay(x+.5,y+.5,scene->cam);
-  RGB pixel = Shade(
+  Vector pixel = Shade(
     ray,
+    0,
     root,treeObjectLength,
     unboundedObjectList,unboundedObjectListLength,
     scene
@@ -108,7 +109,7 @@ RGB Shoot_Single(
   return pixel;
 }
 
-RGB Shoot_Multi(
+Vector Shoot_Multi(
   double x, double y, int i, int j,
   Window *window, int upto,
   int isStochastic,
@@ -134,13 +135,13 @@ RGB Shoot_Multi(
   }
 
   // compute topleft, topright, bottomleft and bottomright colors
-  RGB c1, c2, c3, c4, avg;
+  Vector c1, c2, c3, c4, avg;
 
-  #define AVG_4_COLORS(x,y,z,w) \
-    RGB_New( \
-        MIN(255,ROUND((x.red +   y.red +   z.red +   w.red)/4.)), \
-        MIN(255,ROUND((x.green + y.green + z.green + w.green)/4.)), \
-        MIN(255,ROUND((x.blue +  y.blue +  z.blue +  w.blue)/4.)) \
+  #define AVG_4_COLORS(c1,c2,c3,c4) \
+    Vector_New( \
+        ((c1.x + c2.x + c3.x + c4.x)/4.), \
+        ((c1.y + c2.y + c3.y + c4.y)/4.), \
+        ((c1.z + c2.z + c3.z + c4.z)/4.) \
       )
 
   #define COMPUTE_CORNER_COLOR(ii,jj,rx,ry) \
@@ -152,6 +153,7 @@ RGB Shoot_Multi(
       ); \
       window->pixel[jj][ii] = Shade( \
         ray, \
+        0, \
         root,treeObjectLength, \
         unboundedObjectList,unboundedObjectListLength, \
         scene \
@@ -180,18 +182,18 @@ RGB Shoot_Multi(
   avg = AVG_4_COLORS(c1,c2,c3,c4);
   // how much differ avg and corners colors
   if(upto == 1 ||
-      abs(avg.red - c1.red) <= AVG_DIFF &&
-      abs(avg.green - c1.green) <= AVG_DIFF &&
-      abs(avg.blue - c1.blue) <= AVG_DIFF &&
-      abs(avg.red - c2.red) <= AVG_DIFF &&
-      abs(avg.green - c2.green) <= AVG_DIFF &&
-      abs(avg.blue - c2.blue) <= AVG_DIFF &&
-      abs(avg.red - c3.red) <= AVG_DIFF &&
-      abs(avg.green - c3.green) <= AVG_DIFF &&
-      abs(avg.blue - c3.blue) <= AVG_DIFF &&
-      abs(avg.red - c4.red) <= AVG_DIFF &&
-      abs(avg.green - c4.green) <= AVG_DIFF &&
-      abs(avg.blue - c4.blue) <= AVG_DIFF) {
+      fabs(avg.x - c1.x) <= AVG_DIFF &&
+      fabs(avg.y - c1.y) <= AVG_DIFF &&
+      fabs(avg.z - c1.z) <= AVG_DIFF &&
+      fabs(avg.x - c2.x) <= AVG_DIFF &&
+      fabs(avg.y - c2.y) <= AVG_DIFF &&
+      fabs(avg.z - c2.z) <= AVG_DIFF &&
+      fabs(avg.x - c3.x) <= AVG_DIFF &&
+      fabs(avg.y - c3.y) <= AVG_DIFF &&
+      fabs(avg.z - c3.z) <= AVG_DIFF &&
+      fabs(avg.x - c4.x) <= AVG_DIFF &&
+      fabs(avg.y - c4.y) <= AVG_DIFF &&
+      fabs(avg.z - c4.z) <= AVG_DIFF) {
     // enough
     return avg;
   }

@@ -76,7 +76,7 @@ Camera *Camera_New(
   return cam;
 }
 
-void Camera_PrepareForShooting(
+void Camera_Setup(
   long width,
   long height,
   Camera *cam

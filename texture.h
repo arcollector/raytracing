@@ -10,6 +10,8 @@
 #include "vector.h"
 #include "matrix.h"
 
+extern int gbDebug;
+
 #define TEXTURE_MAX_LENGTH 10
 #define TEXTURE_DEFAULT 0
 #define TEXTURE_SKY 1
@@ -23,6 +25,7 @@ typedef struct {
   long type;
   Vector translate, scale;
   Matrix local, invLocal;
+  double rfl;
   double kA;
   double kS; long expS; int isMetallic;
   double minRadius, maxRadius;
@@ -39,6 +42,7 @@ void Texture_SetPhong(
   int isMetallic,
   Texture *tex
 );
+void Texture_SetReflect(double rfl, Texture *tex);
 void Texture_SetRadii(double minRadius, double maxRadius, Texture *tex);
 void Texture_SetScale(Vector v, Texture *tex);
 

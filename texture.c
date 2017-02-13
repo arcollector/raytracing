@@ -15,6 +15,7 @@ Texture *Texture_New() {
   tex->scale = Vector_New(1,1,1);
   tex->local = Matrix_New();
   tex->invLocal = Matrix_New();
+  tex->rfl = 0;
   tex->kA = 0.1;
   tex->kS = 0;
   tex->expS = 0;
@@ -40,6 +41,9 @@ void Texture_Setup(Texture *tex) {
       Texture_AddColor(0, Vector_New(1,1,1), tex);
       Texture_AddColor(0, Vector_New(0,0,0), tex);
     }
+
+  } else if(tex->minRadius > 0 || tex->maxRadius > 0) {
+    tex->type = TEXTURE_SPHERICAL;
   }
 
   Matrix scale = Matrix_New();
@@ -53,19 +57,13 @@ void Texture_Setup(Texture *tex) {
   translate._32 = -tex->translate.z;
 
   tex->local = Matrix_Mul(scale,translate);
-
-  if(tex->minRadius > 0 || tex->maxRadius > 0) {
-    tex->type = TEXTURE_SPHERICAL;
-  }
 }
 
 void Texture_AddColor(double t, Vector color, Texture *tex) {
   long i = tex->length;
   if(i == TEXTURE_MAX_LENGTH) return;
   tex->limit[i] = t;
-  tex->color[i].x = color.x;
-  tex->color[i].y = color.y;
-  tex->color[i].z = color.z;
+  tex->color[i] = color;
   tex->length++;
 }
 
@@ -137,6 +135,10 @@ void Texture_SetPhong(
   tex->kS = phong;
   tex->expS = phongExp;
   tex->isMetallic = isMetallic;
+}
+
+void Texture_SetReflect(double rfl, Texture *tex) {
+  tex->rfl = rfl;
 }
 
 void Texture_SetRadii(double minRadius, double maxRadius, Texture *tex) {

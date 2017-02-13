@@ -14,6 +14,8 @@
 
 static void *trace(void *arg);
 
+#define DEBUG_PIXEL(x,y) (BMP_SetPixel(&gbCanvas,x,y,RGB_New(255,255,255)))
+
 // **** GLOBALS ****
 
 int gbDebug = 0;
@@ -170,7 +172,7 @@ int main(int argc, char *argv[]) {
   gbUnboundedObjectListLength = gbScene->objectListLength;
   #endif
 
-  Camera_PrepareForShooting(width,height,gbScene->cam);
+  Camera_Setup(width,height,gbScene->cam);
 
   printf("--- RAY TRACING GO! ---\n");
   ttTime();

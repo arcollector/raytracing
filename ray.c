@@ -1,6 +1,13 @@
 #include "ray.h"
 
-Ray Ray_New(Vector p1, Vector p2) {
+Ray Ray_New(Vector start, Vector dir) {
+  Ray ray;
+  ray.start = start;
+  ray.dir = dir;
+  return ray;
+}
+
+Ray Ray_FromP1toP2(Vector p1, Vector p2) {
   Ray ray;
   ray.start = p1;
   ray.dir = Vector_FromP1toP2(ray.start,p2);

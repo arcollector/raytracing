@@ -4,6 +4,7 @@ WIDTH = 500
 HEIGHT = 500
 ANTI_ALIASING = stochastic
 
+/*
 CAMERA {
   loc (10,0,-10)
   upPoint (10,1,-10)
@@ -11,6 +12,16 @@ CAMERA {
   viewerDistance 10
   window (-10,-10) (10,10)
 }
+*/
+
+CAMERA {
+  loc (0,0,-10)
+  upPoint (0,1,-10)
+  lookAt (0,0,0)
+  viewerDistance 10
+  window (-10,-10) (10,10)
+}
+
 
 SKY {
   TEXTURE {
@@ -20,6 +31,10 @@ SKY {
     color 1.01, (.8,.218,0)
     scale (10,10,0)
   }
+}
+
+LAMP {
+  loc (0,10,-10)
 }
 
 SPHERE {
@@ -35,6 +50,7 @@ SPHERE {
   radius 5
   TEXTURE {
     color 1, (0,0,1)
+    reflect .7
   }
 }
 
@@ -44,6 +60,8 @@ PLANE {
   TEXTURE {
     checker
     scale (5,5,5)
-    color 1, (1,1,0)
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
   }
 }

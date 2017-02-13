@@ -14,8 +14,9 @@
 
 extern int gbDebug;
 
-RGB Shade(
+Vector Shade(
   Ray ray,
+  int level,
   BBOXTree *root,
   long treeObjectLength,
   Object *unboundedObjectList,
