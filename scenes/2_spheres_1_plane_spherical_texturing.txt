@@ -45,6 +45,7 @@ PLANE {
   loc (0,-10,0)
   normal (0,1,0)
   TEXTURE {
-    color 1, (1,1,0)
+    checker
+    scale (7,3,10)
   }
 }

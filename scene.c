@@ -47,6 +47,7 @@ enum {
     PHONG, PHONG_EXP, METALLIC,
     SCALE,
     MINRADIUS, MAXRADIUS,
+    CHECKER,
   LAMP,
   SPHERE,
     RADIUS,
@@ -71,12 +72,10 @@ char gbStringTypes[][50] = {
   "TEXTURE",
     "COLOR",
     "AMBIENT",
-    "PHONG",
-    "PHONG_EXP",
-    "METALLIC",
+    "PHONG", "PHONG_EXP", "METALLIC",
     "SCALE",
-    "MINRADIUS",
-    "MAXRADIUS",
+    "MINRADIUS", "MAXRADIUS",
+    "CHECKER",
   "LAMP",
   "SPHERE",
     "RADIUS",
@@ -200,6 +199,9 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       if(DEBUG) printf("FOUND MAX RADIUS\n");
       code = Scene_GetString(fp);
       maxRadius = atof(gbStringBuf);
+    } else if(code == CHECKER) {
+      if(DEBUG) printf("FOUND CHECKER\n");
+      tex->type = TEXTURE_CHECKER;        
     } else {
       if(DEBUG) printf("TEXTURE PROPERTY INVALID %s\n", gbStringBuf);
       return code;
@@ -209,6 +211,8 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
 
   Texture_SetPhong(phong, phongExp, isMetallic, tex);
   Texture_SetRadii(minRadius, maxRadius, tex);
+
+  Texture_Setup(tex);
 
   return code;
 }

@@ -81,10 +81,13 @@ Vector Shade_ComputeColor(
   intersection = Vector_AddVector(intersection,Vector_MulScalar(normal,.01));
   Texture *tex = obj->texture;
   Vector baseColor = Texture_GetColor(intersection,normal,tex);
+  //if(gbDebug) printf("baseColor "), Vector_Print(baseColor);
   Vector white = Vector_New(1,1,1);
   // color * Ka
   Vector color = Vector_MulScalar(baseColor,tex->kA);
+  //if(gbDebug) printf("baseColor * kA "), Vector_Print(color);
   for(Lamp *lamp = lampList; lamp; lamp = lamp->next) {
+    //if(gbDebug) printf("light "), Vector_Print(lamp->position);
     Vector sumTerm = Vector_New(0,0,0);
     // ray from intersection point to lamp location
     Ray pl = Ray_New(intersection,lamp->position);
@@ -102,10 +105,12 @@ Vector Shade_ComputeColor(
         root,treeObjectLength,
         unboundedObjectList,unboundedObjectListLength
       )) {
+      //if(gbDebug) printf("\tshadowed!\n");
       continue;
     }
     // color * Ka + sum[ color * cosI ]
     sumTerm = Vector_AddVector(sumTerm,Vector_MulScalar(baseColor,cosI));
+    //if(gbDebug) printf("\tcosI = %f baseColor*cosI ",cosI), Vector_Print(sumTerm);
     // Phong calc
     if(tex->kS > 0) {
       Vector tmp = Vector_MulScalar(normal, 2*cosI);
@@ -115,9 +120,11 @@ Vector Shade_ComputeColor(
         // color * Ka + sum[ color * cosI + white * Ks * cosR^expS ]
         double factor = tex->kS * pow(cosR, tex->expS);
         tmp = Vector_MulScalar(tex->isMetallic ? baseColor : white, factor);
+        //if(gbDebug) printf("\tcosR = %f white*cosR^expS*kS = %f ",cosR,factor), Vector_Print(tmp);
         sumTerm = Vector_AddVector(sumTerm,tmp);
       }
     }
+    //if(gbDebug) printf("\tsum term "), Vector_Print(sumTerm);
     color = Vector_AddVector(color,sumTerm);
   }
 
@@ -125,5 +132,6 @@ Vector Shade_ComputeColor(
 
   // TODO trace the refract vector
 
+  //if(gbDebug) printf("final "), Vector_Print(color);
   return color;
 }

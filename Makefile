@@ -56,7 +56,7 @@ matrix.o: matrix.h matrix.c
 lamp.o: vector.h vector.c matrix.h matrix.c lamp.h lamp.c
 	gcc -c lamp.c
 
-texture.o: rgb.h rgb.c vector.h vector.c \
+texture.o: rgb.h rgb.c vector.h vector.c matrix.h matrix.c \
 					texture.h texture.c
 	gcc -c texture.c
 

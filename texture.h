@@ -8,23 +8,29 @@
 #include "helpers.h"
 #include "rgb.h"
 #include "vector.h"
+#include "matrix.h"
 
+#define TEXTURE_MAX_LENGTH 10
 #define TEXTURE_DEFAULT 0
 #define TEXTURE_SKY 1
+#define TEXTURE_SPHERICAL 2
+#define TEXTURE_CHECKER 3
 
 typedef struct {
   Vector color[16];
   double limit[16];
   long length;
   long type;
+  Vector translate, scale;
+  Matrix local, invLocal;
   double kA;
   double kS; long expS; int isMetallic;
-  Vector scale;
-  double minRadius, maxRadius; // used in spherical texturing
+  double minRadius, maxRadius;
 } Texture;
 
 Texture *Texture_New();
 Texture *Texture_FromRGB(RGB color);
+void Texture_Setup(Texture *tex);
 
 void Texture_SetAmbient(double ambient, Texture *tex);
 void Texture_SetPhong(

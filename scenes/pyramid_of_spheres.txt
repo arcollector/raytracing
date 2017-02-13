@@ -2,7 +2,7 @@ FILE_NAME = pyramid_of_spheres.bmp
 
 WIDTH = 1000
 HEIGHT = 1000
-ANTI_ALIASING = stochastic
+ANTI_ALIASING = none
 
 CAMERA {
   loc (15,15,-10)
@@ -1006,6 +1006,9 @@ PLANE {
   loc (0,-10,0)
   normal (0,1,0)
   TEXTURE {
+    scale (5,5,5)
+    checker
     color 1, (1,1,0)
+    color 1, (0,1,1)
   }
 }
