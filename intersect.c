@@ -1,34 +1,47 @@
 #include "intersect.h"
 
-static Object *Intersect_RayObject(
+static Hit *Intersect_RayObject(
   Ray ray,
   Object *objectList,
   double *tValue,
-  double dist
+  double dist,
+  double *attenuate
 ) {
 
-  Object *returnObj = NULL;
+  Hit *returnHit = NULL, *tmp = NULL;
   int isShadowCasting = dist > 0;
   for(Object *obj = objectList; obj; obj = obj->next) {
-    double t = (*obj->intersect)(ray,obj->primitive);
+    if(!(tmp = (*obj->intersect)(ray,obj->primitive))) continue;
+    Hit_Begin(tmp);
+    double t = Hit_Next(tmp);
+    // Hit_Next return always the first positive t value (if any)
     if(t > 0 && t < *tValue) {
-      // dist is used to test if t has length less than dist
-      // used for shadow testing
+      Hit_SetObject(obj, tmp);
       if(isShadowCasting) {
-        if(t < dist) return obj;
+        // is object farthest than light source
+        if(t > dist) continue;
+        // rfr is the refraction coeff
+        double rfr = obj->texture->rfr;
+        // object is opaque
+        if(rfr <= 0) return tmp;
+        // attenuate shadow
+        if(attenuate) *attenuate *= rfr;
       } else {
         *tValue = t;
-        returnObj = obj;
+        returnHit = tmp;
       }
+    } else {
+      Hit_Free(tmp);
     }
   }
-  return returnObj;
+  return returnHit;
 }
 
-static Object *_Intersect(
+static Hit *_Intersect(
   Ray ray,
   double *tValue,
   double dist,
+  double *attenuate,
   BBOXTree *root,
   long treeObjectLength,
   Object *unboundedObjectList,
@@ -36,7 +49,7 @@ static Object *_Intersect(
 ) {
 
   *tValue = POSITIVE_INFINITY;
-  Object *tmp, *intersected = NULL;
+  Hit *tmp = NULL, *intersected = NULL;
   int isShadowCasting = dist > 0;
   // root is null if the scene contains only unbounded objects
   if(root) {
@@ -54,7 +67,14 @@ static Object *_Intersect(
       if(node->right) stack[stackLength++] = node->right;
       // node is leaf if node->objectList contains objects
       if(node->objectListLength &&
-        (tmp = Intersect_RayObject(ray,node->objectList,tValue,dist))) {
+        (tmp = Intersect_RayObject(
+          ray,
+          node->objectList,
+          tValue,
+          dist,
+          attenuate)
+         )
+      ) {
         intersected = tmp;
         if(isShadowCasting) isAbort = 1;
       }
@@ -65,7 +85,15 @@ static Object *_Intersect(
   }
 
   if(unboundedObjectListLength &&
-    (tmp = Intersect_RayObject(ray,unboundedObjectList,tValue,dist))) {
+    (tmp = Intersect_RayObject(
+      ray,
+      unboundedObjectList,
+      tValue,
+      dist,
+      attenuate
+      )
+    )
+  ) {
     intersected = tmp;
     if(isShadowCasting) return intersected;
   }
@@ -73,7 +101,7 @@ static Object *_Intersect(
   return intersected;
 }
 
-Object *Intersect(
+Hit *Intersect(
   Ray ray,
   double *tValue,
   BBOXTree *root,
@@ -86,6 +114,7 @@ Object *Intersect(
     ray,
     tValue,
     0,
+    NULL,
     root,
     treeObjectLength,
     unboundedObjectList,
@@ -96,6 +125,7 @@ Object *Intersect(
 int Intersect_Shadow(
   Ray ray,
   double dist,
+  double *attenuate,
   BBOXTree *root,
   long treeObjectLength,
   Object *unboundedObjectList,
@@ -107,6 +137,7 @@ int Intersect_Shadow(
     ray,
     &tValue,
     dist,
+    attenuate,
     root,
     treeObjectLength,
     unboundedObjectList,

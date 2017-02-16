@@ -11,6 +11,7 @@
 #include "bbox.h"
 #include "scene.h"
 #include "intersect.h"
+#include "object.h"
 
 extern int gbDebug;
 

@@ -25,7 +25,7 @@ Sphere *Sphere_New(Vector center, double radius, Texture *tex) {
   return sphere;
 }
 
-double Sphere_Intersect(Ray ray, void *_sphere) {
+Hit *Sphere_Intersect(Ray ray, void *_sphere) {
 
   Sphere *sphere = _sphere;
 
@@ -38,23 +38,14 @@ double Sphere_Intersect(Ray ray, void *_sphere) {
   double disc = b*b - c;
   // not intersection possible
   if(disc < EPSILON) {
-    return -1;
+    return NULL;
   }
 
   double term = sqrt(disc);
   double t1 = -b - term;
   double t2 = -b + term;
 
-  // point behind start point
-  if(t1 < 0 && t2 < 0) {
-    return -1;
-  }
-  // ray start inside sphere
-  if(t1 < 0) {
-    return t2;
-  }
-
-  return t1;
+  return Hit_New(2,t1,t2);
 }
 
 Vector Sphere_Normal(Vector point, void *_sphere) {

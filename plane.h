@@ -11,6 +11,7 @@
 #include "matrix.h"
 #include "ray.h"
 #include "texture.h"
+#include "hit.h"
 
 typedef struct {
   Vector center;
@@ -19,7 +20,7 @@ typedef struct {
 } Plane;
 
 Plane *Plane_New(Vector center, Vector normal, Texture *tex);
-double Plane_Intersect(Ray ray, void *plane);
+Hit *Plane_Intersect(Ray ray, void *plane);
 Vector Plane_Normal(Vector point, void *plane);
 void Plane_Print(void *plane);
 void Plane_Free(void *plane);

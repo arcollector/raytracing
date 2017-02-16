@@ -16,6 +16,8 @@ Texture *Texture_New() {
   tex->local = Matrix_New();
   tex->invLocal = Matrix_New();
   tex->rfl = 0;
+  tex->rfr = 0;
+  tex->ior = IOR_VACUUM;
   tex->kA = 0.1;
   tex->kS = 0;
   tex->expS = 0;
@@ -141,6 +143,14 @@ void Texture_SetReflect(double rfl, Texture *tex) {
   tex->rfl = rfl;
 }
 
+void Texture_SetRefraction(double rfr, Texture *tex) {
+  tex->rfr = rfr;
+}
+
+void Texture_SetIOR(double ior, Texture *tex) {
+  tex->ior = ior;
+}
+
 void Texture_SetRadii(double minRadius, double maxRadius, Texture *tex) {
   tex->minRadius = minRadius;
   tex->maxRadius = maxRadius;
@@ -157,6 +167,7 @@ void Texture_Print(Texture *tex) {
     Vector c = tex->color[i];
     printf("%ld) %f %f %f\n",i,c.x,c.y,c.z);
   }
+  printf("rfl is %f rfr is %f index is %f\n", tex->rfl, tex->rfr, tex->ior);
   printf("kA is %f\n", tex->kA);
   printf("kS is %f and expS is %ld\n", tex->kS, tex->expS);
   printf("scale is: ");

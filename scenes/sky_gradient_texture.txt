@@ -2,7 +2,7 @@ FILE_NAME = sky_gradrient_texture.bmp
 
 WIDTH = 500
 HEIGHT = 500
-ANTI_ALIASING = stochastic
+ANTI_ALIASING = none
 
 /*
 CAMERA {
@@ -42,6 +42,8 @@ SPHERE {
   radius 5
   TEXTURE {
     color 1, (1,0,0)
+    refraction .9
+    index 1.33
   }
 }
 
@@ -51,6 +53,14 @@ SPHERE {
   TEXTURE {
     color 1, (0,0,1)
     reflect .7
+  }
+}
+
+SPHERE {
+  loc (0,0,10)
+  radius 5
+  TEXTURE {
+    color 1, (0,1,0)
   }
 }
 

@@ -13,13 +13,13 @@ Plane *Plane_New(Vector center, Vector normal, Texture *tex) {
   return plane;
 }
 
-double Plane_Intersect(Ray ray, void *_plane) {
+Hit *Plane_Intersect(Ray ray, void *_plane) {
 
   Plane *plane = _plane;
 
   double deno = Vector_Dot(plane->normal, ray.dir);
   if(fabs(deno) < EPSILON) { // not intersection possible
-    return -1;
+    return NULL;
   }
 
   double nume = Vector_Dot(plane->normal,
@@ -28,10 +28,10 @@ double Plane_Intersect(Ray ray, void *_plane) {
 
   double t = nume/deno;
   if(fabs(t) < EPSILON) {
-    return -1;
+    return NULL;
   }
 
-  return t;
+  return Hit_New(1,t);
 }
 
 Vector Plane_Normal(Vector point, void *_plane) {

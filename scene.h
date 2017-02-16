@@ -11,6 +11,7 @@
 #include "matrix.h"
 #include "camera.h"
 #include "texture.h"
+#include "hit.h"
 #include "lamp.h"
 #include "object.h"
 #include "sphere.h"

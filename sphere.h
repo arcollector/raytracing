@@ -9,6 +9,7 @@
 #include "matrix.h"
 #include "ray.h"
 #include "texture.h"
+#include "hit.h"
 
 extern int gbDebug;
 
@@ -22,7 +23,7 @@ typedef struct {
 } Sphere;
 
 Sphere *Sphere_New(Vector center, double radius, Texture *tex);
-double Sphere_Intersect(Ray ray, void *sphere);
+Hit *Sphere_Intersect(Ray ray, void *sphere);
 Vector Sphere_Normal(Vector point, void *sphere);
 void Sphere_Print(void *sphere);
 void Sphere_Free(void *sphere);

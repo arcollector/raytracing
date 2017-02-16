@@ -30,4 +30,10 @@
 * checker texture -- **done! *(13/02/2017)***
 
 
-* add reflect and refract recursive calls
+* add reflect and refract recursive calls -- **done! *(16/02/2017)***
+
+
+* add clipping
+
+
+* add solid texturing

@@ -1,14 +1,17 @@
 #ifndef INTERSECT_H
 #define INTERSECT_H
 
-#include "rgb.h"
+#include "helpers.h"
 #include "vector.h"
 #include "ray.h"
 #include "bbox.h"
+#include "object.h"
+#include "hit.h"
+#include "texture.h"
 
 extern int gbDebug;
 
-Object *Intersect(
+Hit *Intersect(
   Ray ray,
   double *tValue,
   BBOXTree *root,
@@ -20,6 +23,7 @@ Object *Intersect(
 int Intersect_Shadow(
   Ray ray,
   double dist,
+  double *attenuate,
   BBOXTree *root,
   long treeObjectLength,
   Object *unboundedObjectList,

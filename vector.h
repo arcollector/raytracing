@@ -53,6 +53,16 @@ double Vector_Length(Vector v);
 
 Vector Vector_Normalize(Vector v);
 
+Vector Vector_Reflect(Vector incident, Vector normal);
+
+Vector Vector_Refract(
+  Vector incident,
+  Vector normal,
+  double nI,
+  double nR,
+  int *isTIR
+);
+
 void Vector_Print(Vector v);
 
 #endif

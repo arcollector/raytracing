@@ -7,7 +7,7 @@ static int Scene_AddObject(
   void *primitive,
   Texture *tex,
   int type,
-  double (*intersect)(Ray ray, void *primitive),
+  Hit *(*intersect)(Ray ray, void *primitive),
   Vector (*normal)(Vector point, void *primitive),
   void (*print)(void *primitive),
   void (*free)(void *primitive),
@@ -46,6 +46,7 @@ enum {
     AMBIENT,
     PHONG, PHONG_EXP, METALLIC,
     REFLECT,
+    REFRACTION, INDEX,
     SCALE,
     MINRADIUS, MAXRADIUS,
     CHECKER,
@@ -75,6 +76,7 @@ char gbStringTypes[][50] = {
     "AMBIENT",
     "PHONG", "PHONG_EXP", "METALLIC",
     "REFLECT",
+    "REFRACTION", "INDEX",
     "SCALE",
     "MINRADIUS", "MAXRADIUS",
     "CHECKER",
@@ -156,7 +158,7 @@ double Scene_ParseFloat(FILE *fp) {
 int Scene_GetTexture(FILE *fp, Texture *tex) {
   int code;
   double phong = 0; long phongExp = 0; int isMetallic = 0;
-  double rfl = 0;
+  double rfl = 0, rfr = 0, ior = IOR_VACUUM;
   double minRadius = 0, maxRadius = 0;
   Vector tmp;
 
@@ -187,13 +189,21 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       if(DEBUG) printf("FOUND PHONG_EXP\n");
       code = Scene_GetString(fp);
       phongExp = atol(gbStringBuf);
+    } else if(code == METALLIC) {
+      if(DEBUG) printf("FOUND METALLIC\n");
+      isMetallic = 1;
     } else if(code == REFLECT) {
       if(DEBUG) printf("FOUND REFLECT\n");
       code = Scene_GetString(fp);
       rfl =  atof(gbStringBuf);
-    } else if(code == METALLIC) {
-      if(DEBUG) printf("FOUND METALLIC\n");
-      isMetallic = 1;
+    } else if(code == REFRACTION) {
+      if(DEBUG) printf("FOUND REFRACTION\n");
+      code = Scene_GetString(fp);
+      rfr = atof(gbStringBuf);
+    } else if(code == INDEX) {
+      if(DEBUG) printf("FOUND INDEX\n");
+      code = Scene_GetString(fp);
+      ior = atof(gbStringBuf);
     } else if(code == SCALE) {
       if(DEBUG) printf("FOUND SCALE\n");
       tmp = Scene_ParseVector(fp);
@@ -218,6 +228,8 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
 
   Texture_SetPhong(phong, phongExp, isMetallic, tex);
   Texture_SetReflect(rfl, tex);
+  Texture_SetRefraction(rfr, tex);
+  Texture_SetIOR(ior, tex);
   Texture_SetRadii(minRadius, maxRadius, tex);
 
   Texture_Setup(tex);
@@ -229,7 +241,7 @@ int Scene_AddObject(
   void *primitive,
   Texture *tex,
   int type,
-  double (*intersect)(Ray ray, void *primitive),
+  Hit *(*intersect)(Ray ray, void *primitive),
   Vector (*normal)(Vector point, void *primitive),
   void (*print)(void *primitive),
   void (*free)(void *primitive),
