@@ -73,7 +73,7 @@ Vector Shade(
           ray,
           -Vector_Dot(ray.start,ray.start) / Vector_Dot(ray.start,ray.dir)
         ),
-        VECTOR_NULL,
+        VECTOR_ZERO,
         scene->sky
       );
     }

@@ -13,7 +13,8 @@ typedef struct {
 
 #include "matrix.h"
 
-#define VECTOR_NULL Vector_New(0,0,0)
+#define VECTOR_ZERO Vector_New(0,0,0)
+#define VECTOR_NAN Vector_New(NAN,NAN,NAN);
 
 Vector Vector_New(double x, double y, double z);
 Vector Vector2d_New(double x, double y);
