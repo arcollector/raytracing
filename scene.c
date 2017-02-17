@@ -17,8 +17,9 @@ static int Scene_AddObject(
 static void Scene_LoadDefaults(Scene *scene);
 
 static int Scene_GetString(FILE *fp);
-static Vector Scene_ParseVector(FILE *fp);
-static double Scene_ParseFloat(FILE *fp);
+static Vector Scene_ParseVector(FILE *fp, int *code);
+static double Scene_ParseFloat(FILE *fp, int *code);
+static long Scene_ParseLong(FILE *fp, int *code);
 static int Scene_GetTexture(FILE *fp, Texture *tex);
 
 static int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
@@ -141,23 +142,28 @@ int Scene_GetString(FILE *fp) {
   return i;
 }
 
-Vector Scene_ParseVector(FILE *fp) {
-  int code;
+Vector Scene_ParseVector(FILE *fp, int *code) {
   double x,y,z;
-  code = Scene_GetString(fp);
+  *code = Scene_GetString(fp);
   x = atof(gbStringBuf);
-  code = Scene_GetString(fp);
+  *code = Scene_GetString(fp);
   y = atof(gbStringBuf);
-  code = Scene_GetString(fp);
+  *code = Scene_GetString(fp);
   z = atof(gbStringBuf);
   return Vector_New(x,y,z);
 }
 
-double Scene_ParseFloat(FILE *fp) {
-  int code;
+double Scene_ParseFloat(FILE *fp, int *code) {
   double val;
-  code = Scene_GetString(fp);
+  *code = Scene_GetString(fp);
   val = atof(gbStringBuf);
+  return val;
+}
+
+long Scene_ParseLong(FILE *fp, int *code) {
+  long val;
+  *code = Scene_GetString(fp);
+  val = atol(gbStringBuf);
   return val;
 }
 
@@ -173,14 +179,10 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
 
     if(code == COLOR) {
       if(DEBUG) printf("FOUND COLOR\n");
-      code = Scene_GetString(fp);
-      double limit = atof(gbStringBuf);
-      code = Scene_GetString(fp);
-      double r = atof(gbStringBuf);
-      code = Scene_GetString(fp);
-      double g = atof(gbStringBuf);
-      code = Scene_GetString(fp);
-      double b = atof(gbStringBuf);
+      double limit = Scene_ParseFloat(fp, &code);
+      double r = Scene_ParseFloat(fp, &code);
+      double g = Scene_ParseFloat(fp, &code);
+      double b = Scene_ParseFloat(fp, &code);
       Texture_AddColor(limit,Vector_New(r,g,b),tex);
     } else if(code == AMBIENT) {
       if(DEBUG) printf("FOUND AMBIENT\n");
@@ -189,39 +191,32 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       Texture_SetAmbient(ambient, tex);
     } else if(code == PHONG) {
       if(DEBUG) printf("FOUND PHONG\n");
-      code = Scene_GetString(fp);
-      phong = atof(gbStringBuf);
+      phong = Scene_ParseFloat(fp, &code);
     } else if(code == PHONG_EXP) {
       if(DEBUG) printf("FOUND PHONG_EXP\n");
-      code = Scene_GetString(fp);
-      phongExp = atol(gbStringBuf);
+      phongExp = Scene_ParseLong(fp, &code);
     } else if(code == METALLIC) {
       if(DEBUG) printf("FOUND METALLIC\n");
       isMetallic = 1;
     } else if(code == REFLECT) {
       if(DEBUG) printf("FOUND REFLECT\n");
-      code = Scene_GetString(fp);
-      rfl =  atof(gbStringBuf);
+      rfl = Scene_ParseFloat(fp, &code);
     } else if(code == REFRACTION) {
       if(DEBUG) printf("FOUND REFRACTION\n");
-      code = Scene_GetString(fp);
-      rfr = atof(gbStringBuf);
+      rfr = Scene_ParseFloat(fp, &code);
     } else if(code == INDEX) {
       if(DEBUG) printf("FOUND INDEX\n");
-      code = Scene_GetString(fp);
-      ior = atof(gbStringBuf);
+      ior = Scene_ParseFloat(fp, &code);
     } else if(code == SCALE) {
       if(DEBUG) printf("FOUND SCALE\n");
-      tmp = Scene_ParseVector(fp);
+      tmp = Scene_ParseVector(fp, &code);
       Texture_SetScale(tmp,tex);
     } else if(code == MINRADIUS) {
       if(DEBUG) printf("FOUND MIN RADIUS\n");
-      code = Scene_GetString(fp);
-      minRadius = atof(gbStringBuf);
+      minRadius = Scene_ParseFloat(fp, &code);
     } else if(code == MAXRADIUS) {
       if(DEBUG) printf("FOUND MAX RADIUS\n");
-      code = Scene_GetString(fp);
-      maxRadius = atof(gbStringBuf);
+      maxRadius = Scene_ParseFloat(fp, &code);
     } else if(code == CHECKER) {
       if(DEBUG) printf("FOUND CHECKER\n");
       tex->type = TEXTURE_CHECKER;
@@ -440,35 +435,30 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
-      loc = Scene_ParseVector(fp);
+      loc = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(loc);
 
     } else if(code == LOOKAT) {
       if(DEBUG) printf("\tLOOKAT found, ");
-      lookAt = Scene_ParseVector(fp);
+      lookAt = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(lookAt);
 
     } else if(code == UPPOINT) {
       if(DEBUG) printf("\tUPPOINT found, ");
-      upPoint = Scene_ParseVector(fp);
+      upPoint = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(upPoint);
 
     } else if(code == VIEWERDISTANCE) {
       if(DEBUG) printf("\tVIEWDISTANE found, ");
-      Scene_GetString(fp);
-      viewerDistance = atof(gbStringBuf);
+      viewerDistance = Scene_ParseFloat(fp, &code);
       if(DEBUG) printf("%5.5f\n", viewerDistance);
 
     } else if(code == WINDOW) {
       if(DEBUG) printf("\tWINDOW found, ");
-      Scene_GetString(fp);
-      minX = atof(gbStringBuf);
-      Scene_GetString(fp);
-      minY = atof(gbStringBuf);
-      Scene_GetString(fp);
-      maxX = atof(gbStringBuf);
-      Scene_GetString(fp);
-      maxY = atof(gbStringBuf);
+      minX = Scene_ParseFloat(fp, &code);
+      minY = Scene_ParseFloat(fp, &code);
+      maxX = Scene_ParseFloat(fp, &code);
+      maxY = Scene_ParseFloat(fp, &code);
       if(DEBUG) printf("(%5.5f %5.5f)(%5.5f %5.5f)\n",minX,minY,maxX,maxY);
 
     } else {
@@ -508,6 +498,8 @@ int Scene_GetSky(FILE *fp, Scene *scene) {
     }
   }
 
+  // allow duplicated sky declarations, just overwrite
+  if(scene->sky) Texture_Free(scene->sky);
   tex->type = TEXTURE_SKY;
   scene->sky = tex;
 
@@ -524,7 +516,7 @@ int Scene_GetLamp(FILE *fp, Scene *scene) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
-      loc = Scene_ParseVector(fp);
+      loc = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(loc);
 
     } else {
@@ -555,13 +547,13 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
-      loc = Scene_ParseVector(fp);
+      loc = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(loc);
 
     } else if(code == RADIUS) {
       if(DEBUG) printf("\tRADIUS found, ");
-      radius = Scene_ParseFloat(fp);
-      if(DEBUG) printf("%5.5f\n", radius);
+      radius = Scene_ParseFloat(fp, &code);
+      if(DEBUG) printf("%f\n", radius);
 
     } else if(code == TEXTURE) {
       if(DEBUG) printf("\tTEXTURE found\n");
@@ -576,8 +568,14 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
 
   }
 
+  Sphere *sphere = Sphere_New(loc, radius, tex);
+  if(!sphere) {
+    Texture_Free(tex);
+    return ERROR;
+  }
+
   if(!Scene_AddObject(
-    Sphere_New(loc, radius, tex),
+    sphere, 
     tex,
     OBJ_SPHERE,
     Sphere_Intersect,
@@ -587,7 +585,10 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
     Sphere_BBOX,
     scene
     )
-  ) return ERROR;
+  ) {
+    Sphere_Free(sphere);  
+    return ERROR;
+  }
 
   return code;
 }
@@ -603,12 +604,12 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
-      loc = Scene_ParseVector(fp);
+      loc = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(loc);
 
     } else if(code == NORMAL) {
       if(DEBUG) printf("\tNORMAL found, ");
-      normal = Scene_ParseVector(fp);
+      normal = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(normal);
 
     } else if(code == TEXTURE) {
@@ -624,8 +625,14 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
 
   }
 
+  Plane *plane = Plane_New(loc, normal, tex);
+  if(!plane) {
+    Texture_Free(tex);
+    return ERROR;
+  }
+
   if(!Scene_AddObject(
-    Plane_New(loc, normal, tex),
+    plane,
     tex,
     OBJ_PLANE,
     Plane_Intersect,
@@ -635,7 +642,10 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
     NULL,
     scene
     )
-  ) return ERROR;
+  ) {
+    Plane_Free(plane);
+    return ERROR;
+  }
 
   return code;
 }
@@ -654,12 +664,12 @@ int Scene_GetPolygon(FILE *fp, Scene *scene) {
 
     if(code == LOC) {
       if(DEBUG) printf("\tLOC found, ");
-      loc = Scene_ParseVector(fp);
+      loc = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(loc);
 
     } else if(code == NORMAL) {
       if(DEBUG) printf("\tNORMAL found, ");
-      normal = Scene_ParseVector(fp);
+      normal = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(normal);
 
     } else if(code == TEXTURE) {
@@ -669,7 +679,7 @@ int Scene_GetPolygon(FILE *fp, Scene *scene) {
 
     } else if(code == VERTEX) {
       if(DEBUG) printf("\tVERTEX found\n");
-      Vector vertex = Scene_ParseVector(fp);
+      Vector vertex = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(vertex);
       vertices = realloc(vertices,sizeof(Vector)*(verticesLength+1));
       vertices[verticesLength++] = vertex;
@@ -690,7 +700,7 @@ int Scene_GetPolygon(FILE *fp, Scene *scene) {
     return ERROR;
   }
 
-  if(!Polygon_SetVertices(verticesLength, vertices, poly)) {
+  if(!Polygon_Setup(verticesLength, vertices, poly)) {
     free(vertices);
     Polygon_Free(poly);
     return ERROR;
@@ -708,7 +718,10 @@ int Scene_GetPolygon(FILE *fp, Scene *scene) {
     Polygon_BBOX,
     scene
     )
-  ) return ERROR;
+  ) {
+    Polygon_Free(poly);
+    return ERROR;
+  }
 
   return code;
 }
@@ -735,5 +748,4 @@ void Scene_Print(Scene *scene) {
     (*node->print)(node->primitive);
   }
   printf("==== END ====\n");
-
 }

@@ -1,7 +1,6 @@
 #include "plane.h"
 
 Plane *Plane_New(Vector center, Vector normal, Texture *tex) {
-
   Plane *plane = malloc(sizeof(Plane));
   if(!plane) return NULL;
 
@@ -14,13 +13,11 @@ Plane *Plane_New(Vector center, Vector normal, Texture *tex) {
 }
 
 Hit *Plane_Intersect(Ray ray, void *_plane) {
-
   Plane *plane = _plane;
 
   double deno = Vector_Dot(plane->normal, ray.dir);
-  if(fabs(deno) < EPSILON) { // not intersection possible
-    return NULL;
-  }
+  // not intersection possible
+  if(fabs(deno) < EPSILON) return NULL;
 
   double nume = Vector_Dot(
     plane->normal,
@@ -28,10 +25,6 @@ Hit *Plane_Intersect(Ray ray, void *_plane) {
   );
 
   double t = nume/deno;
-  if(fabs(t) < EPSILON) {
-    return NULL;
-  }
-
   return Hit_New(1,t);
 }
 
@@ -42,8 +35,9 @@ Vector Plane_Normal(Vector point, void *_plane) {
 
 void Plane_Print(void *_plane) {
   Plane *plane = _plane;
-  printf("plane normal is: "); Vector_Print(plane->normal);
-  printf("plane center is: \n"); Vector_Print(plane->center);
+  printf("===== PLANE =====\n");
+  printf("normal is: "); Vector_Print(plane->normal);
+  printf("center is: "); Vector_Print(plane->center);
   Texture_Print(plane->tex);
 }
 

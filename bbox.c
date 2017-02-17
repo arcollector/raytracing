@@ -42,7 +42,8 @@ Vector BBOX_GetAxis(int index) {
 
 BBOX *BBOX_New(Object *obj) {
 
-  // not bounding box possible
+  // primitive dont support bbox
+  // it will form part of the unbounded objects list
   if(!obj->bbox) return NULL;
 
   BBOX *bbox = malloc(sizeof(BBOX));
@@ -50,6 +51,13 @@ BBOX *BBOX_New(Object *obj) {
   bbox->next = NULL;
 
   (*obj->bbox)(bbox);
+
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+    bbox->centroid[i] = Vector_DivScalar(
+      Vector_AddVector(bbox->min[i], bbox->max[i]),
+      2
+    );
+  }
 
   return bbox;
 }

@@ -5,7 +5,10 @@ Hit *Hit_New(int length, ...) {
   Hit *hit = malloc(sizeof(Hit));
   if(!hit) return NULL;
   hit->t = calloc(length, sizeof(double));
-  if(!hit->t) return NULL;
+  if(!hit->t) {
+    free(hit);
+    return NULL;
+  }
 
   hit->start = 0;
   hit->next = -1;
@@ -19,7 +22,7 @@ Hit *Hit_New(int length, ...) {
   for(int i = 0; i < length; i++) {
     double t = hit->t[i] = va_arg(argp, double);
     if(fabs(t) < EPSILON) hit->allPositive = 0;
-    if(t >= -EPSILON && !isStart) {
+    if(t > -EPSILON && !isStart) {
       isStart = 1;
       hit->start = i;
     }

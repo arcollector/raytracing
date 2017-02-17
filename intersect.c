@@ -15,7 +15,7 @@ static Hit *Intersect_RayObject(
     Hit_Begin(tmp);
     double t = Hit_Next(tmp);
     // Hit_Next return always the first positive t value (if any)
-    if(t > 0 && t < *tValue) {
+    if(t >= 0 && t < *tValue) {
       Hit_SetObject(obj, tmp);
       if(isShadowCasting) {
         // is object farthest than light source

@@ -104,9 +104,9 @@ Vector Shade_ComputeColor(
   );
   Object *obj = hit->object;
   void *primitive = obj->primitive;
-  Vector normal = (*obj->normal)(intersection,primitive);
-  // move the intersection off from the primitive by a little amount
-  // to avoid self intersection on the recursive calls
+  Vector normal = (*obj->normal)(intersection, primitive);
+  // move off the intersection from the primitive by a little amount
+  // to avoid self intersection
   Vector pi = Vector_AddVector(intersection,Vector_MulScalar(normal,EPSILON));
   Texture *tex = obj->texture;
   Vector baseColor = Texture_GetColor(pi,normal,tex);
@@ -142,7 +142,10 @@ Vector Shade_ComputeColor(
       if(cosR > 0) {
         // color * Ka + sum[ color * cosI + white * Ks * cosR^expS ]
         double factor = tex->kS * pow(cosR, tex->expS);
-        Vector tmp = Vector_MulScalar(tex->isMetallic ? baseColor : white, factor);
+        Vector tmp = Vector_MulScalar(
+          tex->isMetallic ? baseColor : white,
+          factor
+        );
         sumTerm = Vector_AddVector(sumTerm,tmp);
       }
     }
@@ -151,13 +154,13 @@ Vector Shade_ComputeColor(
 
   if(tex->rfl > 0) {
     Vector rflColor = Shade(
-      Shade_RayReflect(ray.dir,intersection,normal),
+      Shade_RayReflect(ray.dir, intersection, normal),
       level + 1,
       root, treeObjectLength,
       unboundedObjectList, unboundedObjectListLength,
       scene
     );
-    color = Vector_AddVector(color,Vector_MulScalar(rflColor, tex->rfl));
+    color = Vector_AddVector(color, Vector_MulScalar(rflColor, tex->rfl));
   }
 
   if(tex->rfr > 0) {
@@ -178,7 +181,7 @@ Vector Shade_ComputeColor(
         unboundedObjectList, unboundedObjectListLength,
         scene
       );
-      color = Vector_AddVector(color,Vector_MulScalar(rfrColor, tex->rfr));
+      color = Vector_AddVector(color, Vector_MulScalar(rfrColor, tex->rfr));
     }
   }
 
@@ -207,8 +210,8 @@ int Shade_RayRefract(
   Ray *rayRefract,
   Object *obj
 ) {
-  // incident must pointing to nR medium
-  // normal must pointing to nI medium
+  // incident must point to nR medium
+  // normal must point to nI medium
   int isTIR;
   Vector refract = Vector_Refract(
     incident,
@@ -219,8 +222,8 @@ int Shade_RayRefract(
   );
   void *primitive = obj->primitive;
   // using the refract vector, build a ray and intersect it
-  // with current primitive, find out where this refract ray
-  // will intersect
+  // with the current primitive, find out where this refracted
+  // ray intersect
   Ray ray = Ray_New(intersection,refract);
   Hit *hit = (*obj->intersect)(ray,primitive);
   if(!hit) {
@@ -237,7 +240,9 @@ int Shade_RayRefract(
   intersection = Ray_PointAt(ray,Hit_Next(hit));
   Hit_Free(hit);
   // use the normal at the exit point
-  // we need normal pointing to medium 1
+  // we need that the normal must point to inside
+  // by default, all primitives returns a normal
+  // that points to the outside of the primitve
   normal = Vector_Negate((*obj->normal)(intersection,primitive));
   // calc exit refract vector
   // it will an exit refract vector if a tir dont ocurr
@@ -255,8 +260,8 @@ int Shade_RayRefract(
 
   *rayRefract = Ray_New(
     // move intersection point by a little to avoid self intersection
-    // remember that normal was negated
-    Vector_AddVector(intersection,Vector_MulScalar(normal,-EPSILON)),
+    // remember that the normal was negated
+    Vector_AddVector(intersection, Vector_MulScalar(normal,-EPSILON)),
     refract
   );
 

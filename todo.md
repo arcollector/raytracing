@@ -6,7 +6,7 @@
 * create an object structure to hold all geometry structure -- **done!**
 
 
-* bounding box tree for rapid ray intersection calculations -- **done! *(21/01/2017)***
+* bounding box tree for rapid ray intersection calculations -- **done! *(21/01/2017)**
 
   * add min heap for better performance
 
@@ -21,16 +21,35 @@
 
 * stochastic ray shooting -- **done!**
 
-  * quad tree may not necessary for such task -- **done! *(02/02/2017)***
+  * quad tree may not necessary for such task -- **done! (02/02/2017)**
+  * it seems that stochastic does not work, fix it when you have ganas
 
 
-* polygon object -- **done! *(17/02/2017)***
+* polygon object -- **done! *(17/02/2017)**
 
 
-* checker texture -- **done! *(13/02/2017)***
+* box object
 
 
-* add reflect and refract recursive calls -- **done! *(16/02/2017)***
+* circle object
+
+
+* cone object
+
+
+* cylinder object
+
+
+* quadratic object
+
+
+* ring object
+
+
+* checker texture -- **done! *(13/02/2017)**
+
+
+* add reflect and refract recursive calls -- **done! *(16/02/2017)**
 
 
 * add clipping

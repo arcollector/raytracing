@@ -37,11 +37,10 @@ typedef struct {
 } Mesh;
 
 Polygon *Polygon_New(Texture *tex);
-int Polygon_SetVertices(long pointsLength, Vector *points, Polygon *poly);
+int Polygon_Setup(long pointsLength, Vector points[], Polygon *poly);
 
 Hit *Polygon_Intersect(Ray ray, void *poly);
 Vector Polygon_Normal(Vector point, void *poly);
-
 void Polygon_Free(void *poly);
 void Polygon_Print(void *poly);
 

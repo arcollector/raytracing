@@ -23,6 +23,7 @@ typedef struct {
 } Sphere;
 
 Sphere *Sphere_New(Vector center, double radius, Texture *tex);
+
 Hit *Sphere_Intersect(Ray ray, void *sphere);
 Vector Sphere_Normal(Vector point, void *sphere);
 void Sphere_Print(void *sphere);

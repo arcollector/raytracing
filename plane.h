@@ -20,6 +20,7 @@ typedef struct {
 } Plane;
 
 Plane *Plane_New(Vector center, Vector normal, Texture *tex);
+
 Hit *Plane_Intersect(Ray ray, void *plane);
 Vector Plane_Normal(Vector point, void *plane);
 void Plane_Print(void *plane);

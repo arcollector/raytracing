@@ -1,5 +1,52 @@
 #include "polygon.h"
 
+static int Polygon_SetVertices(
+  long pointsLength,
+  Vector points[],
+  Polygon *poly
+) {
+  if(pointsLength < 3) return 0;
+  poly->vertices = calloc(pointsLength,sizeof(Vertex));
+  if(!poly->vertices) return 0;
+  for(long i = 0; i < pointsLength; i++) {
+    poly->vertices[i].p = points[i];
+  }
+  poly->verticesLength = pointsLength;
+  return 1;
+}
+
+static int Polygon_SetNormal(Polygon *poly) {
+  if(poly->verticesLength < 3) return 0;
+  // polygon vertices must be specified
+  // in cw ordering so that the normal will
+  // point to the outside of the polygon
+  Vector p0 = poly->vertices[0].p,
+         p1 = poly->vertices[1].p,
+         p2 = poly->vertices[2].p;
+  poly->normal = Vector_Normalize(
+    Vector_Cross(
+      Vector_FromP1toP2(p0, p1),
+      Vector_FromP1toP2(p0, p2)
+    )
+  );
+  return 1;
+}
+
+static int Polygon_SetEdges(Polygon *poly) {
+  long verticesLength = poly->verticesLength;
+  if(!verticesLength) return 0;
+  poly->edges = calloc(verticesLength,sizeof(Edge));
+  if(!poly->edges) return 0;
+  for(long i = 0; i < verticesLength; i++) {
+    Vertex v1 = poly->vertices[i];
+    Vertex v2 = poly->vertices[(i+1)%verticesLength];
+    poly->edges[i].v1 = v1;
+    poly->edges[i].v2 = v2;
+  }
+  poly->edgesLength = verticesLength;
+  return 1;
+}
+
 Polygon *Polygon_New(Texture *tex) {
 
   Polygon *poly = malloc(sizeof(Polygon));
@@ -17,45 +64,16 @@ Polygon *Polygon_New(Texture *tex) {
   return poly;
 }
 
-int Polygon_SetVertices(long pointsLength, Vector *points, Polygon *poly) {
-  if(pointsLength < 3) return 0;
-  poly->vertices = calloc(pointsLength,sizeof(Vertex));
-  if(!poly->vertices) return 0;
-  for(long i = 0; i < pointsLength; i++) {
-    poly->vertices[i].p = points[i];
-  }
-  poly->verticesLength = pointsLength;
-  // polygon vertices must be specified
-  // in cw ordering so that the normal will
-  // point to the outside of the polygon
-  Vector p0 = points[0],
-         p1 = points[1],
-         p2 = points[2];
-  poly->normal = Vector_Normalize(
-    Vector_Cross(
-      Vector_FromP1toP2(p0, p1),
-      Vector_FromP1toP2(p0, p2)
-    )
-  );
-  poly->edges = calloc(pointsLength,sizeof(Edge));
-  if(!poly->edges) return 0;
-  for(long i = 0; i < pointsLength; i++) {
-    Vertex v1 = poly->vertices[i];
-    Vertex v2 = poly->vertices[(i+1)%pointsLength];
-    poly->edges[i].v1 = v1;
-    poly->edges[i].v2 = v2; 
-  }
-  poly->edgesLength = pointsLength;
-  return 1;
+int Polygon_Setup(long pointsLength, Vector points[], Polygon *poly) {
+  return Polygon_SetVertices(pointsLength, points, poly) &&
+     Polygon_SetEdges(poly) &&
+     Polygon_SetNormal(poly);
 }
 
-Hit *Polygon_Intersect(Ray ray, void *_poly) {
-  Polygon *poly = _poly;
-
+static Hit *Polygon_IntersectRayPlane(Ray ray, Polygon *poly) {
   double deno = Vector_Dot(poly->normal, ray.dir);
-  if(fabs(deno) < EPSILON) { // not intersection possible
-    return NULL;
-  }
+  // not intersection possible
+  if(fabs(deno) < EPSILON) return NULL;
 
   double nume = Vector_Dot(
     poly->normal,
@@ -63,11 +81,10 @@ Hit *Polygon_Intersect(Ray ray, void *_poly) {
   );
 
   double t = nume/deno;
-  if(fabs(t) < EPSILON) {
-    return NULL;
-  }
+  return Hit_New(1,t);
+}
 
-  Vector pi = Ray_PointAt(ray,t);
+static int Polygon_IsPointInside(Vector point, Polygon *poly) {
   // find out dominant axis
   Vector n = poly->normal;
   double nx = fabs(n.x);
@@ -77,32 +94,42 @@ Hit *Polygon_Intersect(Ray ray, void *_poly) {
   int useY = ny >= nx && nx >= nz ? 1 : 0;
   int useZ = !useX && !useY ? 1 : 0;
   int prevSign, isFirstRun = 1;
-  // test if pi is inside polygon projected edges
+  // test if intersection is inside polygon projected edges
   for(long i = 0; i < poly->edgesLength; i++) {
     Edge edge = poly->edges[i];
     Vector v1 = edge.v1.p;
     Vector v2 = edge.v2.p;
     double res;
     if(useX) {
-      res = (pi.y - v1.y)*(v2.z - v1.z) -
-            (pi.z - v1.z)*(v2.y - v1.y);
+      res = (point.y - v1.y)*(v2.z - v1.z) -
+            (point.z - v1.z)*(v2.y - v1.y);
     } else if(useY) {
-      res = (pi.x - v1.x)*(v2.z - v1.z) -
-            (pi.z - v1.z)*(v2.x - v1.x);
+      res = (point.x - v1.x)*(v2.z - v1.z) -
+            (point.z - v1.z)*(v2.x - v1.x);
     } else {
-      res = (pi.y - v1.y)*(v2.x - v1.x) -
-            (pi.x - v1.x)*(v2.y - v1.y);
+      res = (point.y - v1.y)*(v2.x - v1.x) -
+            (point.x - v1.x)*(v2.y - v1.y);
     }
     double sign = SIGN(res);
     if(isFirstRun) {
       isFirstRun = 0;
     } else if(sign != 0 && sign != prevSign) {
-      return NULL;
+      return 0;
     }
     prevSign = sign;
   }
+  return 1;
+}
 
-  return Hit_New(1,t);
+Hit *Polygon_Intersect(Ray ray, void *_poly) {
+  Polygon *poly = _poly;
+  Hit *hit = Polygon_IntersectRayPlane(ray,poly);
+  if(!hit || !hit->allPositive) return NULL;
+  if(!Polygon_IsPointInside(Ray_PointAt(ray,hit->t[0]),poly)) {
+    Hit_Free(hit);
+    return NULL;
+  }
+  return hit;
 }
 
 Vector Polygon_Normal(Vector point, void *_poly) {
@@ -155,9 +182,5 @@ void Polygon_BBOX(BBOX *bbox) {
     Vector axis = BBOX_GetAxis(i);
     bbox->min[i] = Vector_MulScalar(axis, Vector_Dot(axis, min));
     bbox->max[i] = Vector_MulScalar(axis, Vector_Dot(axis, max));
-    bbox->centroid[i] = Vector_DivScalar(
-      Vector_AddVector(bbox->min[i], bbox->max[i]),
-      2
-    );
   }
 }

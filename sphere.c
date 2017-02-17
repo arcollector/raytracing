@@ -1,7 +1,6 @@
 #include "sphere.h"
 
 Sphere *Sphere_New(Vector center, double radius, Texture *tex) {
-
   Sphere *sphere = malloc(sizeof(Sphere));
   if(!sphere) return NULL;
 
@@ -26,7 +25,6 @@ Sphere *Sphere_New(Vector center, double radius, Texture *tex) {
 }
 
 Hit *Sphere_Intersect(Ray ray, void *_sphere) {
-
   Sphere *sphere = _sphere;
 
   // ray in world space to sphere space
@@ -37,9 +35,7 @@ Hit *Sphere_Intersect(Ray ray, void *_sphere) {
 
   double disc = b*b - c;
   // not intersection possible
-  if(disc < EPSILON) {
-    return NULL;
-  }
+  if(disc < 0) return NULL;
 
   double term = sqrt(disc);
   double t1 = -b - term;
@@ -57,9 +53,9 @@ Vector Sphere_Normal(Vector point, void *_sphere) {
 
 void Sphere_Print(void *_sphere) {
   Sphere *sphere = _sphere;
-  printf("sphere center: (%5.5f %5.5f %5.5f)",
-    sphere->center.x,sphere->center.y,sphere->center.z);
-  printf(" radius: %5.5f\n", sphere->radius);
+  printf("==== SPHERE ====\n");
+  printf("center is "); Vector_Print(sphere->center);
+  printf("radius is %f\n", sphere->radius);
   Texture_Print(sphere->tex);
 }
 
@@ -78,9 +74,5 @@ void Sphere_BBOX(BBOX *bbox) {
     Vector max = Vector_MulScalar(axis, length + sphere->radius);
     bbox->min[i] = min;
     bbox->max[i] = max;
-    bbox->centroid[i] = Vector_DivScalar(
-      Vector_AddVector(bbox->min[i], bbox->max[i]),
-      2
-    );
   }
 }
