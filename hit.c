@@ -18,7 +18,7 @@ Hit *Hit_New(int length, ...) {
   int isStart = 0;
   for(int i = 0; i < length; i++) {
     double t = hit->t[i] = va_arg(argp, double);
-    if(t < -EPSILON) hit->allPositive = 0;
+    if(fabs(t) < EPSILON) hit->allPositive = 0;
     if(t >= -EPSILON && !isStart) {
       isStart = 1;
       hit->start = i;

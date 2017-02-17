@@ -91,6 +91,10 @@ void Camera_Setup(
   cam->win = win;
 }
 
+void Camera_Free(Camera *cam) {
+  free(cam);
+}
+
 void Camera_Print(Camera *cam) {
   printf("==== CAMERA CONFIG ===\n");
   printf("left: %5.5f %5.5f %5.5f\n",

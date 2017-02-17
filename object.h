@@ -6,9 +6,15 @@
 #include "ray.h"
 #include "texture.h"
 #include "hit.h"
+#include "bbox.h"
 
-#define OBJ_SPHERE 1
-#define OBJ_PLANE 2
+enum {
+  OBJ_SPHERE = 1,
+  OBJ_PLANE,
+  OBJ_POLYGON
+} ObjectTypes;
+
+typedef struct BBOXStruct BBOX;
 
 typedef struct ObjectStruct {
   void *primitive;
@@ -19,6 +25,7 @@ typedef struct ObjectStruct {
   Texture *texture;
   void (*print)(void *primitive);
   void (*free)(void *primitive);
+  void (*bbox)(BBOX *bbox);
 } Object;
 
 #endif

@@ -11,6 +11,7 @@ static int Scene_AddObject(
   Vector (*normal)(Vector point, void *primitive),
   void (*print)(void *primitive),
   void (*free)(void *primitive),
+  void (*bbox)(BBOX *bbox),
   Scene *scene
 );
 static void Scene_LoadDefaults(Scene *scene);
@@ -26,6 +27,7 @@ static int Scene_GetSky(FILE *fp, Scene *scene);
 static int Scene_GetLamp(FILE *fp, Scene *scene);
 static int Scene_GetSphere(FILE *fp, Scene *scene);
 static int Scene_GetPlane(FILE *fp, Scene *scene);
+static int Scene_GetPolygon(FILE *fp, Scene *scene);
 
 enum {
   FILE_NAME = 0,
@@ -54,6 +56,8 @@ enum {
   SPHERE,
     RADIUS,
   PLANE,
+  POLYGON,
+    VERTEX,
   CURLY,
   TOTAL_IDS,
   ERROR
@@ -84,6 +88,8 @@ char gbStringTypes[][50] = {
   "SPHERE",
     "RADIUS",
   "PLANE",
+  "POLYGON",
+    "VERTEX",
   "}",
   '\0'
 };
@@ -245,6 +251,7 @@ int Scene_AddObject(
   Vector (*normal)(Vector point, void *primitive),
   void (*print)(void *primitive),
   void (*free)(void *primitive),
+  void (*bbox)(BBOX *bbox),
   Scene *scene
 ) {
 
@@ -258,6 +265,7 @@ int Scene_AddObject(
   obj->normal = normal;
   obj->print = print;
   obj->free = free;
+  obj->bbox = bbox;
 
   obj->next = scene->objectList;
   scene->objectList = obj;
@@ -314,6 +322,7 @@ void Scene_LoadDefaults(Scene *scene) {
 
 void Scene_Free(Scene *scene) {
   free(scene->fileName);
+  Camera_Free(scene->cam);
   if(scene->objectListLength) {
     for(Object *node = scene->objectList, *next; node; node = next) {
       next = node->next;
@@ -376,6 +385,10 @@ int Scene_Setup(FILE *fp, Scene **scene) {
     } else if(code == PLANE) {
       if(DEBUG) printf("PLANE found\n");
       code = Scene_GetPlane(fp, *scene);
+
+    } else if(code == POLYGON) {
+      if(DEBUG) printf("POLYGON found\n");
+      code = Scene_GetPolygon(fp, *scene);
 
     } else {
       if(strlen(gbStringBuf)) {
@@ -464,6 +477,8 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
     }
   }
 
+  // already have a camera? if so, overwrite
+  if(scene->cam) Camera_Free(scene->cam);
   scene->cam = Camera_New(
     loc, upPoint, lookAt,
     viewerDistance,
@@ -488,6 +503,7 @@ int Scene_GetSky(FILE *fp, Scene *scene) {
 
     } else {
       if(DEBUG) printf("\tSKY property invalid: %s\n", gbStringBuf);
+      Texture_Free(tex);
       return ERROR;
     }
   }
@@ -554,6 +570,7 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
 
     } else {
       if(DEBUG) printf("\tSPHERE property invalid: %s\n", gbStringBuf);
+      Texture_Free(tex);
       return ERROR;
     }
 
@@ -567,6 +584,7 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
     Sphere_Normal,
     Sphere_Print,
     Sphere_Free,
+    Sphere_BBOX,
     scene
     )
   ) return ERROR;
@@ -600,6 +618,7 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
 
     } else {
       if(DEBUG) printf("\tPLANE property invalid: %s\n", gbStringBuf);
+      Texture_Free(tex);
       return ERROR;
     }
 
@@ -613,6 +632,80 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
     Plane_Normal,
     Plane_Print,
     Plane_Free,
+    NULL,
+    scene
+    )
+  ) return ERROR;
+
+  return code;
+}
+
+int Scene_GetPolygon(FILE *fp, Scene *scene) {
+
+  int code;
+  Vector loc, normal;
+  Texture *tex = Texture_New();
+  Polygon *poly = Polygon_New(tex);
+  Vector *vertices = NULL;
+  long verticesLength = 0;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == LOC) {
+      if(DEBUG) printf("\tLOC found, ");
+      loc = Scene_ParseVector(fp);
+      if(DEBUG) Vector_Print(loc);
+
+    } else if(code == NORMAL) {
+      if(DEBUG) printf("\tNORMAL found, ");
+      normal = Scene_ParseVector(fp);
+      if(DEBUG) Vector_Print(normal);
+
+    } else if(code == TEXTURE) {
+      if(DEBUG) printf("\tTEXTURE found\n");
+      code = Scene_GetTexture(fp,tex);
+      if(DEBUG) Texture_Print(tex);
+
+    } else if(code == VERTEX) {
+      if(DEBUG) printf("\tVERTEX found\n");
+      Vector vertex = Scene_ParseVector(fp);
+      if(DEBUG) Vector_Print(vertex);
+      vertices = realloc(vertices,sizeof(Vector)*(verticesLength+1));
+      vertices[verticesLength++] = vertex;
+
+    } else {
+      if(DEBUG) printf("\tPOLYGON property invalid: %s\n", gbStringBuf);
+      if(vertices) free(vertices);
+      Polygon_Free(poly);
+      return ERROR;
+    }
+
+  }
+
+  if(verticesLength < 3) {
+    if(DEBUG) printf("\tPOLYGON missing VERTEX or VERTEX count less than 3\n");
+    if(vertices) free(vertices);
+    Polygon_Free(poly);
+    return ERROR;
+  }
+
+  if(!Polygon_SetVertices(verticesLength, vertices, poly)) {
+    free(vertices);
+    Polygon_Free(poly);
+    return ERROR;
+  }
+  free(vertices);
+
+  if(!Scene_AddObject(
+    poly,
+    tex,
+    OBJ_POLYGON,
+    Polygon_Intersect,
+    Polygon_Normal,
+    Polygon_Print,
+    Polygon_Free,
+    Polygon_BBOX,
     scene
     )
   ) return ERROR;

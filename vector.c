@@ -37,11 +37,11 @@ Vector Vector_FromRGB(RGB color) {
 }
 
 RGB Vector_ToRGB(Vector color) {
-  return RGB_New(
-    MAX(0,MIN(255,ROUND(color.x * 255))),
-    MAX(0,MIN(255,ROUND(color.y * 255))),
-    MAX(0,MIN(255,ROUND(color.z * 255)))
-  );
+  RGB res;
+  res.red = MAX(0,MIN(255,ROUND(color.x * 255)));
+  res.green = MAX(0,MIN(255,ROUND(color.y * 255)));
+  res.blue = MAX(0,MIN(255,ROUND(color.z * 255)));
+  return res;
 }
 
 Vector Vector_AddVector(Vector v1,Vector v2) {

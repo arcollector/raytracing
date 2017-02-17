@@ -1,27 +1,57 @@
 FILE_NAME = sky_gradrient_texture.bmp
 
-WIDTH = 500
-HEIGHT = 500
+WIDTH = 1280
+HEIGHT = 1024
 ANTI_ALIASING = none
 
-/*
+/* right */
 CAMERA {
-  loc (10,0,-10)
-  upPoint (10,1,-10)
+  loc (-50,0,25)
+  upPoint (-50,1,25)
+  lookAt (0,0,25)
+  viewerDistance 10
+  window (-10,-10) (10,10)
+}
+/* back */
+CAMERA {
+  loc (0,0,75)
+  upPoint (0,1,75)
   lookAt (0,0,0)
   viewerDistance 10
   window (-10,-10) (10,10)
 }
-*/
-
+/* bottom */
+CAMERA {
+  loc (0,-50,25)
+  upPoint (0,-50,24)
+  lookAt (0,0,25)
+  viewerDistance 10
+  window (-10,-10) (10,10)
+}
+/* left */
+CAMERA {
+  loc (50,0,25)
+  upPoint (50,1,25)
+  lookAt (0,0,25)
+  viewerDistance 10
+  window (-10,-10) (10,10)
+}
+/* slant */
+CAMERA {
+  loc (40,5,1)
+  upPoint (40,6,1)
+  lookAt (0,0,25)
+  viewerDistance 10
+  window (-10,-10) (10,10)
+}
+/* front */
 CAMERA {
   loc (0,0,-10)
   upPoint (0,1,-10)
   lookAt (0,0,0)
   viewerDistance 10
-  window (-10,-10) (10,10)
+  window (-11,-8.8) (11,8.8)
 }
-
 
 SKY {
   TEXTURE {
@@ -38,7 +68,7 @@ LAMP {
 }
 
 SPHERE {
-  loc (-6,0,0)
+  loc (-6,0,5)
   radius 5
   TEXTURE {
     color 1, (1,0,0)
@@ -48,7 +78,7 @@ SPHERE {
 }
 
 SPHERE {
-  loc (6,0,0)
+  loc (6,0,5)
   radius 5
   TEXTURE {
     color 1, (0,0,1)
@@ -57,19 +87,107 @@ SPHERE {
 }
 
 SPHERE {
-  loc (0,0,10)
+  loc (0,0,15)
   radius 5
   TEXTURE {
     color 1, (0,1,0)
   }
 }
 
+/*
 PLANE {
   loc (0,-10,0)
   normal (0,1,0)
   TEXTURE {
     checker
     scale (5,5,5)
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
+  }
+}
+*/
+
+/* paralepiped */
+/* front */
+POLYGON {
+  vertex = -29.9 -9.9 -4.9
+  vertex = -29.9 -9.4 -4.9
+  vertex = 29.9 -9.4 -4.9
+  vertex = 29.9 -9.9 -4.9
+  TEXTURE {
+    checker
+    scale 5 5 5
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
+  }
+}
+/* back */
+POLYGON {
+  vertex = 29.9 -9.4 54.9
+  vertex = -29.9 -9.4 54.9
+  vertex = -29.9 -9.9 54.9
+  vertex = 29.9 -9.9 54.9
+  TEXTURE {
+    checker
+    scale 5 5 5
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
+  }
+}
+/* top */
+POLYGON {
+  vertex = -29.9 -9.4 -4.9
+  vertex = -29.9 -9.4 54.9
+  vertex = 29.9 -9.4 54.9
+  vertex = 29.9 -9.4 -4.9
+  TEXTURE {
+    checker
+    scale 5 5 5
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
+  }
+}
+/* bottom */
+POLYGON {
+  vertex = -29.9 -9.9 -4.9
+  vertex = 29.9 -9.9 -4.9
+  vertex = 29.9 -9.9 54.9
+  vertex = -29.9 -9.9 54.9
+  TEXTURE {
+    checker
+    scale 5 5 5
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
+  }
+}
+/* right */
+POLYGON {
+  vertex = 29.9 -9.4 -4.9
+  vertex = 29.9 -9.4 54.9
+  vertex = 29.9 -9.9 54.9
+  vertex = 29.9 -9.9 -4.9
+  TEXTURE {
+    checker
+    scale 5 5 5
+    color 1, (.5,.9,.3)
+    color 1, (.5,.1,.7)
+    reflect 1
+  }
+}
+/* left */
+POLYGON {
+  vertex = -29.9 -9.4 54.9
+  vertex = -29.9 -9.4 -4.9
+  vertex = -29.9 -9.9 -4.9
+  vertex = -29.9 -9.9 54.9
+  TEXTURE {
+    checker
+    scale 5 5 5
     color 1, (.5,.9,.3)
     color 1, (.5,.1,.7)
     reflect 1

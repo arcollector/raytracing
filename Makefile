@@ -6,14 +6,14 @@ clean:
 
 install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				lamp.o texture.o \
-				sphere.o plane.o \
+				sphere.o plane.o polygon.o \
 				scene.o shade.o shoot.o intersect.o hit.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o
 	gcc raytracing.c -o bin/raytracing \
 				rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				lamp.o texture.o \
-				sphere.o plane.o \
+				sphere.o plane.o polygon.o \
 				scene.o shade.o shoot.o intersect.o hit.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o \
@@ -64,13 +64,17 @@ ray.o: vector.h vector.c matrix.h matrix.c \
 			ray.h ray.c
 	gcc -c ray.c
 
-sphere.o: helpers.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c hit.h hit.c \
+sphere.o: helpers.h vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c hit.h hit.c bbox.h bbox.c \
 					sphere.h sphere.c
 	gcc -c sphere.c
 
-plane.o: helpers.h rgb.h rgb.c vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c hit.h hit.c \
+plane.o: helpers.h vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c hit.h hit.c \
 				plane.h plane.c
 	gcc -c plane.c
+
+polygon.o: helpers.h vector.h vector.c matrix.h matrix.c ray.h ray.c texture.h texture.c hit.h hit.c bbox.h bbox.c \
+					polygon.h polygon.c
+	gcc -c polygon.c
 
 windowing.o: vector.h vector.c matrix.h matrix.c \
 						windowing.h windowing.c
@@ -80,7 +84,7 @@ camera.o: vector.h vector.c matrix.h matrix.c windowing.h windowing.c \
 					camera.h camera.c
 	gcc -c camera.c
 
-scene.o: rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c object.h texture.h texture.c lamp.h lamp.c hit.h hit.c \
+scene.o: rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c object.h texture.h texture.c lamp.h lamp.c hit.h hit.c bbox.h bbox.c \
 				sphere.h sphere.c \
 				plane.h plane.c \
 				scene.h scene.c
@@ -94,7 +98,7 @@ shoot.o: helpers.h rgb.h rgb.c vector.h vector.h ray.h ray.c camera.h camera.c o
 				shoot.h shoot.c
 	gcc -c shoot.c
 
-bbox.o: helpers.h vector.h vector.c object.h sphere.h sphere.c \
+bbox.o: helpers.h vector.h vector.c object.h \
 				bbox.h bbox.c
 	gcc -c bbox.c
 

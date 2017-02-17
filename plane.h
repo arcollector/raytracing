@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "helpers.h"
-#include "rgb.h"
 #include "vector.h"
 #include "matrix.h"
 #include "ray.h"
@@ -17,6 +16,7 @@ typedef struct {
   Vector center;
   Vector normal;
   Texture *tex;
+  Matrix local, invLocal;
 } Plane;
 
 Plane *Plane_New(Vector center, Vector normal, Texture *tex);

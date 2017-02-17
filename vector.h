@@ -6,12 +6,13 @@
 
 #include "helpers.h"
 #include "rgb.h"
+#include "matrix.h"
 
-typedef struct {
+typedef struct VectorStruct {
   double x,y,z,w;
 } Vector;
 
-#include "matrix.h"
+typedef struct MatrixStruct Matrix;
 
 #define VECTOR_ZERO Vector_New(0,0,0)
 #define VECTOR_NAN Vector_New(NAN,NAN,NAN);

@@ -8,7 +8,6 @@
 #include "helpers.h"
 #include "vector.h"
 #include "object.h"
-#include "sphere.h"
 
 #define BBOX_AXES_COUNT 3
 
@@ -53,6 +52,5 @@ void BBOXTree_Print(BBOXTree *tree);
 
 int BBOX_Intersect(Ray ray, BBOX *bbox);
 int BBOXTree_NodeIntersect(Ray ray, BBOXTree *node);
-void BBOX_Sphere(BBOX *bbox);
 
 #endif

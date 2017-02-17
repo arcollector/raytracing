@@ -24,7 +24,7 @@
   * quad tree may not necessary for such task -- **done! *(02/02/2017)***
 
 
-* polygon object
+* polygon object -- **done! *(17/02/2017)***
 
 
 * checker texture -- **done! *(13/02/2017)***

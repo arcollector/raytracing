@@ -51,10 +51,9 @@ Ray Shoot_BuildRay(double x, double y, Camera *cam) {
   //Vector_Print(ps); Vector_Print(pvp); printf("\n");
   // to world space (change of axes)
   Vector pw = Vector_MulMatrix(pvp,cam->invLocal);
-
   // build ray (world space)
   Ray ray = Ray_Normalize(Ray_FromP1toP2(cam->viewerPos,pw));
-  //Ray_Print(ray); exit(0);
+  //Ray_Print(ray);
 
   return ray;
 }

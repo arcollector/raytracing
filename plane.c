@@ -22,7 +22,8 @@ Hit *Plane_Intersect(Ray ray, void *_plane) {
     return NULL;
   }
 
-  double nume = Vector_Dot(plane->normal,
+  double nume = Vector_Dot(
+    plane->normal,
     Vector_SubVector(plane->center, ray.start)
   );
 
@@ -36,7 +37,7 @@ Hit *Plane_Intersect(Ray ray, void *_plane) {
 
 Vector Plane_Normal(Vector point, void *_plane) {
   Plane *plane = _plane;
-  return plane->normal;  
+  return plane->normal;
 }
 
 void Plane_Print(void *_plane) {

@@ -1,4 +1,4 @@
-FILE_NAME = spheres_and_shadows.bmp
+FILE_NAME = spheres_and_lights.bmp
 WIDTH = 500
 HEIGHT = 500
 ANTI_ALIASING = none

@@ -213,6 +213,6 @@ double Texture_Spherical(Vector p, Texture *tex) {
 
 Vector Texture_Checker(Vector p, Texture *tex) {
   p = Vector_MulMatrix(p, tex->local);
-  return ((int)p.x + (int)p.y + (int)p.z) % 2 == 0 ?
+  return ((long)p.x + (long)p.y + (long)p.z) % 2 == 0 ?
     tex->color[0] : tex->color[1];
 }

@@ -13,9 +13,11 @@
 #include "texture.h"
 #include "hit.h"
 #include "lamp.h"
+#include "bbox.h"
 #include "object.h"
 #include "sphere.h"
 #include "plane.h"
+#include "polygon.h"
 
 #define AA_NONE 1
 #define AA_MULTI 2

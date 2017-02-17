@@ -43,13 +43,13 @@ Vector BBOX_GetAxis(int index) {
 BBOX *BBOX_New(Object *obj) {
 
   // not bounding box possible
-  if(obj->type == OBJ_PLANE) return NULL;
+  if(!obj->bbox) return NULL;
 
   BBOX *bbox = malloc(sizeof(BBOX));
   bbox->obj = obj;
   bbox->next = NULL;
 
-  if(obj->type == OBJ_SPHERE) BBOX_Sphere(bbox);
+  (*obj->bbox)(bbox);
 
   return bbox;
 }
@@ -143,7 +143,8 @@ void BBOXTree_ComputeNodeBBOX(BBOXTree *node, BBOX *bboxList) {
     node->bbox.min[i] = bbox->min[i];
     node->bbox.max[i] = bbox->max[i];
   }
-  for(bbox = bbox->next; bbox; bbox = bbox->next) { // keep iteratig
+  // keep iterating
+  for(bbox = bbox->next; bbox; bbox = bbox->next) {
     totalObjects++;
     for(long i = 0; i < BBOX_AXES_COUNT; i++) {
       node->bbox.min[i].x = MIN(node->bbox.min[i].x, bbox->min[i].x);
@@ -295,6 +296,7 @@ BBOXTree *BBOXTree_BuildHierarchy(
 
 void BBOX_Print(BBOX *bbox) {
 
+  printf("===== BBOX =====\n");
   printf("object is %d\n",bbox->obj->type);
   (*bbox->obj->print)(bbox->obj->primitive);
   for(long i = 0; i < BBOX_AXES_COUNT; i++) {
@@ -303,7 +305,6 @@ void BBOX_Print(BBOX *bbox) {
     Vector_Print(bbox->max[i]);
     Vector_Print(bbox->centroid[i]);
   }
-  printf("==============\n");
 }
 
 void BBOXList_Print(BBOX *bboxList) {
@@ -389,13 +390,13 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
     Vector min = bbox->min[i];
     Vector max = bbox->max[i];
     double deno = Vector_Dot(axis, ray.dir);
-    //printf("axis  %ld\n",i);
-    //printf("\tdeno %5.5f\n", deno);
+    //if(gbDebug) printf("axis  %ld -> ",i), Vector_Print(axis);
+    //if(gbDebug) printf("\tdeno %5.5f\n", deno);
     if(fabs(deno) < EPSILON) {
       double dist1 = Vector_Dot(axis, Vector_SubVector(min, ray.start));
       double dist2 = Vector_Dot(axis, Vector_SubVector(max, ray.start));
       if(SIGN(dist1) == SIGN(dist2)) {
-        //printf("\tray is outside bounding box\n");
+        //if(gbDebug) printf("\tray is outside bounding box\n");
         return 0; // outside bounding box
       }
       continue; // infinite intersection
@@ -408,7 +409,7 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
     double tMin = MIN(t1,t2);
     double tMax = MAX(t1,t2);
-    //printf("\tt1 %5.5f,t2 %5.5f,tMin %5.5f,tMax %5.5f\n", t1,t2,tMin,tMax);
+    //if(gbDebug) printf("\tt1 %5.5f,t2 %5.5f,tMin %5.5f,tMax %5.5f\n", t1,t2,tMin,tMax);
     if(tMax < 0) {
       return 0; // not intersection possible
     }
@@ -432,21 +433,4 @@ int BBOX_Intersect(Ray ray, BBOX *bbox) {
 
 int BBOXTree_NodeIntersect(Ray ray, BBOXTree *node) {
   return BBOX_Intersect(ray, &node->bbox);
-}
-
-void BBOX_Sphere(BBOX *bbox) {
-
-  Sphere *sphere = bbox->obj->primitive;
-
-  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
-    Vector axis = BBOX_GetAxis(i);
-    double length = Vector_Dot(axis, sphere->center);
-    Vector min = Vector_MulScalar(axis, length - sphere->radius);
-    Vector max = Vector_MulScalar(axis, length + sphere->radius);
-    bbox->min[i] = min;
-    bbox->max[i] = max;
-    bbox->centroid[i] = Vector_DivScalar(
-      Vector_AddVector(bbox->min[i], bbox->max[i]), 2
-    );
-  }
 }

@@ -32,5 +32,6 @@ void Camera_Setup(
 );
 
 void Camera_Print(Camera *cam);
+void Camera_Free(Camera *cam);
 
 #endif

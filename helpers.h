@@ -8,7 +8,7 @@
 #define POSITIVE_INFINITY 1e10
 #define NEGATIVE_INFINITY -POSITIVE_INFINITY
 
-#define SIGN(x) ((x) < 0 ? -1 : 1)
+#define SIGN(x) (fabs(x) <= EPSILON ? 0 : (x) > 0 ? 1 : -1)
 
 #define DEG2RAD(x) ((x)/180.*PI)
 

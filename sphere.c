@@ -68,3 +68,19 @@ void Sphere_Free(void *_sphere) {
   Texture_Free(sphere->tex);
   free(sphere);
 }
+
+void Sphere_BBOX(BBOX *bbox) {
+  Sphere *sphere = bbox->obj->primitive;
+  for(long i = 0; i < BBOX_AXES_COUNT; i++) {
+    Vector axis = BBOX_GetAxis(i);
+    double length = Vector_Dot(axis, sphere->center);
+    Vector min = Vector_MulScalar(axis, length - sphere->radius);
+    Vector max = Vector_MulScalar(axis, length + sphere->radius);
+    bbox->min[i] = min;
+    bbox->max[i] = max;
+    bbox->centroid[i] = Vector_DivScalar(
+      Vector_AddVector(bbox->min[i], bbox->max[i]),
+      2
+    );
+  }
+}

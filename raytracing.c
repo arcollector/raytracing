@@ -90,6 +90,7 @@ void *trace(void *arg) {
   for(long y = yStart; y < yEnd; y++) {
     for(long x = 0; x < width; x++) {
       //printf("(%ld %ld)\n",x,y);
+      //gbDebug = x == 260 && y == 400 ? 1 : 0;
       RGB pixel = Shoot(
         x,y,
         gbScene,
