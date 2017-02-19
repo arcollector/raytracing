@@ -1,0 +1,139 @@
+FILE_NAME clip_sphere.bmp
+WIDTH 1000
+HEIGHT 1000
+
+CAMERA {
+  loc (2,5,0)
+  upPoint (2,6,0)
+  lookAt (0,0,10)
+  viewerDistance 10
+  window (-10,-10) (10,10)
+}
+
+LAMP {
+  loc (10,10,10)
+  falloff 1
+  strength 10
+}
+
+LAMP {
+  loc (-10,10,0)
+  falloff 1
+  strength 10
+}
+
+SKY {
+  TEXTURE {
+    color 0, (0,.5,1)
+  }
+}
+
+SPHERE {
+  loc (0,0,10)
+  radius 7
+  TEXTURE {
+    ambient .2
+    color 1, (1,1,0)
+  }
+
+  CLIP_PLANE {
+    normal (0,-1,0)
+    loc (0,0,10)
+  }
+
+  CLIP_PLANE {
+    normal (-1,-1,0)
+    loc (0,0,10)
+  }
+
+}
+
+SPHERE {
+  loc (10,0,10)
+  radius 3
+  TEXTURE {
+    color 1, (1,0,0)
+  }
+
+  CLIP_OUT_CONE {
+    apex (10,10,10),
+    base (10,2.5,10),
+    min_radius 0
+    max_radius 3
+  }
+
+
+  CLIP_PLANE {
+    normal (0,1,0);
+    loc (10,-1,10);
+  }
+
+  CLIP_PLANE {
+    normal (-1,-.2,0)
+    loc (10,0,10)
+  }
+
+}
+
+SPHERE {
+  loc (-12,0,10)
+  radius 3
+  TEXTURE {
+    color 1, (1,1,1)
+  }
+
+  CLIP_OUT_CONE {
+    apex (-12,0,13)
+    min_radius 0
+    base (-12,0,7)
+    max_radius 1
+  }
+
+  CLIP_OUT_SPHERE {
+    loc (-10,2,10)
+    radius 2.5
+  }
+
+}
+
+SPHERE {
+  loc (0,0,0)
+  radius 1
+  TEXTURE {
+    color 1, (0,1,0)
+  }
+
+  CLIP_OUT_BOX {
+    base (-0.5,-0.5,-1.5)
+    apex (0.5,0.5,1.5)
+  }
+
+}
+
+PLANE {
+  loc (0,0,30)
+  normal (0,0,-1)
+  TEXTURE {
+    color 1, (1,.5,.5)
+  }
+
+  CLIP_OUT_CONE {
+    apex (5,4,30)
+    min_radius 1
+    base (-5,4,30)
+    max_radius 5
+  }
+
+  CLIP_OUT_CONE {
+    apex (0,10,30)
+    min_radius 1
+    base (0,7,30)
+    max_radius 2
+  }
+
+  CLIP_OUT_SPHERE {
+    loc(-20,10,30)
+    radius 3
+  }
+
+}

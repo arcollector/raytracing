@@ -85,9 +85,9 @@ Matrix Matrix_Transpose(Matrix m) {
 
 void Matrix_Print(Matrix m) {
   printf(
-    "[%5.5f %5.5f %5.5f %5.5f]"
-    "[%5.5f %5.5f %5.5f %5.5f]"
-    "[%5.5f %5.5f %5.5f %5.5f]"
+    "[%5.5f %5.5f %5.5f %5.5f]\n"
+    "[%5.5f %5.5f %5.5f %5.5f]\n"
+    "[%5.5f %5.5f %5.5f %5.5f]\n"
     "[%5.5f %5.5f %5.5f %5.5f]\n",
     m._00, m._01, m._02, m._03,
     m._10, m._11, m._12, m._13,

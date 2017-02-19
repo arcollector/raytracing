@@ -13,26 +13,36 @@ static Hit *Intersect_RayObject(
   for(Object *obj = objectList; obj; obj = obj->next) {
     if(!(tmp = (*obj->intersect)(ray,obj->primitive))) continue;
     Hit_Begin(tmp);
-    double t = Hit_Next(tmp);
-    // Hit_Next return always the first positive t value (if any)
-    if(t >= 0 && t < *tValue) {
-      Hit_SetObject(obj, tmp);
+    while(!Hit_IsEnd(tmp)) {
+      double t = Hit_Next(tmp);
+      // ignore t small values
+      if(t < EPSILON) continue;
+      // do clip test (if any)
+      if(obj->clipListLength &&
+        !Clip(Ray_PointAt(ray,t), obj->clipList)) {
+        continue;
+      }
       if(isShadowCasting) {
         // is object farthest than light source
         if(t > dist) continue;
         // rfr is the refraction coeff
         double rfr = obj->texture->rfr;
         // object is opaque
-        if(rfr <= 0) return tmp;
+        if(rfr <= 0) {
+          Hit_Free(tmp);
+          return tmp;
+        }
         // attenuate shadow
         if(attenuate) *attenuate *= rfr;
-      } else {
+
+      } else if(t < *tValue) {
         *tValue = t;
-        returnHit = tmp;
+        if(returnHit) Hit_Free(returnHit);
+        returnHit = Hit_New(1,t);
+        Hit_SetObject(obj,returnHit);
       }
-    } else {
-      Hit_Free(tmp);
     }
+    Hit_Free(tmp);
   }
   return returnHit;
 }
@@ -50,6 +60,7 @@ static Hit *_Intersect(
 
   *tValue = POSITIVE_INFINITY;
   Hit *tmp = NULL, *intersected = NULL;
+  // isShadowCasting is true, only one intersection is enough for our needs
   int isShadowCasting = dist > 0;
   // root is null if the scene contains only unbounded objects
   if(root) {
@@ -75,6 +86,7 @@ static Hit *_Intersect(
           attenuate)
          )
       ) {
+        if(intersected) Hit_Free(intersected);
         intersected = tmp;
         if(isShadowCasting) isAbort = 1;
       }
@@ -94,6 +106,7 @@ static Hit *_Intersect(
       )
     )
   ) {
+    if(intersected) Hit_Free(intersected);
     intersected = tmp;
     if(isShadowCasting) return intersected;
   }

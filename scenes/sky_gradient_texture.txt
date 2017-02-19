@@ -72,7 +72,7 @@ SPHERE {
   radius 5
   TEXTURE {
     color 1, (1,0,0)
-    refraction .9
+    refract .9
     index 1.33
   }
 }

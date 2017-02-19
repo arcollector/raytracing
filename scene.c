@@ -5,13 +5,15 @@
 static Scene *Scene_New();
 static int Scene_AddObject(
   void *primitive,
-  Texture *tex,
   int type,
   Hit *(*intersect)(Ray ray, void *primitive),
   Vector (*normal)(Vector point, void *primitive),
+  Texture *tex,
   void (*print)(void *primitive),
   void (*free)(void *primitive),
   void (*bbox)(BBOX *bbox),
+  ClipList *clipList,
+  long clipListLength,
   Scene *scene
 );
 static void Scene_LoadDefaults(Scene *scene);
@@ -21,7 +23,11 @@ static Vector Scene_ParseVector(FILE *fp, int *code);
 static double Scene_ParseFloat(FILE *fp, int *code);
 static long Scene_ParseLong(FILE *fp, int *code);
 static int Scene_GetTexture(FILE *fp, Texture *tex);
-
+static int Scene_GetClip(FILE *fp, int code, ClipList **clipList);
+static int Scene_GetClipPlane(FILE *fp, ClipList **node);
+static int Scene_GetClipCone(FILE *fp, int clipType, ClipList **node);
+static int Scene_GetClipBox(FILE *fp, int clipType, ClipList **node);
+static int Scene_GetClipSphere(FILE *fp, int clipType, ClipList **node);
 static int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
 static int Scene_GetCamera(FILE *fp, Scene *scene);
 static int Scene_GetSky(FILE *fp, Scene *scene);
@@ -37,7 +43,7 @@ enum {
     NONE,
     MULTI,
     STOCHASTIC,
-  LOC, NORMAL,
+  LOC, NORMAL, RADIUS, APEX, MIN_RADIUS, BASE, MAX_RADIUS,
   CAMERA,
     UPPOINT,
     LOOKAT,
@@ -49,13 +55,19 @@ enum {
     AMBIENT,
     PHONG, PHONG_EXP, METALLIC,
     REFLECT,
-    REFRACTION, INDEX,
+    REFRACT, INDEX,
     SCALE,
-    MINRADIUS, MAXRADIUS,
     CHECKER,
+  CLIP_PLANE,
+  CLIP_IN_BOX,
+  CLIP_OUT_BOX,
+  CLIP_IN_CONE,
+  CLIP_OUT_CONE,
+  CLIP_IN_SPHERE,
+  CLIP_OUT_SPHERE,
   LAMP,
+    STRENGTH, FALLOFF,
   SPHERE,
-    RADIUS,
   PLANE,
   POLYGON,
     VERTEX,
@@ -68,8 +80,10 @@ char gbStringTypes[][50] = {
   "FILE_NAME",
   "WIDTH", "HEIGHT",
   "ANTI_ALIASING",
-    "NONE", "MULTI", "STOCHASTIC",
-  "LOC", "NORMAL",
+    "NONE",
+    "MULTI",
+    "STOCHASTIC",
+  "LOC", "NORMAL", "RADIUS", "APEX", "MIN_RADIUS", "BASE", "MAX_RADIUS",
   "CAMERA",
     "UPPOINT",
     "LOOKAT",
@@ -81,13 +95,19 @@ char gbStringTypes[][50] = {
     "AMBIENT",
     "PHONG", "PHONG_EXP", "METALLIC",
     "REFLECT",
-    "REFRACTION", "INDEX",
+    "REFRACT", "INDEX",
     "SCALE",
-    "MINRADIUS", "MAXRADIUS",
     "CHECKER",
+  "CLIP_PLANE",
+  "CLIP_IN_BOX",
+  "CLIP_OUT_BOX",
+  "CLIP_IN_CONE",
+  "CLIP_OUT_CONE",
+  "CLIP_IN_SPHERE",
+  "CLIP_OUT_SPHERE",
   "LAMP",
+    "STRENGTH", "FALLOFF",
   "SPHERE",
-    "RADIUS",
   "PLANE",
   "POLYGON",
     "VERTEX",
@@ -201,7 +221,7 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
     } else if(code == REFLECT) {
       if(DEBUG) printf("FOUND REFLECT\n");
       rfl = Scene_ParseFloat(fp, &code);
-    } else if(code == REFRACTION) {
+    } else if(code == REFRACT) {
       if(DEBUG) printf("FOUND REFRACTION\n");
       rfr = Scene_ParseFloat(fp, &code);
     } else if(code == INDEX) {
@@ -211,10 +231,10 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
       if(DEBUG) printf("FOUND SCALE\n");
       tmp = Scene_ParseVector(fp, &code);
       Texture_SetScale(tmp,tex);
-    } else if(code == MINRADIUS) {
+    } else if(code == MIN_RADIUS) {
       if(DEBUG) printf("FOUND MIN RADIUS\n");
       minRadius = Scene_ParseFloat(fp, &code);
-    } else if(code == MAXRADIUS) {
+    } else if(code == MAX_RADIUS) {
       if(DEBUG) printf("FOUND MAX RADIUS\n");
       maxRadius = Scene_ParseFloat(fp, &code);
     } else if(code == CHECKER) {
@@ -238,15 +258,223 @@ int Scene_GetTexture(FILE *fp, Texture *tex) {
   return code;
 }
 
+int Scene_GetClip(FILE *fp, int code, ClipList **clipList) {
+
+  ClipList *node;
+  if(code == CLIP_PLANE) {
+    if(DEBUG) printf("CLIP_PLANE found\n");
+    code = Scene_GetClipPlane(fp, &node);
+
+  } else if(code == CLIP_IN_CONE) {
+    if(DEBUG) printf("CLIP_IN_CONE found\n");
+    code = Scene_GetClipCone(fp, CLIP_IN, &node);
+
+  } else if(code == CLIP_OUT_CONE) {
+    if(DEBUG) printf("CLIP_OUT_CONE found\n");
+    code = Scene_GetClipCone(fp, CLIP_OUT, &node);
+
+  } else if(code == CLIP_IN_BOX) {
+    if(DEBUG) printf("CLIP_IN_BOX found\n");
+    code = Scene_GetClipBox(fp, CLIP_IN, &node);
+
+  } else if(code == CLIP_OUT_BOX) {
+    if(DEBUG) printf("CLIP_OUT_BOX found\n");
+    code = Scene_GetClipBox(fp, CLIP_OUT, &node);
+
+  } else if(code == CLIP_IN_SPHERE) {
+    if(DEBUG) printf("CLIP_IN_SPHERE found\n");
+    code = Scene_GetClipSphere(fp, CLIP_IN, &node);
+
+  } else if(code == CLIP_OUT_SPHERE) {
+    if(DEBUG) printf("CLIP_OUT_SPHERE found\n");
+    code = Scene_GetClipSphere(fp, CLIP_OUT, &node);
+
+  } else {
+    if(DEBUG) printf("CLIP property unknown %s\n",gbStringBuf);
+    return 0;
+  }
+
+  ClipList_InsertNode(node, clipList);
+  return 1;
+}
+
+int Scene_GetClipPlane(FILE *fp, ClipList **node) {
+
+  int code;
+  Vector loc, normal;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == LOC) {
+      if(DEBUG) printf("\tLOC found, ");
+      loc = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(loc);
+
+    } else if(code == NORMAL) {
+      if(DEBUG) printf("\tNORMAL found, ");
+      normal = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(normal);
+
+    } else {
+      if(DEBUG) printf("\tCLIP_PLANE property invalid: %s\n", gbStringBuf);
+      return ERROR;
+    }
+  }
+
+  ClipPlane *clipper = ClipPlane_New(loc, normal);
+  if(!clipper) return ERROR;
+
+  *node = ClipList_NewNode(
+    clipper, ClipPlane_Clip, ClipPlane_Print
+  );
+  if(!*node) {
+    Clipper_Free(clipper);
+    return ERROR;
+  }
+
+  return code;
+}
+
+int Scene_GetClipCone(FILE *fp, int clipType, ClipList **node) {
+
+  int code;
+  Vector apex, base;
+  double minRadius, maxRadius;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == APEX) {
+      if(DEBUG) printf("\tAPEX found, ");
+      apex = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(apex);
+
+    } else if(code == BASE) {
+      if(DEBUG) printf("\tBASE found, ");
+      base = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(base);
+
+    } else if(code == MIN_RADIUS) {
+      if(DEBUG) printf("\tMIN_RADIUS found, ");
+      minRadius = Scene_ParseFloat(fp, &code);
+      if(DEBUG) printf("%f\n", minRadius);
+
+    } else if(code == MAX_RADIUS) {
+      if(DEBUG) printf("\tMAX_RADIUS found, ");
+      maxRadius = Scene_ParseFloat(fp, &code);
+      if(DEBUG) printf("%f\n", maxRadius);
+
+    } else {
+      if(DEBUG) printf("\tCLIP_CONE property invalid: %s\n", gbStringBuf);
+      return ERROR;
+    }
+  }
+
+  ClipCone *clipper = ClipCone_New(
+    apex, minRadius, base, maxRadius, clipType
+  );
+  if(!clipper) return ERROR;
+
+  *node = ClipList_NewNode(
+    clipper, ClipCone_Clip, ClipCone_Print
+  );
+  if(!*node) {
+    Clipper_Free(clipper);
+    return ERROR;
+  }
+
+  return code;
+}
+
+int Scene_GetClipBox(FILE *fp, int clipType, ClipList **node) {
+
+  int code;
+  Vector apex, base;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == APEX) {
+      if(DEBUG) printf("\tAPEX found, ");
+      apex = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(apex);
+
+    } else if(code == BASE) {
+      if(DEBUG) printf("\tBASE found, ");
+      base = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(base);
+
+    } else {
+      if(DEBUG) printf("\tCLIP_BOX property invalid: %s\n", gbStringBuf);
+      return ERROR;
+    }
+  }
+
+  ClipBox *clipper = ClipBox_New(apex, base, clipType);
+  if(!clipper) return ERROR;
+
+  *node = ClipList_NewNode(
+    clipper, ClipBox_Clip, ClipBox_Print
+  );
+  if(!*node) {
+    Clipper_Free(clipper);
+    return ERROR;
+  }
+
+  return code;
+}
+
+static int Scene_GetClipSphere(FILE *fp, int clipType, ClipList **node) {
+
+  int code;
+  Vector loc;
+  double radius;
+
+  while(!feof(fp) &&
+        (code = Scene_GetString(fp)) != CURLY) {
+
+    if(code == LOC) {
+      if(DEBUG) printf("\tLOC found, ");
+      loc = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(loc);
+
+    } else if(code == RADIUS) {
+      if(DEBUG) printf("\tRADIUS found, ");
+      radius = Scene_ParseFloat(fp, &code);
+      if(DEBUG) printf("%f\n",radius);
+
+    } else {
+      if(DEBUG) printf("\tCLIP_SPHERE property invalid: %s\n", gbStringBuf);
+      return ERROR;
+    }
+  }
+
+  ClipSphere *clipper = ClipSphere_New(loc, radius, clipType);
+  if(!clipper) return ERROR;
+
+  *node = ClipList_NewNode(
+    clipper, ClipSphere_Clip, ClipSphere_Print
+  );
+  if(!*node) {
+    Clipper_Free(clipper);
+    return ERROR;
+  }
+
+  return code;
+}
+
 int Scene_AddObject(
   void *primitive,
-  Texture *tex,
   int type,
   Hit *(*intersect)(Ray ray, void *primitive),
   Vector (*normal)(Vector point, void *primitive),
+  Texture *tex,
   void (*print)(void *primitive),
   void (*free)(void *primitive),
   void (*bbox)(BBOX *bbox),
+  ClipList *clipList,
+  long clipListLength,
   Scene *scene
 ) {
 
@@ -255,12 +483,14 @@ int Scene_AddObject(
 
   obj->primitive = primitive;
   obj->type = type;
-  obj->texture = tex;
   obj->intersect = intersect;
   obj->normal = normal;
+  obj->texture = tex;
   obj->print = print;
   obj->free = free;
   obj->bbox = bbox;
+  obj->clipList = clipList;
+  obj->clipListLength = clipListLength;
 
   obj->next = scene->objectList;
   scene->objectList = obj;
@@ -310,9 +540,12 @@ void Scene_LoadDefaults(Scene *scene) {
     scene->sky = tex;
   }
   if(!scene->lampList) {
-    scene->lampList = Lamp_New(scene->cam->viewerPos);
+    scene->lampList = Lamp_New(
+      scene->cam->viewerPos,
+      LAMP_STRENGTH_DEFAULT,
+      LAMP_FALLOFF_DEFAULT
+    );
   }
-
 }
 
 void Scene_Free(Scene *scene) {
@@ -322,6 +555,7 @@ void Scene_Free(Scene *scene) {
     for(Object *node = scene->objectList, *next; node; node = next) {
       next = node->next;
       (*node->free)(node->primitive);
+      if(node->clipListLength) ClipList_Free(node->clipList);
       free(node);
     }
   }
@@ -510,6 +744,8 @@ int Scene_GetLamp(FILE *fp, Scene *scene) {
 
   int code;
   Vector loc;
+  double strength = LAMP_STRENGTH_DEFAULT,
+         falloff = LAMP_FALLOFF_DEFAULT;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -519,14 +755,23 @@ int Scene_GetLamp(FILE *fp, Scene *scene) {
       loc = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(loc);
 
+    } else if(code == STRENGTH) {
+      if(DEBUG) printf("\tSTRENGTH found, ");
+      strength = Scene_ParseFloat(fp, &code);
+      if(DEBUG) printf("strength: %f\n", strength);
+
+    } else if(code == FALLOFF) {
+      if(DEBUG) printf("\tFALLOFF found, ");
+      falloff = Scene_ParseFloat(fp, &code);
+      if(DEBUG) printf("falloff: %f\n", falloff);
+
     } else {
       if(DEBUG) printf("\tLAMP property invalid: %s\n", gbStringBuf);
       return ERROR;
     }
-
   }
 
-  Lamp *lamp = Lamp_New(loc);
+  Lamp *lamp = Lamp_New(loc, strength, falloff);
   lamp->next = scene->lampList;
   scene->lampList = lamp;
 
@@ -541,6 +786,9 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
   Vector loc;
   double radius;
   Texture *tex = Texture_New();
+  if(!tex) return ERROR;
+  ClipList *clipList = NULL;
+  long clipListLength = 0;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -560,33 +808,40 @@ int Scene_GetSphere(FILE *fp, Scene *scene) {
       code = Scene_GetTexture(fp,tex);
       if(DEBUG) Texture_Print(tex);
 
+    } else if(Scene_GetClip(fp, code, &clipList)) {
+      clipListLength++;
+
     } else {
       if(DEBUG) printf("\tSPHERE property invalid: %s\n", gbStringBuf);
       Texture_Free(tex);
+      ClipList_Free(clipList);
       return ERROR;
     }
-
   }
 
   Sphere *sphere = Sphere_New(loc, radius, tex);
   if(!sphere) {
     Texture_Free(tex);
+    ClipList_Free(clipList);
     return ERROR;
   }
 
   if(!Scene_AddObject(
-    sphere, 
-    tex,
+    sphere,
     OBJ_SPHERE,
     Sphere_Intersect,
     Sphere_Normal,
+    tex,
     Sphere_Print,
     Sphere_Free,
     Sphere_BBOX,
+    clipList,
+    clipListLength,
     scene
     )
   ) {
-    Sphere_Free(sphere);  
+    Sphere_Free(sphere);
+    ClipList_Free(clipList);
     return ERROR;
   }
 
@@ -598,6 +853,9 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
   int code;
   Vector loc, normal;
   Texture *tex = Texture_New();
+  if(!tex) return ERROR;
+  ClipList *clipList = NULL;
+  long clipListLength = 0;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -617,33 +875,40 @@ int Scene_GetPlane(FILE *fp, Scene *scene) {
       code = Scene_GetTexture(fp,tex);
       if(DEBUG) Texture_Print(tex);
 
+    } else if(Scene_GetClip(fp, code, &clipList)) {
+      clipListLength++;
+
     } else {
       if(DEBUG) printf("\tPLANE property invalid: %s\n", gbStringBuf);
       Texture_Free(tex);
+      ClipList_Free(clipList);
       return ERROR;
     }
-
   }
 
   Plane *plane = Plane_New(loc, normal, tex);
   if(!plane) {
     Texture_Free(tex);
+    ClipList_Free(clipList);
     return ERROR;
   }
 
   if(!Scene_AddObject(
     plane,
-    tex,
     OBJ_PLANE,
     Plane_Intersect,
     Plane_Normal,
+    tex,
     Plane_Print,
     Plane_Free,
     NULL,
+    clipList,
+    clipListLength,
     scene
     )
   ) {
     Plane_Free(plane);
+    ClipList_Free(clipList);
     return ERROR;
   }
 
@@ -655,9 +920,16 @@ int Scene_GetPolygon(FILE *fp, Scene *scene) {
   int code;
   Vector loc, normal;
   Texture *tex = Texture_New();
+  if(!tex) return ERROR;
   Polygon *poly = Polygon_New(tex);
+  if(!poly) {
+    Texture_Free(tex);
+    return ERROR;
+  }
   Vector *vertices = NULL;
   long verticesLength = 0;
+  ClipList *clipList = NULL;
+  long clipListLength = 0;
 
   while(!feof(fp) &&
         (code = Scene_GetString(fp)) != CURLY) {
@@ -684,42 +956,50 @@ int Scene_GetPolygon(FILE *fp, Scene *scene) {
       vertices = realloc(vertices,sizeof(Vector)*(verticesLength+1));
       vertices[verticesLength++] = vertex;
 
+    } else if(Scene_GetClip(fp, code, &clipList)) {
+      clipListLength++;
+
     } else {
       if(DEBUG) printf("\tPOLYGON property invalid: %s\n", gbStringBuf);
       if(vertices) free(vertices);
       Polygon_Free(poly);
+      ClipList_Free(clipList);
       return ERROR;
     }
-
   }
 
   if(verticesLength < 3) {
     if(DEBUG) printf("\tPOLYGON missing VERTEX or VERTEX count less than 3\n");
     if(vertices) free(vertices);
     Polygon_Free(poly);
+    ClipList_Free(clipList);
     return ERROR;
   }
 
   if(!Polygon_Setup(verticesLength, vertices, poly)) {
     free(vertices);
     Polygon_Free(poly);
+    ClipList_Free(clipList);
     return ERROR;
   }
   free(vertices);
 
   if(!Scene_AddObject(
     poly,
-    tex,
     OBJ_POLYGON,
     Polygon_Intersect,
     Polygon_Normal,
+    tex,
     Polygon_Print,
     Polygon_Free,
     Polygon_BBOX,
+    clipList,
+    clipListLength,
     scene
     )
   ) {
     Polygon_Free(poly);
+    ClipList_Free(clipList);
     return ERROR;
   }
 

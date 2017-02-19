@@ -28,8 +28,8 @@ SPHERE {
   TEXTURE {
     ambient .3
     color 1, (1,0,0)
-    minRadius .6
-    maxRadius .8
+    min_radius .6
+    max_radius .8
   }
 }
 
@@ -38,8 +38,8 @@ SPHERE {
   radius 5
   TEXTURE {
     ambient .3
-    minRadius .6
-    maxRadius .3
+    min_radius .6
+    max_radius .3
     color .3, (0,0,1)
     color .8, (1,0,1)
     color .9, (0,1,1)

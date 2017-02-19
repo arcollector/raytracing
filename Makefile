@@ -7,14 +7,14 @@ clean:
 install: rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				lamp.o texture.o \
 				sphere.o plane.o polygon.o \
-				scene.o shade.o shoot.o intersect.o hit.o \
+				scene.o shade.o shoot.o intersect.o hit.o clip.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o
 	gcc raytracing.c -o bin/raytracing \
 				rgb.o vector.o matrix.o ray.o camera.o windowing.o \
 				lamp.o texture.o \
 				sphere.o plane.o polygon.o \
-				scene.o shade.o shoot.o intersect.o hit.o \
+				scene.o shade.o shoot.o intersect.o hit.o clip.o \
 				octree_quantizer.o bmp.o tga.o \
 				bbox.o \
 				-lm -lpthread -Wall -g $(On)
@@ -84,7 +84,7 @@ camera.o: vector.h vector.c matrix.h matrix.c windowing.h windowing.c \
 					camera.h camera.c
 	gcc -c camera.c
 
-scene.o: rgb.h rgb.c vector.h vector.c matrix.h matrix.c camera.h camera.c object.h texture.h texture.c lamp.h lamp.c hit.h hit.c bbox.h bbox.c \
+scene.o: vector.h vector.c matrix.h matrix.c camera.h camera.c object.h texture.h texture.c lamp.h lamp.c hit.h hit.c bbox.h bbox.c clip.h clip.c \
 				sphere.h sphere.c \
 				plane.h plane.c \
 				scene.h scene.c
@@ -102,12 +102,15 @@ bbox.o: helpers.h vector.h vector.c object.h \
 				bbox.h bbox.c
 	gcc -c bbox.c
 
-intersect.o: helpers.h vector.h vector.c ray.h ray.c bbox.h bbox.c object.h hit.h hit.c texture.h texture.c \
+intersect.o: helpers.h vector.h vector.c ray.h ray.c bbox.h bbox.c object.h hit.h hit.c texture.h texture.c clip.c clip.h \
 						intersect.h intersect.c
 	gcc -c intersect.c
 
 hit.o: helpers.h object.h hit.h hit.c
 	gcc -c hit.c
+
+clip.o: vector.h clip.h clip.c
+	gcc -c clip.c
 
 # ------ Tests ----------------
 

@@ -52,7 +52,7 @@
 * add reflect and refract recursive calls -- **done! *(16/02/2017)**
 
 
-* add clipping
+* add clipping -- **done! *(20/02/2017)**
 
 
 * add solid texturing

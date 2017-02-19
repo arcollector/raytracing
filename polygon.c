@@ -48,7 +48,6 @@ static int Polygon_SetEdges(Polygon *poly) {
 }
 
 Polygon *Polygon_New(Texture *tex) {
-
   Polygon *poly = malloc(sizeof(Polygon));
   if(!poly) return NULL;
 
@@ -66,8 +65,8 @@ Polygon *Polygon_New(Texture *tex) {
 
 int Polygon_Setup(long pointsLength, Vector points[], Polygon *poly) {
   return Polygon_SetVertices(pointsLength, points, poly) &&
-     Polygon_SetEdges(poly) &&
-     Polygon_SetNormal(poly);
+         Polygon_SetEdges(poly) &&
+         Polygon_SetNormal(poly);
 }
 
 static Hit *Polygon_IntersectRayPlane(Ray ray, Polygon *poly) {
@@ -124,7 +123,7 @@ static int Polygon_IsPointInside(Vector point, Polygon *poly) {
 Hit *Polygon_Intersect(Ray ray, void *_poly) {
   Polygon *poly = _poly;
   Hit *hit = Polygon_IntersectRayPlane(ray,poly);
-  if(!hit || !hit->allPositive) return NULL;
+  if(!hit) return NULL;
   if(!Polygon_IsPointInside(Ray_PointAt(ray,hit->t[0]),poly)) {
     Hit_Free(hit);
     return NULL;

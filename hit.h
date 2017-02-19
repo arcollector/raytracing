@@ -13,8 +13,7 @@ typedef struct ObjectStruct Object;
 typedef struct {
   double *t;
   int tLength;
-  int start, next;
-  int allPositive;
+  int next;
   Object *object;
 } Hit;
 
