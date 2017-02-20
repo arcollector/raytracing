@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "hit.h"
 #include "bbox.h"
+#include "clip.h"
 
 enum {
   OBJ_SPHERE = 1,
@@ -26,6 +27,8 @@ typedef struct ObjectStruct {
   void (*print)(void *primitive);
   void (*free)(void *primitive);
   void (*bbox)(BBOX *bbox);
+  ClipList *clipList;
+  long clipListLength;
 } Object;
 
 #endif

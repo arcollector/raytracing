@@ -10,22 +10,14 @@ Hit *Hit_New(int length, ...) {
     return NULL;
   }
 
-  hit->start = 0;
   hit->next = -1;
   hit->tLength = length;
   hit->object = NULL;
-  hit->allPositive = 1;
 
   va_list argp;
   va_start(argp, length);
-  int isStart = 0;
   for(int i = 0; i < length; i++) {
-    double t = hit->t[i] = va_arg(argp, double);
-    if(fabs(t) < EPSILON) hit->allPositive = 0;
-    if(t > -EPSILON && !isStart) {
-      isStart = 1;
-      hit->start = i;
-    }
+    hit->t[i] = va_arg(argp, double);
   }
   va_end(argp);
 
@@ -33,7 +25,7 @@ Hit *Hit_New(int length, ...) {
 }
 
 void Hit_Begin(Hit *hit) {
-  hit->next = hit->start;
+  hit->next = 0;
 }
 
 double Hit_Next(Hit *hit) {
@@ -55,8 +47,7 @@ void Hit_Free(Hit *hit) {
 
 void Hit_Print(Hit *hit) {
   printf("=== HIT ===\n");
-  printf("start %d next %d tLength %d\n",hit->start,hit->next,hit->tLength);
-  printf("are t all positive %d\n",hit->allPositive);
+  printf(" next %d tLength %d\n",hit->next,hit->tLength);
   printf("object %p\n",hit->object);
   for(int i = 0; i < hit->tLength; i++) {
     printf("%d) t: %f ",i,hit->t[i]);

@@ -105,21 +105,27 @@ Vector Shade_ComputeColor(
   Object *obj = hit->object;
   void *primitive = obj->primitive;
   Vector normal = (*obj->normal)(intersection, primitive);
-  // move off the intersection from the primitive by a little amount
-  // to avoid self intersection
-  Vector pi = Vector_AddVector(intersection,Vector_MulScalar(normal,EPSILON));
+  // normal must point to in reverse direction
+  // that the ray direction
+  if(Vector_Dot(normal, ray.dir) >= 0) {
+    normal = Vector_Negate(normal);
+  }
+  Vector pOffset = Vector_AddVector(
+    intersection,
+    Vector_MulScalar(normal,EPSILON)
+  );
   Texture *tex = obj->texture;
-  Vector baseColor = Texture_GetColor(pi,normal,tex);
-  // color * Ka
+  Vector baseColor = Texture_GetColor(intersection, normal, tex);
+  // color*Ka
   Vector color = Vector_MulScalar(baseColor,tex->kA);
   for(Lamp *lamp = scene->lampList; lamp; lamp = lamp->next) {
     Vector sumTerm = Vector_New(0,0,0);
-    Ray pl = Ray_FromP1toP2(pi,lamp->position);
+    Ray pl = Ray_FromP1toP2(pOffset, lamp->position);
     double dist = Ray_Length(pl);
     // normalize ray dir
-    pl.dir = Vector_DivScalar(pl.dir,dist);
+    pl.dir = Vector_DivScalar(pl.dir, dist);
     // Lambertian calc
-    double cosI = Vector_Dot(normal,pl.dir);
+    double cosI = Vector_Dot(normal, pl.dir);
     // object normal is not facing the light
     if(cosI < 0) continue;
     double attenuate = 1;
@@ -132,19 +138,23 @@ Vector Shade_ComputeColor(
       )) {
       continue;
     }
-    // color * Ka + sum[ color * cosI ]
-    sumTerm = Vector_AddVector(sumTerm,Vector_MulScalar(baseColor,cosI));
+    double factor = lamp->strength / pow(dist,lamp->falloff);
+    // color*Ka + sum[ color*cosI*factor ]
+    sumTerm = Vector_AddVector(
+      sumTerm,
+      Vector_MulScalar(baseColor, cosI * factor)
+    );
+    // attenuate if a transparent object was between object and light
     sumTerm = Vector_MulScalar(sumTerm,attenuate);
     // Phong calc
     if(tex->kS > 0) {
       Vector reflect = Vector_Reflect(pl.dir, normal);
       double cosR = Vector_Dot(eye, reflect);
       if(cosR > 0) {
-        // color * Ka + sum[ color * cosI + white * Ks * cosR^expS ]
-        double factor = tex->kS * pow(cosR, tex->expS);
+        // color*Ka + sum[ color*cosI*factor + white*Ks*(cosR^expS)*factor ]
         Vector tmp = Vector_MulScalar(
           tex->isMetallic ? baseColor : white,
-          factor
+          tex->kS * pow(cosR, tex->expS) * factor
         );
         sumTerm = Vector_AddVector(sumTerm,tmp);
       }
@@ -154,7 +164,11 @@ Vector Shade_ComputeColor(
 
   if(tex->rfl > 0) {
     Vector rflColor = Shade(
-      Shade_RayReflect(ray.dir, intersection, normal),
+      Shade_RayReflect(
+        ray.dir,
+        pOffset,
+        normal
+      ),
       level + 1,
       root, treeObjectLength,
       unboundedObjectList, unboundedObjectListLength,
@@ -194,8 +208,7 @@ Ray Shade_RayReflect(
   Vector normal
 ) {
   return Ray_New(
-    // move intersection to avoid self intersection
-    Vector_AddVector(intersection,Vector_MulScalar(normal,EPSILON)),
+    intersection,
     // calc reflect vector and use it as the ray dir
     Vector_Reflect(dir,normal)
   );

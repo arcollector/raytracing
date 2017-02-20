@@ -6,7 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "rgb.h"
 #include "vector.h"
 #include "matrix.h"
 #include "camera.h"
@@ -15,6 +14,7 @@
 #include "lamp.h"
 #include "bbox.h"
 #include "object.h"
+#include "clip.h"
 #include "sphere.h"
 #include "plane.h"
 #include "polygon.h"

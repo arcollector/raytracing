@@ -8,6 +8,7 @@
 #include "object.h"
 #include "hit.h"
 #include "texture.h"
+#include "clip.h"
 
 extern int gbDebug;
 
