@@ -1,15 +1,7 @@
 FILE_NAME = spheres_and_lights.bmp
-WIDTH = 500
-HEIGHT = 500
+XRES = 500
+YRES = 500
 ANTI_ALIASING = none
-
-CAMERA {
-  loc (0,0,-1)
-  upPoint (0,1,0)
-  lookAt (0,0,0)
-  viewerDistance 10
-  window (-5,-5) (5,5)
-}
 
 LAMP {
   loc (5,20,10)

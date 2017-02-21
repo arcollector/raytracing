@@ -1,55 +1,44 @@
 FILE_NAME = sky_gradrient_texture.bmp
 
-WIDTH = 1280
-HEIGHT = 1024
+XRES = 1280
+YRES = 1024
 ANTI_ALIASING = none
 
-/* right */
-CAMERA {
-  loc (-50,0,25)
-  upPoint (-50,1,25)
-  lookAt (0,0,25)
-  viewerDistance 10
-  window (-10,-10) (10,10)
-}
-/* back */
-CAMERA {
-  loc (0,0,75)
-  upPoint (0,1,75)
-  lookAt (0,0,0)
-  viewerDistance 10
-  window (-10,-10) (10,10)
-}
-/* bottom */
-CAMERA {
-  loc (0,-50,25)
-  upPoint (0,-50,24)
-  lookAt (0,0,25)
-  viewerDistance 10
-  window (-10,-10) (10,10)
-}
 /* left */
-CAMERA {
+OBSERVER {
   loc (50,0,25)
-  upPoint (50,1,25)
-  lookAt (0,0,25)
-  viewerDistance 10
-  window (-10,-10) (10,10)
+  lookAt (40,0,25)
+  window (-11,-8.8) (11,8.8)
 }
 /* slant */
-CAMERA {
+OBSERVER {
   loc (40,5,1)
-  upPoint (40,6,1)
-  lookAt (0,0,25)
-  viewerDistance 10
-  window (-10,-10) (10,10)
+  lookAt (31.5,4,6.12)
+  window (-11,-8.8) (11,8.8)
+}
+/* bottom */
+OBSERVER {
+  loc (0,-60,25)
+  up (0,0,-1)
+  lookAt (0,-50,25)
+  window (-11,-8.8) (11,8.8)
+}
+/* right */
+OBSERVER {
+  loc (-20,0,25)
+  lookAt (-10,0,25)
+  window (-11,-8.8) (11,8.8)
 }
 /* front */
-CAMERA {
-  loc (0,0,-10)
-  upPoint (0,1,-10)
-  lookAt (0,0,0)
-  viewerDistance 10
+OBSERVER {
+  loc (0,0,-20)
+  lookAt (0,0,-10)
+  window (-11,-8.8) (11,8.8)
+}
+/* back */
+OBSERVER {
+  loc (0,0,85)
+  lookAt (0,0,75)
   window (-11,-8.8) (11,8.8)
 }
 

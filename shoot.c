@@ -47,12 +47,14 @@ Ray Shoot_BuildRay(double x, double y, Camera *cam) {
   // from screen space
   Vector ps = Vector2d_New(x,y);
   // to view plane space (windowing)
+  // pvp is in cam space
   Vector pvp = Vector_MulMatrix(ps,cam->win);
-  //Vector_Print(ps); Vector_Print(pvp); printf("\n");
-  // to world space (change of axes)
+  //Vector_Print(ps); Vector_Print(pvp);
+  // to world space
   Vector pw = Vector_MulMatrix(pvp,cam->invLocal);
+  //Vector_Print(pw);
   // build ray (world space)
-  Ray ray = Ray_Normalize(Ray_FromP1toP2(cam->viewerPos,pw));
+  Ray ray = Ray_Normalize(Ray_FromP1toP2(cam->pos,pw));
   //Ray_Print(ray);
 
   return ray;

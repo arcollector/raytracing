@@ -94,27 +94,30 @@ Vector Shade_ComputeColor(
 ) {
 
   if(level == MAX_LEVEL) return Vector_New(0,0,0);
-  // for phong calc
-  Vector white = Vector_New(1,1,1);
+
+  Object *obj = hit->object;
+  void *primitive = obj->primitive;
+  Texture *tex = obj->texture;
 
   Hit_Begin(hit);
   Vector intersection = Ray_PointAt(ray, Hit_Next(hit));
-  Vector eye = Vector_Normalize(
-    Vector_FromP1toP2(intersection, scene->cam->viewerPos)
-  );
-  Object *obj = hit->object;
-  void *primitive = obj->primitive;
   Vector normal = (*obj->normal)(intersection, primitive);
   // normal must point to in reverse direction
   // that the ray direction
   if(Vector_Dot(normal, ray.dir) >= 0) {
     normal = Vector_Negate(normal);
   }
+  // move intersection by a little amount along the
+  // object normal to avoid self intersection
   Vector pOffset = Vector_AddVector(
     intersection,
-    Vector_MulScalar(normal,EPSILON)
+    Vector_MulScalar(normal, EPSILON)
   );
-  Texture *tex = obj->texture;
+  // for phong calc
+  Vector white = Vector_New(1,1,1);
+  Vector eye = Vector_Normalize(
+    Vector_FromP1toP2(intersection, scene->cam->pos)
+  );
   Vector baseColor = Texture_GetColor(intersection, normal, tex);
   // color*Ka
   Vector color = Vector_MulScalar(baseColor,tex->kA);

@@ -1,12 +1,10 @@
 FILE_NAME clip_sphere.bmp
-WIDTH 1000
-HEIGHT 1000
+XRES 1000
+YRES 1000
 
-CAMERA {
-  loc (2,5,0)
-  upPoint (2,6,0)
-  lookAt (0,0,10)
-  viewerDistance 10
+OBSERVER {
+  loc (3.8,9.4,-8.8)
+  lookAt (2,5,0)
   window (-10,-10) (10,10)
 }
 

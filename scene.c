@@ -17,7 +17,6 @@ static int Scene_AddObject(
   Scene *scene
 );
 static void Scene_LoadDefaults(Scene *scene);
-
 static int Scene_GetString(FILE *fp);
 static Vector Scene_ParseVector(FILE *fp, int *code);
 static double Scene_ParseFloat(FILE *fp, int *code);
@@ -29,7 +28,7 @@ static int Scene_GetClipCone(FILE *fp, int clipType, ClipList **node);
 static int Scene_GetClipBox(FILE *fp, int clipType, ClipList **node);
 static int Scene_GetClipSphere(FILE *fp, int clipType, ClipList **node);
 static int Scene_GetAntiAliasing(FILE *fp, Scene *scene);
-static int Scene_GetCamera(FILE *fp, Scene *scene);
+static int Scene_GetObserver(FILE *fp, Scene *scene);
 static int Scene_GetSky(FILE *fp, Scene *scene);
 static int Scene_GetLamp(FILE *fp, Scene *scene);
 static int Scene_GetSphere(FILE *fp, Scene *scene);
@@ -38,16 +37,15 @@ static int Scene_GetPolygon(FILE *fp, Scene *scene);
 
 enum {
   FILE_NAME = 0,
-  WIDTH, HEIGHT,
+  XRES, YRES,
   ANTIALIASING,
     NONE,
     MULTI,
     STOCHASTIC,
   LOC, NORMAL, RADIUS, APEX, MIN_RADIUS, BASE, MAX_RADIUS,
-  CAMERA,
-    UPPOINT,
+  OBSERVER,
+    UP,
     LOOKAT,
-    VIEWERDISTANCE,
     WINDOW,
   SKY,
   TEXTURE,
@@ -78,16 +76,15 @@ enum {
 
 char gbStringTypes[][50] = {
   "FILE_NAME",
-  "WIDTH", "HEIGHT",
+  "XRES", "YRES",
   "ANTI_ALIASING",
     "NONE",
     "MULTI",
     "STOCHASTIC",
   "LOC", "NORMAL", "RADIUS", "APEX", "MIN_RADIUS", "BASE", "MAX_RADIUS",
-  "CAMERA",
-    "UPPOINT",
+  "OBSERVER",
+    "UP",
     "LOOKAT",
-    "VIEWERDISTANCE",
     "WINDOW",
   "SKY",
   "TEXTURE",
@@ -526,10 +523,9 @@ void Scene_LoadDefaults(Scene *scene) {
 
   if(!scene->cam) {
     scene->cam = Camera_New(
-      Vector_New(0,0,-1), // camera location
+      Vector_New(0,0,-11), // camera location
       Vector_New(0,1,0), // camera up vector (tilt)
-      Vector_New(0,0,0), // camera point of interest
-      10, // how far viewer is behind camera view plane
+      Vector_New(0,0,-1), // camera point of interest
       Vector2d_New(-10,-10), Vector2d_New(10,10) // view plane dims
     );
   }
@@ -541,7 +537,7 @@ void Scene_LoadDefaults(Scene *scene) {
   }
   if(!scene->lampList) {
     scene->lampList = Lamp_New(
-      scene->cam->viewerPos,
+      scene->cam->pos,
       LAMP_STRENGTH_DEFAULT,
       LAMP_FALLOFF_DEFAULT
     );
@@ -579,14 +575,14 @@ int Scene_Setup(FILE *fp, Scene **scene) {
       if(DEBUG) printf("value is %s\n",gbStringBuf);
       strcpy((*scene)->fileName,gbStringBuf);
 
-    } else if(code == WIDTH) {
-      if(DEBUG) printf("WIDTH found, ");
+    } else if(code == XRES) {
+      if(DEBUG) printf("XRES found, ");
       code = Scene_GetString(fp);
       if(DEBUG) printf("value is %s\n",gbStringBuf);
       (*scene)->width = atol(gbStringBuf);
 
-    } else if(code == HEIGHT) {
-      if(DEBUG) printf("HEIGHT found, ");
+    } else if(code == YRES) {
+      if(DEBUG) printf("YRES found, ");
       code = Scene_GetString(fp);
       if(DEBUG) printf("value is %s\n",gbStringBuf);
       (*scene)->height = atol(gbStringBuf);
@@ -595,9 +591,9 @@ int Scene_Setup(FILE *fp, Scene **scene) {
       if(DEBUG) printf("ANTI_ALIASING found\n");
       code = Scene_GetAntiAliasing(fp, *scene);
 
-    } else if(code == CAMERA) {
-      if(DEBUG) printf("CAMERA found\n");
-      code = Scene_GetCamera(fp, *scene);
+    } else if(code == OBSERVER) {
+      if(DEBUG) printf("OBSERVER found\n");
+      code = Scene_GetObserver(fp, *scene);
 
     } else if(code == SKY) {
       if(DEBUG) printf("SKY found\n");
@@ -657,11 +653,10 @@ int Scene_GetAntiAliasing(FILE *fp, Scene *scene) {
   return code;
 }
 
-int Scene_GetCamera(FILE *fp, Scene *scene) {
+int Scene_GetObserver(FILE *fp, Scene *scene) {
 
   int code;
-  Vector loc, lookAt, upPoint;
-  double viewerDistance;
+  Vector loc, lookAt, up = Vector_New(0,1,0);
   double minX,minY,maxX,maxY;
 
   while(!feof(fp) &&
@@ -677,15 +672,10 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
       lookAt = Scene_ParseVector(fp, &code);
       if(DEBUG) Vector_Print(lookAt);
 
-    } else if(code == UPPOINT) {
-      if(DEBUG) printf("\tUPPOINT found, ");
-      upPoint = Scene_ParseVector(fp, &code);
-      if(DEBUG) Vector_Print(upPoint);
-
-    } else if(code == VIEWERDISTANCE) {
-      if(DEBUG) printf("\tVIEWDISTANE found, ");
-      viewerDistance = Scene_ParseFloat(fp, &code);
-      if(DEBUG) printf("%5.5f\n", viewerDistance);
+    } else if(code == UP) {
+      if(DEBUG) printf("\tUP found, ");
+      up = Scene_ParseVector(fp, &code);
+      if(DEBUG) Vector_Print(up);
 
     } else if(code == WINDOW) {
       if(DEBUG) printf("\tWINDOW found, ");
@@ -704,8 +694,7 @@ int Scene_GetCamera(FILE *fp, Scene *scene) {
   // already have a camera? if so, overwrite
   if(scene->cam) Camera_Free(scene->cam);
   scene->cam = Camera_New(
-    loc, upPoint, lookAt,
-    viewerDistance,
+    loc, up, lookAt,
     Vector2d_New(minX,minY), Vector2d_New(maxX,maxY)
   );
 
