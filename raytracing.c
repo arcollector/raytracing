@@ -81,7 +81,7 @@ static void Thread_Free(pthread_t *threads, ThreadData *data) {
 // **** THREAD CALLBACK FUNCTION ****
 
 void *trace(void *arg) {
-  printf("i am thread %ld\n",pthread_self());
+  printf("i am thread %ld\n",(long)pthread_self());
   ThreadData *data = (ThreadData *)arg;
   long yStart = data->yStart;
   long yEnd = data->yEnd;
@@ -100,7 +100,7 @@ void *trace(void *arg) {
       BMP_SetPixel(&gbCanvas,x,y,pixel);
     }
   }
-  printf("end thread %ld\n",pthread_self());
+  printf("end thread %ld\n",(long)pthread_self());
   return NULL;
 }
 
